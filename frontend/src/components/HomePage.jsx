@@ -71,6 +71,10 @@ export default function HomePage({
           annualIncome: u.profile.annual_income || '',
           boardPercentage: u.profile.board_percentage || '',
           currentCourse: u.profile.current_course || '',
+          degree: u.profile.degree || '',
+          student_type: u.profile.student_type || u.student_type || '',
+          studentType: u.profile.studentType || u.studentType || '',
+          schoolName: u.profile.school_name || u.profile.college_name || '',
           isFirstGraduate: u.profile.is_first_graduate !== undefined ? u.profile.is_first_graduate : false,
           schoolingType: u.profile.schooling_type || 'tn_govt_school_6_to_12',
           avatar: u.profile.avatar || null,
@@ -88,6 +92,17 @@ export default function HomePage({
       annualIncome: '',
       boardPercentage: '',
       currentCourse: '',
+      degree: '',
+      student_type: '',
+      studentType: '',
+      schoolName: '',
+      schoolClass: '',
+      schoolType: '',
+      schoolMedium: '',
+      emisId: '',
+      schoolMarks: '',
+      collegeName: '',
+      collegeType: '',
       isFirstGraduate: false,
       schoolingType: 'tn_govt_school_6_to_12',
       avatar: null,
@@ -114,9 +129,20 @@ export default function HomePage({
         gender: up.gender || 'male',
         community: up.community || 'BC',
         district: up.district || 'Chennai',
-        annualIncome: up.annual_income || '',
-        boardPercentage: up.board_percentage || '',
-        currentCourse: up.current_course || '',
+        annualIncome: up.annual_income || up.annualIncome || '',
+        boardPercentage: up.board_percentage || up.boardPercentage || '',
+        currentCourse: up.current_course || up.currentCourse || up.school_class || up.schoolClass || '',
+        degree: up.degree || '',
+        student_type: up.student_type || currentUser.student_type || up.studentType || currentUser.studentType || '',
+        studentType: up.student_type || currentUser.student_type || up.studentType || currentUser.studentType || '',
+        schoolName: up.school_name || up.schoolName || up.college_name || '',
+        schoolClass: up.school_class || up.schoolClass || '',
+        schoolType: up.school_type || up.schoolType || '',
+        schoolMedium: up.school_medium || up.schoolMedium || '',
+        emisId: up.emis_id || up.emisId || '',
+        schoolMarks: up.school_marks || up.schoolMarks || up.board_percentage || up.boardPercentage || '',
+        collegeName: up.college_name || up.collegeName || '',
+        collegeType: up.college_type || up.collegeType || '',
         isFirstGraduate: up.is_first_graduate !== undefined ? up.is_first_graduate : false,
         schoolingType: up.schooling_type || 'tn_govt_school_6_to_12',
         avatar: up.avatar || null,
@@ -136,6 +162,17 @@ export default function HomePage({
           annualIncome: '',
           boardPercentage: '',
           currentCourse: '',
+          degree: '',
+          student_type: '',
+          studentType: '',
+          schoolName: '',
+          schoolClass: '',
+          schoolType: '',
+          schoolMedium: '',
+          emisId: '',
+          schoolMarks: '',
+          collegeName: '',
+          collegeType: '',
           isFirstGraduate: false,
           schoolingType: 'tn_govt_school_6_to_12',
           avatar: null,
@@ -246,13 +283,20 @@ export default function HomePage({
     } catch (err) {}
   };
 
-  // Toggleable Welfare View (School vs College) with smart auto-detection from profile
+  // Dynamic Stream Locking: What they are currently studying governs their portal view
   const [homeWelfareView, setHomeWelfareView] = useState('auto'); // 'auto' | 'school' | 'college'
 
-  const courseLower = String(studentProfile.currentCourse || '').toLowerCase();
-  const isSchoolProfile = /class|school|primary|middle|sslc|hsc|grade|வகுப்பு|பள்ளி|std/i.test(courseLower);
+  const userStream = currentUser?.student_type || currentUser?.profile?.student_type || studentProfile?.student_type || studentProfile?.studentType;
+  const courseLower = String(studentProfile.currentCourse || studentProfile.schoolClass || '').toLowerCase();
+  const degreeLower = String(studentProfile.degree || '').toLowerCase();
+  
+  const isSchoolProfile = userStream === 'school' || (userStream !== 'college' && (
+    /class|school|primary|middle|sslc|hsc|grade|வகுப்பு|பள்ளி|std/i.test(courseLower) || 
+    /class|school|primary|middle|sslc|hsc|grade|வகுப்பு|பள்ளி|std/i.test(degreeLower)
+  ));
+  
   const effectiveView = homeWelfareView === 'auto'
-    ? (isSchoolProfile ? 'school' : 'college')
+    ? (userStream === 'school' ? 'school' : (userStream === 'college' ? 'college' : (isSchoolProfile ? 'school' : 'college')))
     : homeWelfareView;
 
   const isTa = currentLang === 'ta';
@@ -999,7 +1043,7 @@ export default function HomePage({
                   </div>
                 </div>
 
-                {/* Compact List of Credentials */}
+                {/* Compact List of Credentials - Dynamically Stream Tailored */}
                 <div className="flex-1 min-w-0 space-y-1 text-xs">
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">{t.label_name || "Name"}</span>
@@ -1007,6 +1051,19 @@ export default function HomePage({
                       {studentProfile.fullName || (isTa ? 'விருந்தினர் மாணவர்' : 'Guest Student')}
                     </strong>
                   </div>
+
+                  {/* Active Stream Tag */}
+                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                    <span className="text-slate-500 font-medium">{isTa ? 'கல்வி நிலை' : 'Stream'}</span>
+                    <span className={`font-bold text-[10px] px-2 py-0.5 rounded ${
+                      effectiveView === 'school'
+                        ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                        : 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                    }`}>
+                      {effectiveView === 'school' ? (isTa ? '🎒 பள்ளி மாணவர்' : '🎒 School Student') : (isTa ? '🎓 கல்லூரி மாணவர்' : '🎓 College Student')}
+                    </span>
+                  </div>
+
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">{t.label_gender_tag || "Gender"}</span>
                     <span className="text-slate-800 font-medium capitalize">
@@ -1025,24 +1082,56 @@ export default function HomePage({
                       {studentProfile.annualIncome ? `₹${Number(studentProfile.annualIncome).toLocaleString('en-IN')}` : (isTa ? '-- (குறிப்பிடப்படவில்லை)' : '-- (Not Set)')}
                     </span>
                   </div>
-                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">{t.label_marks_tag || "12th Marks"}</span>
-                    <span className="text-emerald-700 font-bold font-mono">
-                      {studentProfile.boardPercentage ? `${studentProfile.boardPercentage}%` : '--'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">{t.label_course_tag || "Course"}</span>
-                    <span className="text-slate-800 font-medium truncate ml-2" title={studentProfile.currentCourse}>
-                      {studentProfile.currentCourse || (isTa ? '-- (தேர்வு செய்யப்படவில்லை)' : '-- (Select Course)')}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-slate-500 font-medium">{t.label_fg_tag || "FG"}</span>
-                    <span className={`inline-flex items-center font-bold ${studentProfile.isFirstGraduate ? 'text-emerald-700' : 'text-slate-600'}`}>
-                      {studentProfile.isFirstGraduate ? (t.yes || 'Yes') : (t.no || 'No')}
-                    </span>
-                  </div>
+
+                  {effectiveView === 'school' ? (
+                    <>
+                      <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                        <span className="text-slate-500 font-medium">{isTa ? 'வகுப்பு' : 'Class'}</span>
+                        <span className="text-slate-900 font-bold">
+                          {studentProfile.schoolClass || studentProfile.currentCourse || (isTa ? 'வகுப்பு 10' : 'Class 10')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                        <span className="text-slate-500 font-medium">{isTa ? 'பள்ளி' : 'School'}</span>
+                        <span className="text-slate-800 font-medium truncate ml-2 max-w-[140px]" title={studentProfile.schoolName}>
+                          {studentProfile.schoolName || (isTa ? 'அரசு மேல்நிலைப் பள்ளி' : 'Govt Hr Sec School')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                        <span className="text-slate-500 font-medium">{isTa ? 'மதிப்பெண்' : 'Marks'}</span>
+                        <span className="text-emerald-700 font-bold font-mono">
+                          {studentProfile.schoolMarks || studentProfile.boardPercentage ? `${studentProfile.schoolMarks || studentProfile.boardPercentage}%` : '--'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-slate-500 font-medium">{isTa ? 'EMIS எண்' : 'EMIS ID'}</span>
+                        <span className="text-slate-700 font-mono text-[10px] font-bold">
+                          {studentProfile.emisId || '33020401402...'}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                        <span className="text-slate-500 font-medium">{t.label_marks_tag || "12th Marks"}</span>
+                        <span className="text-emerald-700 font-bold font-mono">
+                          {studentProfile.boardPercentage ? `${studentProfile.boardPercentage}%` : '--'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                        <span className="text-slate-500 font-medium">{t.label_course_tag || "Course"}</span>
+                        <span className="text-slate-800 font-medium truncate ml-2" title={studentProfile.currentCourse}>
+                          {studentProfile.currentCourse || (isTa ? '-- (தேர்வு செய்யப்படவில்லை)' : '-- (Select Course)')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-slate-500 font-medium">{t.label_fg_tag || "FG"}</span>
+                        <span className={`inline-flex items-center font-bold ${studentProfile.isFirstGraduate ? 'text-emerald-700' : 'text-slate-600'}`}>
+                          {studentProfile.isFirstGraduate ? (t.yes || 'Yes') : (t.no || 'No')}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
               </div>
@@ -1160,10 +1249,19 @@ export default function HomePage({
             
             {/* Lifecourse Segment Switcher: School Education vs Higher Education */}
             <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center space-x-2 text-xs font-bold text-slate-800">
-                <span className="text-slate-400 uppercase tracking-wider text-[10px]">{isTa ? 'கல்வி நிலை தேர்வு:' : 'Welfare Stream:'}</span>
-                <span className="bg-slate-100 px-2 py-0.5 rounded text-emerald-800 text-[11px]">
-                  {effectiveView === 'school' ? (isTa ? '🎒 பள்ளி கல்வி நலத்திட்டங்கள்' : '🎒 School Education') : (isTa ? '🎓 கல்லூரி & உயர்கல்வி' : '🎓 Higher Education')}
+              <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-800">
+                <span className="text-slate-400 uppercase tracking-wider text-[10px]">{isTa ? 'தற்போதைய கல்வி நிலை:' : 'Current Study Level:'}</span>
+                <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${
+                  effectiveView === 'school'
+                    ? 'bg-amber-50 text-amber-900 border-amber-300'
+                    : 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                }`}>
+                  {effectiveView === 'school' 
+                    ? (isTa ? `🎒 பள்ளி கல்வி (${studentProfile.schoolClass || studentProfile.currentCourse || 'வகுப்புகள் 1-12'})` : `🎒 School Education (${studentProfile.schoolClass || studentProfile.currentCourse || 'Classes 1-12'})`) 
+                    : (isTa ? `🎓 கல்லூரி & உயர்கல்வி (${studentProfile.degree || studentProfile.currentCourse || 'UG/PG'})` : `🎓 Higher Education (${studentProfile.degree || studentProfile.currentCourse || 'UG/PG'})`)}
+                </span>
+                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full hidden md:inline">
+                  {isTa ? '✓ தற்போதைய கல்விக்கான திட்டங்கள் மட்டும்' : '✓ Showing only current tier schemes'}
                 </span>
               </div>
 
@@ -1176,9 +1274,15 @@ export default function HomePage({
                       ? 'bg-amber-600 text-white shadow-sm'
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   }`}
+                  title={userStream === 'school' ? 'Active student profile stream' : 'Switch to school students view'}
                 >
                   <School size={14} />
                   <span>{isTa ? 'பள்ளி மாணவர்கள் (1-12)' : 'School Students (Class 1-12)'}</span>
+                  {userStream === 'school' && (
+                    <span className="text-[9px] bg-white text-amber-900 font-extrabold px-1.5 py-0.2 rounded-full">
+                      {isTa ? 'செயலில்' : 'Active'}
+                    </span>
+                  )}
                   <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${effectiveView === 'school' ? 'bg-amber-800 text-white' : 'bg-slate-200 text-slate-700'}`}>21</span>
                 </button>
 
@@ -1190,9 +1294,15 @@ export default function HomePage({
                       ? 'bg-[#006a4e] text-white shadow-sm'
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   }`}
+                  title={userStream === 'college' ? 'Active student profile stream' : 'Switch to college students view'}
                 >
                   <GraduationCap size={14} />
                   <span>{isTa ? 'கல்லூரி & உயர்கல்வி' : 'College & Higher Ed'}</span>
+                  {userStream === 'college' && (
+                    <span className="text-[9px] bg-white text-emerald-900 font-extrabold px-1.5 py-0.2 rounded-full">
+                      {isTa ? 'செயலில்' : 'Active'}
+                    </span>
+                  )}
                   <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${effectiveView === 'college' ? 'bg-emerald-900 text-white' : 'bg-slate-200 text-slate-700'}`}>26</span>
                 </button>
               </div>

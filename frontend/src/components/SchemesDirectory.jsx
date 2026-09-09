@@ -30,10 +30,18 @@ export default function SchemesDirectory({
   onApplyWithProfile, 
   searchQuery: externalSearchQuery = '',
   onSearchChange,
-  currentLang = 'en'
+  currentLang = 'en',
+  currentUser = null,
+  currentProfile = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const isTa = currentLang === 'ta';
+
+  // Detect student stream from logged in account or bio profile
+  const userStream = currentUser?.student_type || currentUser?.profile?.student_type || currentProfile?.student_type || currentProfile?.studentType;
+  const courseStr = String(currentProfile?.current_course || currentProfile?.currentCourse || currentProfile?.school_class || currentProfile?.schoolClass || currentProfile?.degree || '').toLowerCase();
+  const isSchoolUser = userStream === 'school' || (userStream !== 'college' && /class|school|primary|middle|secondary|sslc|hsc|வகுப்பு|பள்ளி|std/i.test(courseStr));
+  const isCollegeUser = userStream === 'college' || (userStream !== 'school' && /engineering|degree|ug|pg|diploma|college|b\.e|b\.tech|arts|கல்லூரி/i.test(courseStr));
 
   // Initialize with bundled 50+ official Tamil Nadu schemes so public link works 100% offline & online
   const [schemes, setSchemes] = useState(defaultSchemesCatalog || []);
@@ -41,8 +49,18 @@ export default function SchemesDirectory({
   const [fundingTab, setFundingTab] = useState('all'); // 'all' | 'css' | 'central_sector' | 'state_only' | 'mixed'
   const [selectedDept, setSelectedDept] = useState('all');
   const [selectedCommunity, setSelectedCommunity] = useState('all');
-  const [selectedLevel, setSelectedLevel] = useState('all');
+  const [selectedLevel, setSelectedLevel] = useState(() => {
+    if (isSchoolUser) return 'school';
+    if (isCollegeUser) return 'college';
+    return 'all';
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  // Sync if profile stream switches or updates
+  useEffect(() => {
+    if (isSchoolUser) setSelectedLevel('school');
+    else if (isCollegeUser) setSelectedLevel('college');
+  }, [userStream, isSchoolUser, isCollegeUser]);
 
   // Sync external search query from navbar if changed
   useEffect(() => {
@@ -460,6 +478,62 @@ export default function SchemesDirectory({
         </div>
 
       </div>
+
+      {/* Dynamic Stream Indicator Banner */}
+      {(isSchoolUser || isCollegeUser || userStream) && (
+        <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs ${
+          selectedLevel === 'school'
+            ? 'bg-amber-50/90 border-amber-200 text-amber-950'
+            : (selectedLevel === 'college'
+                ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
+                : 'bg-slate-50 border-slate-200 text-slate-900')
+        }`}>
+          <div className="flex items-center space-x-3">
+            <span className="text-2xl">
+              {selectedLevel === 'school' ? '🎒' : (selectedLevel === 'college' ? '🎓' : '📚')}
+            </span>
+            <div>
+              <div className="text-xs font-black uppercase tracking-wider flex items-center space-x-2">
+                <span>
+                  {selectedLevel === 'school'
+                    ? (isTa ? 'பள்ளி மாணவர் திட்டங்கள் மட்டுமே காட்டப்படுகின்றன' : 'Showing Only School Student Schemes (Classes 1–12)')
+                    : (selectedLevel === 'college'
+                        ? (isTa ? 'கல்லூரி & உயர்கல்வி திட்டங்கள் மட்டுமே காட்டப்படுகின்றன' : 'Showing Only College & Higher Education Schemes (UG/PG/Diploma)')
+                        : (isTa ? 'அனைத்து கல்வி திட்டங்களும் காட்டப்படுகின்றன' : 'Showing Schemes for All Education Levels'))}
+                </span>
+                <span className="text-[10px] bg-white px-2 py-0.5 rounded-full font-bold border border-slate-200 shadow-2xs">
+                  {filteredSchemes.length} {isTa ? 'திட்டங்கள்' : 'Schemes'}
+                </span>
+              </div>
+              <p className="text-[11px] opacity-80 mt-0.5">
+                {isTa
+                  ? `உங்கள் பயோடேட்டாவின் தற்போதைய கல்வி நிலைக்கு (${currentProfile?.current_course || currentProfile?.school_class || (selectedLevel === 'school' ? 'பள்ளி' : 'கல்லூரி')}) உகந்த திட்டங்கள் பிரத்தியேகமாக வடிகட்டப்பட்டுள்ளன.`
+                  : `Filtered specifically for your active study enrollment (${currentProfile?.current_course || currentProfile?.school_class || (selectedLevel === 'school' ? 'School' : 'College')}).`}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 shrink-0 self-end sm:self-auto">
+            {selectedLevel !== 'all' ? (
+              <button
+                type="button"
+                onClick={() => setSelectedLevel('all')}
+                className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg shadow-2xs transition cursor-pointer"
+              >
+                {isTa ? 'அனைத்து 47+ திட்டங்களையும் காண்க' : 'Show All 47+ Catalog'}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSelectedLevel(isSchoolUser ? 'school' : 'college')}
+                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-2xs transition cursor-pointer"
+              >
+                {isTa ? 'எனது கல்வித் திட்டங்களுக்கு மட்டும் திரும்பு' : 'Lock Back to My Study Level'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 4. Schemes Grid */}
       {isLoading ? (

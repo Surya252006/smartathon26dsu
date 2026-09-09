@@ -55,13 +55,19 @@ def is_scheme_eligible(profile: UserProfile, scheme: dict) -> Tuple[bool, List[s
         reasons.append("Requires differently abled status")
         
     # 8. Course & Grade Level check (Collegiate vs School Class 1 to 12 vs Ph.D.)
+    st_lower = str(getattr(profile, 'student_type', '') or getattr(profile, 'studentType', '') or "").lower()
     c_lower = str(profile.current_course or "").lower()
     d_lower = str(getattr(profile, 'degree', '') or "").lower()
     
-    is_school = any(k in c_lower or k in d_lower for k in [
-        "class", "school", "primary", "middle", "sslc", "hsc", "grade",
-        "வகுப்பு", "பள்ளி", "std"
-    ]) or any(d_lower.startswith(p) for p in ["primary", "middle", "high school", "higher secondary"])
+    if st_lower == "school":
+        is_school = True
+    elif st_lower == "college":
+        is_school = False
+    else:
+        is_school = any(k in c_lower or k in d_lower for k in [
+            "class", "school", "primary", "middle", "sslc", "hsc", "grade",
+            "வகுப்பு", "பள்ளி", "std"
+        ]) or any(d_lower.startswith(p) for p in ["primary", "middle", "high school", "higher secondary"])
     
     is_phd = "phd" in c_lower or "ph.d" in c_lower or "research" in c_lower or "doctorate" in c_lower or "phd" in d_lower
     

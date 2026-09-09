@@ -15,6 +15,9 @@ export const DEMO_PERSONAS = [
     expectedOutcome: "Stacks Pudhumai Penn (₹12,000/yr) + First Graduate Concession (₹25,000) = ₹37,000/yr (98% Guaranteed).",
     payload: {
       full_name: "Priya M (Rural Govt School)",
+      student_type: "college",
+      studentType: "college",
+      current_level: "college",
       gender: "female",
       community: "BC",
       annual_income: 120000,
@@ -24,6 +27,7 @@ export const DEMO_PERSONAS = [
       admission_mode: "govt_counseling_single_window",
       degree: "B.E. / B.Tech (Undergraduate)",
       current_course: "Engineering",
+      college_name: "Thiagarajar College of Engineering, Madurai",
       is_differently_abled: false,
       available_docs: ["income_certificate", "community_certificate", "marksheet", "bonafide_certificate"]
     }
@@ -38,6 +42,13 @@ export const DEMO_PERSONAS = [
     expectedOutcome: "Eligible for Class 10 Board Exam Question Banks, PM-POSHAN Hot Noon Meal, Free Textbooks & Special SSLC Coaching. Avoids collegiate collisions.",
     payload: {
       full_name: "Kavitha S (Govt High School, Thanjavur)",
+      student_type: "school",
+      studentType: "school",
+      current_level: "school",
+      school_class: "Class 10 (SSLC Secondary)",
+      school_name: "Government High School, Papanasam, Thanjavur",
+      school_type: "tn_govt_school_6_to_12",
+      school_medium: "Tamil Medium",
       gender: "female",
       community: "BC",
       annual_income: 85000,
@@ -45,7 +56,7 @@ export const DEMO_PERSONAS = [
       schooling_type: "tn_govt_school_6_to_12",
       board_percentage: 88.0,
       admission_mode: "govt_counseling_single_window",
-      degree: "High School (Class 9 - 10)",
+      degree: "High School (Class 9 - 10 / SSLC)",
       current_course: "Class 10 (SSLC Secondary)",
       is_differently_abled: false,
       available_docs: ["income_certificate", "community_certificate", "aadhaar"]
@@ -61,6 +72,13 @@ export const DEMO_PERSONAS = [
     expectedOutcome: "Free Bicycle Scheme (Direct delivery at school) + Pre-Matric SC State Aid + Uniforms & Textbooks + Vetri Paadhai NEET/JEE Coaching.",
     payload: {
       full_name: "Anbarasan K (Govt Model HSS, Salem)",
+      student_type: "school",
+      studentType: "school",
+      current_level: "school",
+      school_class: "Class 11 (Higher Secondary - Bio-Maths)",
+      school_name: "Government Model Higher Secondary School, Salem",
+      school_type: "tn_govt_school_6_to_12",
+      school_medium: "Tamil Medium",
       gender: "male",
       community: "SC",
       annual_income: 95000,
@@ -68,7 +86,7 @@ export const DEMO_PERSONAS = [
       schooling_type: "tn_govt_school_6_to_12",
       board_percentage: 84.5,
       admission_mode: "govt_counseling_single_window",
-      degree: "Higher Secondary (Class 11 - 12)",
+      degree: "Higher Secondary (Class 11 - 12 / HSC)",
       current_course: "Class 11 (Higher Secondary - Bio-Maths)",
       is_differently_abled: false,
       available_docs: ["income_certificate", "community_certificate", "marksheet", "aadhaar"]
@@ -84,6 +102,9 @@ export const DEMO_PERSONAS = [
     expectedOutcome: "Eligible for PM-USP Central Sector Scheme (₹12,000/yr) with 88% Merit Probability. Excludes State Post-Matric & Tamil Pudhalvan due to private school & quota rules.",
     payload: {
       full_name: "Karthik R (Private CBSE)",
+      student_type: "college",
+      studentType: "college",
+      current_level: "college",
       gender: "male",
       community: "OC",
       annual_income: 210000,
@@ -93,6 +114,7 @@ export const DEMO_PERSONAS = [
       admission_mode: "management_quota",
       degree: "B.E. / B.Tech (Undergraduate)",
       current_course: "Engineering",
+      college_name: "Anna University CEG Campus, Guindy",
       is_differently_abled: false,
       available_docs: ["marksheet", "aadhaar"]
     }
@@ -107,6 +129,9 @@ export const DEMO_PERSONAS = [
     expectedOutcome: "AICTE Pragati (₹50,000/yr) with calculated selection chance (83.4%) based on merit cutoff delta, female quota, and MBC equity weighting.",
     payload: {
       full_name: "Ananya S (Govt-Aided Tech)",
+      student_type: "college",
+      studentType: "college",
+      current_level: "college",
       gender: "female",
       community: "MBC",
       annual_income: 340000,
@@ -116,6 +141,7 @@ export const DEMO_PERSONAS = [
       admission_mode: "govt_counseling_single_window",
       degree: "B.E. / B.Tech (Undergraduate)",
       current_course: "Engineering",
+      college_name: "PSG College of Technology, Coimbatore",
       is_differently_abled: false,
       available_docs: ["income_certificate", "community_certificate", "marksheet"]
     }

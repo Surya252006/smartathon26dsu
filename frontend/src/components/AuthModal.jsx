@@ -18,7 +18,9 @@ import {
   GraduationCap,
   Landmark,
   FileCheck2,
-  Award
+  Award,
+  School,
+  BookOpen
 } from 'lucide-react';
 import { TN_DISTRICTS } from './ProfileForm';
 import { saveProfileToCluster, getProfileFromCluster } from '../utils/cloudSync';
@@ -31,6 +33,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
       setMode(initialMode);
     }
   }, [isOpen, initialMode]);
+
+  // Section 0: Student Education Stream ('college' or 'school')
+  const [studentType, setStudentType] = useState('college');
   
   // Section 1: Account Credentials
   const [email, setEmail] = useState('');
@@ -50,7 +55,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
   const [city, setCity] = useState('Aranthangi');
   const [residenceType, setResidenceType] = useState('Rural');
 
-  // Section 4: Academic Credentials
+  // Section 4A: School Specific Credentials (Classes 1 to 12)
+  const [schoolClass, setSchoolClass] = useState('Class 10 (SSLC Secondary)');
+  const [schoolName, setSchoolName] = useState('Government High School, Aranthangi');
+  const [schoolType, setSchoolType] = useState('tn_govt_school_6_to_12');
+  const [schoolMedium, setSchoolMedium] = useState('Tamil Medium');
+  const [emisId, setEmisId] = useState('');
+  const [schoolMarks, setSchoolMarks] = useState('88.0');
+
+  // Section 4B: College Academic Credentials
   const [degree, setDegree] = useState('Undergraduate (UG)');
   const [currentCourse, setCurrentCourse] = useState('B.E. Computer Science & Engineering (B.E CSE)');
   const [collegeName, setCollegeName] = useState('Government College of Engineering, Bodinayakkanur');
@@ -74,6 +87,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
   // 1-Click quick persona pre-fill for fast testing
   const handlePreFillPersona = (personaType) => {
     if (personaType === 'surya') {
+      setStudentType('college');
       setEmail('surya25suresh2006@gmail.com');
       setPassword('surya2026');
       setFullName('Surya Suresh');
@@ -98,6 +112,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
       setSchoolingType('tn_govt_school_6_to_12');
       setIsDifferentlyAbled(false);
     } else if (personaType === 'priya') {
+      setStudentType('college');
       setEmail('priya.murugesan2026@gmail.com');
       setPassword('priya2026');
       setFullName('Priya Murugesan');
@@ -122,6 +137,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
       setSchoolingType('tn_govt_school_6_to_12');
       setIsDifferentlyAbled(false);
     } else if (personaType === 'karthik') {
+      setStudentType('college');
       setEmail('karthikeyan.r2026@gmail.com');
       setPassword('karthik2026');
       setFullName('Karthikeyan R');
@@ -145,12 +161,79 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
       setIsFirstGraduate(false);
       setSchoolingType('private_matriculation');
       setIsDifferentlyAbled(false);
+    } else if (personaType === 'kavitha') {
+      setStudentType('school');
+      setEmail('kavitha.s.school2026@gmail.com');
+      setPassword('kavitha2026');
+      setFullName('Kavitha S');
+      setPhone('9840332211');
+      setGender('female');
+      setDob('2010-06-12');
+      setCommunity('BC');
+      setDistrict('Thanjavur');
+      setTaluk('Papanasam');
+      setCity('Papanasam');
+      setResidenceType('Rural');
+      setFatherName('Shanmugam M');
+      setSchoolClass('Class 10 (SSLC Secondary)');
+      setSchoolName('Government High School, Papanasam, Thanjavur');
+      setSchoolType('tn_govt_school_6_to_12');
+      setSchoolMedium('Tamil Medium');
+      setEmisId('33021900401');
+      setSchoolMarks('88.0');
+      setAnnualIncome('85000');
+      setIsDifferentlyAbled(false);
+      setIsFirstGraduate(false);
+    } else if (personaType === 'anbarasan') {
+      setStudentType('school');
+      setEmail('anbarasan.k.hsc2026@gmail.com');
+      setPassword('anbu2026');
+      setFullName('Anbarasan K');
+      setPhone('9840445566');
+      setGender('male');
+      setDob('2009-04-18');
+      setCommunity('SC');
+      setDistrict('Salem');
+      setTaluk('Attur');
+      setCity('Attur');
+      setResidenceType('Rural');
+      setFatherName('Karuppasamy P');
+      setSchoolClass('Class 11 (Higher Secondary - Bio-Maths)');
+      setSchoolName('Government Model Higher Secondary School, Salem');
+      setSchoolType('tn_govt_school_6_to_12');
+      setSchoolMedium('Tamil Medium');
+      setEmisId('33080701205');
+      setSchoolMarks('84.5');
+      setAnnualIncome('95000');
+      setIsDifferentlyAbled(false);
+      setIsFirstGraduate(false);
     }
   };
 
   const completeAuth = async (userData, fullBioProfile) => {
     const lookupId = userData.email || userData.user_id;
     const cleanId = String(lookupId).toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
+
+    const isSchool = studentType === 'school' || 
+      fullBioProfile.student_type === 'school' || 
+      fullBioProfile.studentType === 'school' ||
+      /class|school|sslc|hsc|primary|middle|grade|std/i.test(fullBioProfile.current_course || fullBioProfile.degree || '');
+
+    const resolvedStudentType = isSchool ? 'school' : 'college';
+
+    const resolvedDegree = isSchool
+      ? (String(schoolClass).includes('11') || String(schoolClass).includes('12') 
+          ? 'Higher Secondary (Class 11 - 12 / HSC)' 
+          : (String(schoolClass).includes('10') || String(schoolClass).includes('9') 
+              ? 'High School (Class 9 - 10 / SSLC)' 
+              : (String(schoolClass).includes('6') || String(schoolClass).includes('7') || String(schoolClass).includes('8') 
+                  ? 'Middle School (Class 6 - 8)' 
+                  : 'Primary School (Class 1 - 5)')))
+      : (fullBioProfile.degree || 'Undergraduate (UG)');
+
+    const resolvedCourse = isSchool ? (schoolClass || fullBioProfile.school_class || 'Class 10 (SSLC Secondary)') : (fullBioProfile.current_course || fullBioProfile.currentCourse || 'Engineering');
+    const resolvedInstitution = isSchool ? (schoolName || fullBioProfile.school_name || 'Government High School') : (fullBioProfile.college_name || fullBioProfile.collegeName || '');
+    const resolvedInstType = isSchool ? (schoolType === 'tn_govt_school_6_to_12' ? 'Government' : 'Govt-Aided') : (fullBioProfile.college_type || fullBioProfile.collegeType || 'Government');
 
     // Combine bio profile
     const consolidatedProfile = {
@@ -163,16 +246,24 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
       district: fullBioProfile.district || 'Chennai',
       taluk: fullBioProfile.taluk || '',
       city: fullBioProfile.city || fullBioProfile.district || 'Chennai',
-      annualIncome: Number(fullBioProfile.annual_income || fullBioProfile.annualIncome) || 140000,
-      boardPercentage: Number(fullBioProfile.board_percentage || fullBioProfile.boardPercentage) || 85.0,
-      currentCourse: fullBioProfile.current_course || fullBioProfile.currentCourse || 'Engineering',
-      collegeName: fullBioProfile.college_name || fullBioProfile.collegeName || '',
-      collegeType: fullBioProfile.college_type || fullBioProfile.collegeType || 'Government',
-      degree: fullBioProfile.degree || 'Undergraduate (UG)',
-      yearOfStudy: fullBioProfile.year_of_study || fullBioProfile.yearOfStudy || '1st Year (Fresher)',
-      admissionMode: fullBioProfile.admission_mode || fullBioProfile.admissionMode || 'govt_counseling_single_window',
-      isFirstGraduate: fullBioProfile.is_first_graduate !== undefined ? Boolean(fullBioProfile.is_first_graduate) : Boolean(fullBioProfile.isFirstGraduate),
-      schoolingType: fullBioProfile.schooling_type || fullBioProfile.schoolingType || 'tn_govt_school_6_to_12',
+      student_type: resolvedStudentType,
+      studentType: resolvedStudentType,
+      current_level: resolvedStudentType,
+      school_class: isSchool ? (schoolClass || fullBioProfile.school_class || resolvedCourse) : '',
+      school_name: isSchool ? (schoolName || fullBioProfile.school_name || resolvedInstitution) : '',
+      school_type: isSchool ? (schoolType || fullBioProfile.school_type || fullBioProfile.schooling_type || 'tn_govt_school_6_to_12') : (fullBioProfile.schooling_type || 'tn_govt_school_6_to_12'),
+      school_medium: isSchool ? (schoolMedium || fullBioProfile.school_medium || 'Tamil Medium') : '',
+      emis_id: isSchool ? (emisId || fullBioProfile.emis_id || '') : '',
+      annualIncome: Number(fullBioProfile.annual_income || fullBioProfile.annualIncome) || (isSchool ? 85000 : 140000),
+      boardPercentage: Number(fullBioProfile.board_percentage || fullBioProfile.boardPercentage || (isSchool ? schoolMarks : 85.0)),
+      currentCourse: resolvedCourse,
+      collegeName: resolvedInstitution,
+      collegeType: resolvedInstType,
+      degree: resolvedDegree,
+      yearOfStudy: isSchool ? resolvedCourse : (fullBioProfile.year_of_study || fullBioProfile.yearOfStudy || '1st Year (Fresher)'),
+      admissionMode: isSchool ? 'school_regular_admission' : (fullBioProfile.admission_mode || fullBioProfile.admissionMode || 'govt_counseling_single_window'),
+      isFirstGraduate: isSchool ? false : (fullBioProfile.is_first_graduate !== undefined ? Boolean(fullBioProfile.is_first_graduate) : Boolean(fullBioProfile.isFirstGraduate)),
+      schoolingType: isSchool ? schoolType : (fullBioProfile.schooling_type || fullBioProfile.schoolingType || 'tn_govt_school_6_to_12'),
       isDifferentlyAbled: Boolean(fullBioProfile.is_differently_abled),
       specialCategory: fullBioProfile.special_category || 'None',
       avatar: fullBioProfile.avatar || null,
@@ -181,6 +272,8 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
 
     const updatedUser = {
       ...userData,
+      student_type: resolvedStudentType,
+      studentType: resolvedStudentType,
       profile: consolidatedProfile
     };
 
@@ -234,6 +327,20 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
         return;
       }
 
+      const isSchool = studentType === 'school';
+      const resolvedDegree = isSchool
+        ? (String(schoolClass).includes('11') || String(schoolClass).includes('12')
+            ? 'Higher Secondary (Class 11 - 12 / HSC)'
+            : (String(schoolClass).includes('10') || String(schoolClass).includes('9')
+                ? 'High School (Class 9 - 10 / SSLC)'
+                : (String(schoolClass).includes('6') || String(schoolClass).includes('7') || String(schoolClass).includes('8')
+                    ? 'Middle School (Class 6 - 8)'
+                    : 'Primary School (Class 1 - 5)')))
+        : degree;
+      const resolvedCourse = isSchool ? schoolClass : currentCourse;
+      const resolvedCollege = isSchool ? schoolName : collegeName.trim();
+      const resolvedCollegeType = isSchool ? (schoolType === 'tn_govt_school_6_to_12' ? 'Government' : 'Govt-Aided') : collegeType;
+
       const bioPayload = {
         email: cleanEmail,
         password,
@@ -247,16 +354,24 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
         taluk: taluk.trim(),
         city: city.trim() || district,
         residence_type: residenceType,
-        degree,
-        current_course: currentCourse,
-        college_name: collegeName.trim(),
-        college_type: collegeType,
-        year_of_study: yearOfStudy,
-        board_percentage: Number(boardPercentage) || 85.0,
-        admission_mode: admissionMode,
-        annual_income: Number(annualIncome) || 140000,
-        is_first_graduate: Boolean(isFirstGraduate),
-        schooling_type: schoolingType,
+        student_type: studentType,
+        studentType: studentType,
+        current_level: studentType,
+        school_class: isSchool ? schoolClass : '',
+        school_name: isSchool ? schoolName : '',
+        school_type: isSchool ? schoolType : schoolingType,
+        school_medium: isSchool ? schoolMedium : '',
+        emis_id: isSchool ? emisId : '',
+        degree: resolvedDegree,
+        current_course: resolvedCourse,
+        college_name: resolvedCollege,
+        college_type: resolvedCollegeType,
+        year_of_study: isSchool ? schoolClass : yearOfStudy,
+        board_percentage: Number(isSchool ? schoolMarks : boardPercentage) || 85.0,
+        admission_mode: isSchool ? 'school_regular_admission' : admissionMode,
+        annual_income: Number(annualIncome) || (isSchool ? 85000 : 140000),
+        is_first_graduate: isSchool ? false : Boolean(isFirstGraduate),
+        schooling_type: isSchool ? schoolType : schoolingType,
         is_differently_abled: Boolean(isDifferentlyAbled),
         special_category: 'None'
       };
@@ -278,7 +393,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
           user_id: 'TN-STU-' + Math.floor(100000 + Math.random() * 900000),
           email: cleanEmail,
           full_name: fullName,
-          role: 'student'
+          role: 'student',
+          student_type: studentType,
+          studentType: studentType
         };
 
         await completeAuth(userObj, bioPayload);
@@ -290,7 +407,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
           user_id: 'TN-STU-' + Math.floor(100000 + Math.random() * 900000),
           email: cleanEmail,
           full_name: fullName,
-          role: 'student'
+          role: 'student',
+          student_type: studentType,
+          studentType: studentType
         };
         await completeAuth(fallbackUser, bioPayload);
         return;
@@ -310,7 +429,14 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
           const data = await res.json();
           if (data?.user) {
             const returnedUser = data.user;
-            await completeAuth(returnedUser, returnedUser.profile || {});
+            const profileData = returnedUser.profile || {};
+            if (!profileData.student_type) {
+              profileData.student_type = studentType;
+              profileData.studentType = studentType;
+            }
+            returnedUser.student_type = profileData.student_type;
+            returnedUser.studentType = profileData.studentType;
+            await completeAuth(returnedUser, profileData);
             return;
           }
         }
@@ -325,6 +451,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
           email: cleanEmail,
           full_name: 'TNeGA System Administrator',
           role: 'admin',
+          student_type: 'college',
           profile: {
             full_name: 'TNeGA System Administrator',
             role: 'admin',
@@ -340,12 +467,17 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
       // Query MongoDB Atlas profile directly if stored
       const clusterProf = await getProfileFromCluster(cleanEmail);
       if (clusterProf) {
+        const detectedType = clusterProf.student_type || clusterProf.studentType || studentType;
         const userObj = {
           user_id: clusterProf.user_id || 'TN-STU-849204',
           email: cleanEmail,
           full_name: clusterProf.full_name || cleanEmail.split('@')[0],
-          role: 'student'
+          role: 'student',
+          student_type: detectedType,
+          studentType: detectedType
         };
+        clusterProf.student_type = detectedType;
+        clusterProf.studentType = detectedType;
         await completeAuth(userObj, clusterProf);
         return;
       }
@@ -413,37 +545,75 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
           </button>
         </div>
 
-        {/* Quick Persona Fill for Demo / Testing */}
-        {mode === 'register' && (
-          <div className="bg-emerald-50/80 px-4 py-2.5 border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 shrink-0 text-xs">
-            <span className="font-bold text-emerald-950 flex items-center text-[11px]">
-              <Sparkles size={12} className="text-amber-500 mr-1" /> Quick Demo Bio-Data Fill:
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => handlePreFillPersona('surya')}
-                className="px-2 py-0.5 bg-white hover:bg-emerald-100 text-emerald-900 rounded border border-emerald-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
-              >
-                Surya Suresh (BC • FG • ₹1.4L)
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePreFillPersona('priya')}
-                className="px-2 py-0.5 bg-white hover:bg-emerald-100 text-emerald-900 rounded border border-emerald-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
-              >
-                Priya M. (BC Female • ₹1.2L)
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePreFillPersona('karthik')}
-                className="px-2 py-0.5 bg-white hover:bg-emerald-100 text-slate-800 rounded border border-slate-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
-              >
-                Karthik R. (OC • ₹3.5L)
-              </button>
-            </div>
+        {/* Student Stream Switcher: School vs College (Active right from login) */}
+        <div className="bg-slate-100/90 px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center space-x-1.5 text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+            <span>கல்வி நிலை / Current Education Stream:</span>
           </div>
-        )}
+          <div className="flex items-center space-x-1.5 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => { setStudentType('school'); setErrorMsg(null); }}
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs ${
+                studentType === 'school'
+                  ? 'bg-amber-600 text-white ring-2 ring-amber-300 font-extrabold shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+              }`}
+            >
+              <School size={14} />
+              <span>🎒 பள்ளி மாணவர் (Class 1 - 12)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => { setStudentType('college'); setErrorMsg(null); }}
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs ${
+                studentType === 'college'
+                  ? 'bg-[#006a4e] text-white ring-2 ring-emerald-300 font-extrabold shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+              }`}
+            >
+              <GraduationCap size={14} />
+              <span>🎓 கல்லூரி மாணவர் (UG/PG/Diploma)</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Quick Persona Fill for Fast Testing (Both School & College) */}
+        <div className="bg-emerald-50/80 px-4 py-2 border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 shrink-0 text-xs">
+          <span className="font-bold text-emerald-950 flex items-center text-[11px]">
+            <Sparkles size={12} className="text-amber-500 mr-1" /> Quick Demo Fill:
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => handlePreFillPersona('surya')}
+              className="px-2 py-0.5 bg-white hover:bg-emerald-100 text-emerald-900 rounded border border-emerald-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
+            >
+              🎓 Surya (College • B.E • FG)
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePreFillPersona('priya')}
+              className="px-2 py-0.5 bg-white hover:bg-emerald-100 text-emerald-900 rounded border border-emerald-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
+            >
+              🎓 Priya (College • SC • ₹1.2L)
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePreFillPersona('kavitha')}
+              className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded border border-amber-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
+            >
+              🎒 Kavitha (School • Class 10 SSLC)
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePreFillPersona('anbarasan')}
+              className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded border border-amber-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
+            >
+              🚲 Anbarasan (School • Class 11 HSC)
+            </button>
+          </div>
+        </div>
 
         {/* Form Container */}
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 bg-slate-50/40">
@@ -663,161 +833,316 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
                 </div>
               </div>
 
-              {/* SECTION D: Higher Education & Academic Credentials */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
-                <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
-                  <GraduationCap size={15} className="text-emerald-700" />
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Part 4: Higher Education Course Details
-                  </h4>
-                </div>
+              {/* SECTION D & E: Conditional between School and College */}
+              {studentType === 'school' ? (
+                <>
+                  {/* SECTION D (SCHOOL): Standard & School Details */}
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+                    <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
+                      <School size={15} className="text-amber-600" />
+                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                        Part 4: School Education & Class Details (பள்ளி கல்வி விவரங்கள்)
+                      </h4>
+                    </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      Degree Level (பட்டப்படிப்பு நிலை)
-                    </label>
-                    <select
-                      value={degree}
-                      onChange={(e) => setDegree(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="Undergraduate (UG)">Undergraduate (UG)</option>
-                      <option value="Postgraduate (PG)">Postgraduate (PG)</option>
-                      <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
-                      <option value="Doctoral / Ph.D">Doctoral / Ph.D</option>
-                    </select>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Current Standard / Class (பயிலும் வகுப்பு) <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={schoolClass}
+                          onChange={(e) => setSchoolClass(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-amber-500"
+                        >
+                          <option value="Class 10 (SSLC Secondary)">Class 10 (10-ஆம் வகுப்பு - SSLC Board)</option>
+                          <option value="Class 11 (Higher Secondary - Bio-Maths)">Class 11 (11-ஆம் வகுப்பு - Higher Secondary HSC)</option>
+                          <option value="Class 12 (Higher Secondary - Computer Science)">Class 12 (12-ஆம் வகுப்பு - Higher Secondary HSC)</option>
+                          <option value="Class 9 (High School)">Class 9 (9-ஆம் வகுப்பு - High School)</option>
+                          <option value="Class 8 (Middle School)">Class 8 (8-ஆம் வகுப்பு - Middle School)</option>
+                          <option value="Class 7 (Middle School)">Class 7 (7-ஆம் வகுப்பு - Middle School)</option>
+                          <option value="Class 6 (Middle School)">Class 6 (6-ஆம் வகுப்பு - Middle School)</option>
+                          <option value="Class 5 (Primary School)">Class 5 (5-ஆம் வகுப்பு - Primary School)</option>
+                          <option value="Class 4 (Primary School)">Class 4 (4-ஆம் வகுப்பு - Primary School)</option>
+                          <option value="Class 3 (Primary School)">Class 3 (3-ஆம் வகுப்பு - Primary School)</option>
+                          <option value="Class 2 (Primary School)">Class 2 (2-ஆம் வகுப்பு - Primary School)</option>
+                          <option value="Class 1 (Primary School)">Class 1 (1-ஆம் வகுப்பு - Primary School)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          School Management Category (பள்ளி வகை) <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={schoolType}
+                          onChange={(e) => setSchoolType(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500"
+                        >
+                          <option value="tn_govt_school_6_to_12">Tamil Nadu Government School (அரசுப் பள்ளி • 100% Free Scheme Access)</option>
+                          <option value="govt_aided">Government Aided School (அரசு உதவிபெறும் பள்ளி)</option>
+                          <option value="private_matriculation">Private Matriculation / State Board School</option>
+                          <option value="cbse_or_matriculation">Central Board / CBSE / ICSE School</option>
+                        </select>
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block font-bold text-slate-700 mb-1">
+                          School Name (பள்ளி பெயர்) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={schoolName}
+                          onChange={(e) => setSchoolName(e.target.value)}
+                          placeholder="e.g. Government Model Higher Secondary School, Salem"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Medium of Instruction (பயிற்சி மொழி)
+                        </label>
+                        <select
+                          value={schoolMedium}
+                          onChange={(e) => setSchoolMedium(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500"
+                        >
+                          <option value="Tamil Medium">Tamil Medium (தமிழ் வழி)</option>
+                          <option value="English Medium">English Medium (ஆங்கில வழி)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          EMIS ID / Student Roll Number (விருப்பத்தேர்வு)
+                        </label>
+                        <input
+                          type="text"
+                          value={emisId}
+                          onChange={(e) => setEmisId(e.target.value)}
+                          placeholder="e.g. 33021900401"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Previous Academic Exam Score (% முந்தைய தேர்வு மதிப்பெண்)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={schoolMarks}
+                          onChange={(e) => setSchoolMarks(e.target.value)}
+                          placeholder="e.g. 88.0"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      Course / Branch (படிப்பு) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={currentCourse}
-                      onChange={(e) => setCurrentCourse(e.target.value)}
-                      placeholder="e.g. B.E. Computer Science"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
-                    />
+                  {/* SECTION E (SCHOOL): Socio-Economic */}
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+                    <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
+                      <Landmark size={15} className="text-amber-600" />
+                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                        Part 5: Family Welfare & Income (குடும்ப வருமானம்)
+                      </h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Annual Family Income (ஆண்டு வருமானம் ₹) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          value={annualIncome}
+                          onChange={(e) => setAnnualIncome(e.target.value)}
+                          placeholder="e.g. 85000"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:ring-2 focus:ring-amber-500"
+                        />
+                        <span className="text-[10px] text-slate-500">As per Tahsildar Income Certificate</span>
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Differently Abled (மாற்றுத்திறனாளியா?)
+                        </label>
+                        <select
+                          value={isDifferentlyAbled ? "yes" : "no"}
+                          onChange={(e) => setIsDifferentlyAbled(e.target.value === "yes")}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500"
+                        >
+                          <option value="no">No (இல்லை)</option>
+                          <option value="yes">Yes (ஆம் - மாற்றுத்திறனாளி சிறப்பு நலத்திட்டங்கள்)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* SECTION D: Higher Education & Academic Credentials */}
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+                    <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
+                      <GraduationCap size={15} className="text-emerald-700" />
+                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                        Part 4: Higher Education Course Details
+                      </h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Degree Level (பட்டப்படிப்பு நிலை)
+                        </label>
+                        <select
+                          value={degree}
+                          onChange={(e) => setDegree(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="Undergraduate (UG)">Undergraduate (UG)</option>
+                          <option value="Postgraduate (PG)">Postgraduate (PG)</option>
+                          <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+                          <option value="Doctoral / Ph.D">Doctoral / Ph.D</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Course / Branch (படிப்பு) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={currentCourse}
+                          onChange={(e) => setCurrentCourse(e.target.value)}
+                          placeholder="e.g. B.E. Computer Science"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          College Name (கல்லூரி பெயர்)
+                        </label>
+                        <input
+                          type="text"
+                          value={collegeName}
+                          onChange={(e) => setCollegeName(e.target.value)}
+                          placeholder="e.g. Government College of Engineering"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          College Type (கல்லூரி வகை)
+                        </label>
+                        <select
+                          value={collegeType}
+                          onChange={(e) => setCollegeType(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="Government">Government (அரசு கல்லூரி)</option>
+                          <option value="Govt-Aided">Govt-Aided (அரசு உதவிபெறும் கல்லூரி)</option>
+                          <option value="Self-Financing">Self-Financing (சுயநிதி தனியார் கல்லூரி)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          12th Board Score (% பொதுத்தேர்வு மதிப்பெண்) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          required
+                          value={boardPercentage}
+                          onChange={(e) => setBoardPercentage(e.target.value)}
+                          placeholder="e.g. 88.5"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Admission Mode (சேர்க்கை முறை)
+                        </label>
+                        <select
+                          value={admissionMode}
+                          onChange={(e) => setAdmissionMode(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="govt_counseling_single_window">Single Window Counseling (TNEA / DoTE)</option>
+                          <option value="management_quota">Management Quota</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      College Name (கல்லூரி பெயர்)
-                    </label>
-                    <input
-                      type="text"
-                      value={collegeName}
-                      onChange={(e) => setCollegeName(e.target.value)}
-                      placeholder="e.g. Government College of Engineering"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
+                  {/* SECTION E: Socio-Economic & Welfare Quota */}
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+                    <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
+                      <Landmark size={15} className="text-emerald-700" />
+                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                        Part 5: Socio-Economic & Welfare Entitlement
+                      </h4>
+                    </div>
 
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      College Type (கல்லூரி வகை)
-                    </label>
-                    <select
-                      value={collegeType}
-                      onChange={(e) => setCollegeType(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="Government">Government (அரசு கல்லூரி)</option>
-                      <option value="Govt-Aided">Govt-Aided (அரசு உதவிபெறும் கல்லூரி)</option>
-                      <option value="Self-Financing">Self-Financing (சுயநிதி தனியார் கல்லூரி)</option>
-                    </select>
-                  </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Annual Family Income (ஆண்டு வருமானம் ₹) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          value={annualIncome}
+                          onChange={(e) => setAnnualIncome(e.target.value)}
+                          placeholder="e.g. 140000"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="text-[10px] text-slate-500">As per Tahsildar Income Certificate</span>
+                      </div>
 
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      12th Board Score (% பொதுத்தேர்வு மதிப்பெண்) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      required
-                      value={boardPercentage}
-                      onChange={(e) => setBoardPercentage(e.target.value)}
-                      placeholder="e.g. 88.5"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          First Generation Graduate (முதல் பட்டதாரி?) <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={isFirstGraduate ? "yes" : "no"}
+                          onChange={(e) => setIsFirstGraduate(e.target.value === "yes")}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="yes">Yes (ஆம் - ₹25,000/yr Tuition Fee Waiver)</option>
+                          <option value="no">No (இல்லை)</option>
+                        </select>
+                      </div>
 
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      Admission Mode (சேர்க்கை முறை)
-                    </label>
-                    <select
-                      value={admissionMode}
-                      onChange={(e) => setAdmissionMode(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="govt_counseling_single_window">Single Window Counseling (TNEA / DoTE)</option>
-                      <option value="management_quota">Management Quota</option>
-                    </select>
+                      <div className="sm:col-span-2">
+                        <label className="block font-bold text-slate-700 mb-1">
+                          Schooling Background (6-12 பள்ளிப் படிப்பு) <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={schoolingType}
+                          onChange={(e) => setSchoolingType(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="tn_govt_school_6_to_12">TN Government School 6-12 (அரசுப் பள்ளி • Pudhumai Penn / Tamil Pudhalvan / 7.5% Quota)</option>
+                          <option value="govt_aided">Government Aided School (அரசு உதவிபெறும் பள்ளி)</option>
+                          <option value="private_matriculation">Private Matriculation / State Board</option>
+                          <option value="cbse_or_matriculation">CBSE / ICSE / Central Board</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              {/* SECTION E: Socio-Economic & Welfare Quota */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
-                <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
-                  <Landmark size={15} className="text-emerald-700" />
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Part 5: Socio-Economic & Welfare Entitlement
-                  </h4>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      Annual Family Income (ஆண்டு வருமானம் ₹) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={annualIncome}
-                      onChange={(e) => setAnnualIncome(e.target.value)}
-                      placeholder="e.g. 140000"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:ring-2 focus:ring-emerald-500"
-                    />
-                    <span className="text-[10px] text-slate-500">As per Tahsildar Income Certificate</span>
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      First Generation Graduate (முதல் பட்டதாரி?) <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={isFirstGraduate ? "yes" : "no"}
-                      onChange={(e) => setIsFirstGraduate(e.target.value === "yes")}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="yes">Yes (ஆம் - ₹25,000/yr Tuition Fee Waiver)</option>
-                      <option value="no">No (இல்லை)</option>
-                    </select>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label className="block font-bold text-slate-700 mb-1">
-                      Schooling Background (6-12 பள்ளிப் படிப்பு) <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={schoolingType}
-                      onChange={(e) => setSchoolingType(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="tn_govt_school_6_to_12">TN Government School 6-12 (அரசுப் பள்ளி • Pudhumai Penn / Tamil Pudhalvan / 7.5% Quota)</option>
-                      <option value="govt_aided">Government Aided School (அரசு உதவிபெறும் பள்ளி)</option>
-                      <option value="private_matriculation">Private Matriculation / State Board</option>
-                      <option value="cbse_or_matriculation">CBSE / ICSE / Central Board</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
 
             </div>
           ) : (
@@ -827,7 +1152,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
             <div className="space-y-3.5">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Registered Email / Student ID
+                  {studentType === 'school' ? 'Registered Email / EMIS ID' : 'Registered Email / Student ID'}
                 </label>
                 <div className="relative">
                   <Mail size={15} className="absolute left-3.5 top-3 text-slate-400" />
@@ -836,7 +1161,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. surya25suresh2006@gmail.com"
+                    placeholder={studentType === 'school' ? 'e.g. kavitha.s.school2026@gmail.com' : 'e.g. surya25suresh2006@gmail.com'}
                     className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
@@ -859,12 +1184,24 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1">
-                <span className="font-bold text-emerald-900 block">
-                  ✓ Instant Bio-Data Restoration
+              <div className="p-3 bg-slate-100 border border-slate-200 rounded-xl text-xs space-y-1">
+                <span className="font-bold text-slate-900 block flex items-center space-x-1.5">
+                  {studentType === 'school' ? (
+                    <span className="text-amber-800 flex items-center space-x-1">
+                      <School size={14} />
+                      <span>🎒 பள்ளி மாணவர் பயன்முறை (School Student Mode)</span>
+                    </span>
+                  ) : (
+                    <span className="text-emerald-800 flex items-center space-x-1">
+                      <GraduationCap size={14} />
+                      <span>🎓 கல்லூரி மாணவர் பயன்முறை (College Student Mode)</span>
+                    </span>
+                  )}
                 </span>
-                <p className="text-[11px] text-emerald-700">
-                  Logging in instantly fetches your verified bio-data from the MongoDB Atlas cluster and autofills all scheme evaluation engines.
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  {studentType === 'school'
+                    ? 'உள்நுழைந்தவுடன் நீங்கள் தற்போது பள்ளியில் பயில்வதற்கேற்ப பள்ளி மாணவர்களுக்கான இலவச மிதிவண்டி, காலை உணவு, PM POSHAN மதிய உணவு மற்றும் SSLC கையேடுகள் மட்டுமே தளத்தில் காண்பிக்கப்படும்.'
+                    : 'உள்நுழைந்தவுடன் நீங்கள் தற்போது கல்லூரியில் பயில்வதற்கேற்ப புதுமைப் பெண், தமிழ்ப் புதல்வன், முதல் பட்டதாரி மற்றும் போஸ்ட்-மெட்ரிக் உதவித்தொகைகள் மட்டுமே தளத்தில் காண்பிக்கப்படும்.'}
                 </p>
               </div>
             </div>

@@ -179,6 +179,27 @@ export default function Navbar({
                   </span>
                 </div>
 
+                {/* Stream Pill */}
+                {(() => {
+                  const sType = currentUser?.student_type || currentUser?.profile?.student_type;
+                  const sClass = currentUser?.profile?.school_class || currentUser?.profile?.current_course;
+                  const sDegree = currentUser?.profile?.degree || currentUser?.profile?.current_course;
+                  if (sType === 'school' || /class|school|primary|middle|sslc|hsc|வகுப்பு/i.test(String(sClass || ''))) {
+                    return (
+                      <span className="hidden sm:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        <span>🎒</span>
+                        <span>{currentLang === 'ta' ? `பள்ளி (${sClass || 'வகுப்பு 10'})` : `School (${sClass || 'Class 10'})`}</span>
+                      </span>
+                    );
+                  }
+                  return (
+                    <span className="hidden sm:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                      <span>🎓</span>
+                      <span>{currentLang === 'ta' ? `கல்லூரி (${sDegree || 'UG'})` : `College (${sDegree || 'UG'})`}</span>
+                    </span>
+                  );
+                })()}
+
                 {/* Green dot indicating "Connected (Student/Admin Login)" */}
                 <div className="hidden md:flex items-center space-x-1.5 bg-slate-800/90 px-2.5 py-1 rounded-full border border-slate-700/80">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>

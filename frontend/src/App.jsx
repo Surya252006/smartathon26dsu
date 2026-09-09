@@ -545,6 +545,8 @@ function App() {
                 searchQuery={searchQuery}
                 onSearchChange={(q) => setSearchQuery(q)}
                 currentLang={currentLang}
+                currentUser={currentUser}
+                currentProfile={currentProfile || currentUser?.profile}
               />
             )}
 

@@ -267,6 +267,14 @@ class RegisterRequest(BaseModel):
     residence_type: Optional[str] = "Rural"
     father_name: Optional[str] = ""
 
+    # Student Stream ('school' or 'college')
+    student_type: Optional[str] = "college"
+    school_class: Optional[str] = None
+    school_name: Optional[str] = None
+    school_type: Optional[str] = None
+    emis_id: Optional[str] = None
+    school_medium: Optional[str] = None
+
     # Academic
     degree: Optional[str] = "Undergraduate (UG)"
     current_course: Optional[str] = "Engineering"
@@ -294,6 +302,10 @@ def register_student(req: RegisterRequest):
     """Registers a student with complete bio-data and syncs directly into MongoDB Atlas cluster."""
     db = SessionLocal()
     try:
+        resolved_student_type = req.student_type or (
+            "school" if any(k in (req.current_course or "").lower() or k in (req.degree or "").lower() for k in ["class", "school", "sslc", "hsc", "primary", "middle", "grade", "std"])
+            else "college"
+        )
         bio_profile = {
             "full_name": req.full_name,
             "email": req.email.lower().strip(),
@@ -306,16 +318,24 @@ def register_student(req: RegisterRequest):
             "city": req.city or req.district or "Chennai",
             "residence_type": req.residence_type or "Rural",
             "father_name": req.father_name or "",
-            "degree": req.degree or "Undergraduate (UG)",
-            "current_course": req.current_course or "Engineering",
+            "student_type": resolved_student_type,
+            "studentType": resolved_student_type,
+            "current_level": resolved_student_type,
+            "school_class": req.school_class or req.current_course or "",
+            "school_name": req.school_name or req.college_name or "",
+            "school_type": req.school_type or req.schooling_type or "tn_govt_school_6_to_12",
+            "emis_id": req.emis_id or "",
+            "school_medium": req.school_medium or "Tamil Medium",
+            "degree": req.degree or ("High School (Class 9 - 10 / SSLC)" if resolved_student_type == "school" else "Undergraduate (UG)"),
+            "current_course": req.current_course or (req.school_class if resolved_student_type == "school" else "Engineering"),
             "college_name": req.college_name or "",
             "college_type": req.college_type or "Government",
-            "year_of_study": req.year_of_study or "1st Year (Fresher)",
+            "year_of_study": req.year_of_study or ("Class 10" if resolved_student_type == "school" else "1st Year (Fresher)"),
             "board_percentage": float(req.board_percentage if req.board_percentage is not None else 85.0),
             "admission_mode": req.admission_mode or "govt_counseling_single_window",
             "annual_income": float(req.annual_income if req.annual_income is not None else 140000.0),
-            "is_first_graduate": bool(req.is_first_graduate),
-            "schooling_type": req.schooling_type or "tn_govt_school_6_to_12",
+            "is_first_graduate": bool(req.is_first_graduate) if resolved_student_type != "school" else False,
+            "schooling_type": req.schooling_type or req.school_type or "tn_govt_school_6_to_12",
             "is_differently_abled": bool(req.is_differently_abled),
             "special_category": req.special_category or "None",
             "avatar": req.avatar,
@@ -335,6 +355,11 @@ def register_student(req: RegisterRequest):
             custom_profile=bio_profile
         )
         auth_data = authenticate_user(db, req.email, req.password)
+        if auth_data:
+            auth_data["student_type"] = resolved_student_type
+            if "profile" in auth_data and isinstance(auth_data["profile"], dict):
+                auth_data["profile"]["student_type"] = resolved_student_type
+                auth_data["profile"]["studentType"] = resolved_student_type
         return {"status": "success", "user": auth_data}
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
