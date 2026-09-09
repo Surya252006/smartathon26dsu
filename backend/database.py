@@ -373,19 +373,20 @@ def create_user_profile(db: Session, user_id: str, profile_data: Dict[str, Any])
     # 1. Ensure User exists in SQLite before adding Profile (avoids FK constraint failure)
     try:
         user = db.query(User).filter(User.id == user_id).first()
+        target_email = str(profile_data.get("email") or "").lower().strip()
+        if not user and target_email:
+            user = db.query(User).filter(User.email == target_email).first()
+        if not user and "@" in str(user_id):
+            user = db.query(User).filter(User.email == str(user_id).lower().strip()).first()
         if not user:
-            # Check by email if user_id looks like an email
-            if "@" in str(user_id):
-                user = db.query(User).filter(User.email == str(user_id).lower().strip()).first()
-            if not user:
-                user = User(
-                    id=user_id,
-                    email=str(profile_data.get("email") or f"{clean_id}@tnega.gov.in").lower().strip(),
-                    password_hash=hash_password("default_pass_2026"),
-                    created_at=now
-                )
-                db.add(user)
-                db.commit()
+            user = User(
+                id=user_id,
+                email=target_email or f"{clean_id}@tnega.gov.in",
+                password_hash=hash_password("default_pass_2026"),
+                created_at=now
+            )
+            db.add(user)
+            db.commit()
 
         profile = db.query(Profile).filter(Profile.user_id == user.id).first()
         if profile:

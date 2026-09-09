@@ -13,7 +13,13 @@ def is_scheme_eligible(profile: UserProfile, scheme: dict) -> Tuple[bool, List[s
         
     # 2. Community check
     eligible_communities = criteria.get("eligible_communities", [])
-    if profile.community not in eligible_communities:
+    comm = str(profile.community or "").upper().strip()
+    norm_comm = "BC" if "BCM" in comm or comm == "BC" else (
+        "MBC" if ("MBC" in comm or "DNC" in comm) else (
+            "SC" if ("SCA" in comm or comm == "SC") else comm
+        )
+    )
+    if "All" not in eligible_communities and comm not in eligible_communities and norm_comm not in eligible_communities:
         reasons.append(f"Community {profile.community} not in {eligible_communities}")
         
     # 3. Income limit
@@ -41,8 +47,22 @@ def is_scheme_eligible(profile: UserProfile, scheme: dict) -> Tuple[bool, List[s
         
     # 8. Course check
     allowed_courses = criteria.get("allowed_courses", ["All"])
-    if "All" not in allowed_courses and profile.current_course not in allowed_courses:
-        reasons.append(f"Course {profile.current_course} not in allowed courses {allowed_courses}")
+    if "All" not in allowed_courses:
+        c_lower = str(profile.current_course or "").lower()
+        matched = False
+        for ac in allowed_courses:
+            ac_lower = ac.lower()
+            if ac_lower in c_lower or c_lower in ac_lower:
+                matched = True
+                break
+            if "eng" in c_lower and "engineering" in ac_lower:
+                matched = True
+                break
+            if ("sci" in c_lower or "art" in c_lower) and "arts" in ac_lower:
+                matched = True
+                break
+        if not matched:
+            reasons.append(f"Course {profile.current_course} not in allowed courses {allowed_courses}")
         
     return len(reasons) == 0, reasons
 

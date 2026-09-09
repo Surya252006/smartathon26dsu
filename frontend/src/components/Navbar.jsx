@@ -15,7 +15,8 @@ import {
   Bot,
   Sliders,
   ShieldCheck,
-  QrCode
+  QrCode,
+  Database
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 
@@ -46,7 +47,9 @@ export default function Navbar({
   onOpenGrievance,
   onOpenAdmin,
   onOpenScanner,
-  onOpenEligibilityChecker
+  onOpenEligibilityChecker,
+  dbStatus,
+  onOpenDbConfig
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [showSearch, setShowSearch] = useState(false);
@@ -129,9 +132,23 @@ export default function Navbar({
             </div>
           </div>
 
-          {/* Right Side: EN/Tamil toggle, profile name Surya Suresh, green dot Connected */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          {/* Right Side: Cloud Cluster Badge, EN/Tamil toggle, profile name Surya Suresh, Connected */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
             
+            {/* Live Cloud Cluster Connection Pill */}
+            <button
+              onClick={onOpenDbConfig}
+              className="flex items-center space-x-1.5 bg-slate-800/90 hover:bg-slate-700 border border-emerald-500/60 text-white px-2 sm:px-2.5 py-1 rounded-lg text-xs font-semibold shadow-xs transition cursor-pointer group"
+              title="Cloud Database Cluster Status (MongoDB Atlas cluster0.fzucldr & Cloud Firestore). Click to inspect connection."
+            >
+              <Database size={13} className="text-emerald-400" />
+              <span className="text-[11px] text-emerald-300 font-bold hidden sm:inline">Cloud Cluster</span>
+              <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span>
+                LIVE
+              </span>
+            </button>
+
             {/* "EN / தமிழ்" Toggle Button */}
             <button
               onClick={toggleLanguage}

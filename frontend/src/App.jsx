@@ -18,6 +18,7 @@ import { evaluateProfileIntelligently } from './utils/decisionEngine';
 import { DEMO_PERSONAS } from './data/demoPersonas';
 import { TRANSLATIONS } from './utils/translations';
 import { saveProfileToCluster, saveEvaluationToCluster, getProfileFromCluster } from './utils/cloudSync';
+import { fetchLiveDbStatus } from './utils/apiConfig';
 
 function App() {
   const [currentTab, setCurrentTab] = useState('home'); // 'home', 'matcher', 'results', 'schemes'
@@ -86,9 +87,8 @@ function App() {
       console.warn("Could not parse saved storage", e);
     }
 
-    // Fetch initial database status
-    fetch('http://localhost:8000/api/db/status')
-      .then(res => res.json())
+    // Fetch initial database & cloud cluster status
+    fetchLiveDbStatus()
       .then(data => setDbStatus(data))
       .catch(err => console.warn("Database status check notice", err));
   }, []);
@@ -327,6 +327,8 @@ function App() {
             onNavigateTab={setCurrentTab}
             onOpenGrievance={() => setShowGrievanceModal(true)}
             onOpenScanner={() => setShowScannerModal(true)}
+            onOpenDbConfig={() => setShowDbModal(true)}
+            dbStatus={dbStatus}
           />
         )}
 

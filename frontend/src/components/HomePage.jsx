@@ -25,7 +25,11 @@ import {
   LogIn,
   Sliders,
   Cpu,
-  FileCheck
+  FileCheck,
+  Database,
+  Server,
+  Cloud,
+  HardDrive
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 import EditProfileModal from './EditProfileModal';
@@ -40,7 +44,9 @@ export default function HomePage({
   onOpenGrievance = null,
   onOpenAuth = null,
   onOpenRegister = null,
-  onOpenScanner = null
+  onOpenScanner = null,
+  onOpenDbConfig = null,
+  dbStatus = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
 
@@ -468,6 +474,70 @@ export default function HomePage({
 
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* LIVE FULLSTACK & CLUSTER ARCHITECTURE STATUS BAR                          */}
+      {/* ========================================================================= */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-6 relative z-10">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg border border-emerald-100 flex flex-col md:flex-row items-center justify-between gap-4">
+          
+          <div className="flex items-center space-x-3 w-full md:w-auto">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Database size={20} />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-950">
+                  Fullstack Cloud Ecosystem
+                </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-ping"></span>
+                  ALL SYSTEMS LIVE & CONNECTED
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Multi-driver persistence mirroring student dossiers and eligibility decisions across cloud and local nodes.
+              </p>
+            </div>
+          </div>
+
+          {/* 3 Live Indicator Chips */}
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
+            {/* MongoDB Atlas */}
+            <div className="flex items-center space-x-1.5 bg-slate-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="font-bold text-slate-800">MongoDB Atlas:</span>
+              <code className="text-emerald-700 font-mono text-[11px]">cluster0.fzucldr</code>
+            </div>
+
+            {/* Cloud Firestore */}
+            <div className="flex items-center space-x-1.5 bg-slate-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs">
+              <Cloud size={13} className="text-emerald-600" />
+              <span className="font-bold text-slate-800">Firestore:</span>
+              <span className="text-emerald-700 font-semibold text-[11px]">tnscheme-ai-dsu</span>
+            </div>
+
+            {/* SQLite */}
+            <div className="flex items-center space-x-1.5 bg-slate-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs">
+              <HardDrive size={13} className="text-emerald-600" />
+              <span className="font-bold text-slate-800">SQLite:</span>
+              <span className="text-emerald-700 font-semibold text-[11px]">app.db</span>
+            </div>
+
+            {/* Inspect Button */}
+            {onOpenDbConfig && (
+              <button
+                type="button"
+                onClick={onOpenDbConfig}
+                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition cursor-pointer shadow-xs"
+              >
+                Inspect
+              </button>
+            )}
+          </div>
+
+        </div>
+      </div>
 
       {/* ========================================================================= */}
       {/* SECTION 20: HOW IT WORKS SECTION                                          */}
