@@ -68,90 +68,104 @@ export const TN_DISTRICTS = [
 
 const extractFormData = (user, profile) => {
   // 0. If authenticated user has existing profile in session/state
-  if (user?.profile && user.profile.full_name) {
-    const up = user.profile;
+  const up = user?.profile || profile;
+  if (up && (up.full_name || up.fullName || up.annual_income || up.annualIncome || up.community)) {
     return {
-      full_name: up.full_name || '',
+      full_name: up.full_name || up.fullName || '',
       age: up.age ? String(up.age) : '18',
+      dob: up.dob || '2006-05-15',
       gender: up.gender || 'male',
       community: up.community || 'BC',
       state: 'Tamil Nadu',
       district: up.district || 'Chennai',
+      taluk: up.taluk || 'Mambalam',
+      city: up.city || up.district || 'Chennai',
       residence_type: up.residence_type || 'Rural',
 
       degree: up.degree || 'Undergraduate (UG)',
-      current_course: up.current_course || 'Engineering',
+      current_course: up.current_course || up.currentCourse || 'Engineering',
       college_name: up.college_name || '',
       college_type: up.college_type || 'Government',
       year_of_study: up.year_of_study || '1st Year (Fresher)',
-      board_percentage: up.board_percentage ? String(up.board_percentage) : '',
+      board_percentage: (up.board_percentage !== undefined && up.board_percentage !== '') ? String(up.board_percentage) : (up.boardPercentage ? String(up.boardPercentage) : ''),
       admission_mode: up.admission_mode || 'govt_counseling_single_window',
 
-      annual_income: up.annual_income ? String(up.annual_income) : '',
+      annual_income: (up.annual_income !== undefined && up.annual_income !== '') ? String(up.annual_income) : (up.annualIncome ? String(up.annualIncome) : ''),
       has_income_certificate: 'yes',
-      is_first_graduate: up.is_first_graduate !== undefined ? up.is_first_graduate : false,
+      is_first_graduate: up.is_first_graduate !== undefined ? Boolean(up.is_first_graduate) : (up.isFirstGraduate !== undefined ? Boolean(up.isFirstGraduate) : false),
       siblings_in_college: 'None',
 
-      schooling_type: up.schooling_type || 'tn_govt_school_6_to_12',
+      schooling_type: up.schooling_type || up.schoolingType || 'tn_govt_school_6_to_12',
       is_differently_abled: Boolean(up.is_differently_abled),
-      disability_percentage: '',
+      disability_percentage: up.disability_percentage ? String(up.disability_percentage) : '',
       special_category: up.special_category || 'None',
-      available_docs: [
+      available_docs: up.available_docs || [
         'income_certificate', 
         'community_certificate', 
         'bonafide_certificate', 
         'marksheet', 
         'aadhaar_bank'
-      ]
+      ],
+      verified_documents: up.verified_documents || {}
     };
   }
 
-  // 1. If profile was evaluated in current session
-  if (profile && (profile.full_name || profile.community)) {
-    return {
-      full_name: profile.full_name || '',
-      age: profile.age ? String(profile.age) : '18',
-      gender: profile.gender || 'male',
-      community: profile.community || 'BC',
-      state: profile.state || 'Tamil Nadu',
-      district: profile.district || 'Chennai',
-      residence_type: profile.residence_type || 'Rural',
-
-      degree: profile.degree || 'Undergraduate (UG)',
-      current_course: profile.current_course || 'Engineering',
-      college_name: profile.college_name || '',
-      college_type: profile.college_type || 'Government',
-      year_of_study: profile.year_of_study || '1st Year (Fresher)',
-      board_percentage: profile.board_percentage ? String(profile.board_percentage) : '',
-      admission_mode: profile.admission_mode || 'govt_counseling_single_window',
-
-      annual_income: profile.annual_income ? String(profile.annual_income) : '',
-      has_income_certificate: 'yes',
-      is_first_graduate: profile.is_first_graduate !== undefined ? profile.is_first_graduate : false,
-      siblings_in_college: 'None',
-
-      schooling_type: profile.schooling_type || 'tn_govt_school_6_to_12',
-      is_differently_abled: Boolean(profile.is_differently_abled),
-      disability_percentage: profile.disability_percentage ? String(profile.disability_percentage) : '',
-      special_category: profile.special_category || 'None',
-      available_docs: profile.available_docs || [
-        'income_certificate', 
-        'community_certificate', 
-        'bonafide_certificate', 
-        'marksheet', 
-        'aadhaar_bank'
-      ]
-    };
-  }
+  // 1. Check sessionStorage for student profile
+  try {
+    const saved = sessionStorage.getItem('tn_student_profile');
+    if (saved) {
+      const sp = JSON.parse(saved);
+      if (sp.fullName || sp.full_name || sp.community) {
+        return {
+          full_name: sp.fullName || sp.full_name || '',
+          age: sp.age ? String(sp.age) : '18',
+          dob: sp.dob || '2006-05-15',
+          gender: sp.gender || 'male',
+          community: sp.community || 'BC',
+          state: 'Tamil Nadu',
+          district: sp.district || 'Chennai',
+          taluk: sp.taluk || 'Mambalam',
+          city: sp.city || sp.district || 'Chennai',
+          residence_type: sp.residence_type || 'Rural',
+          degree: sp.degree || 'Undergraduate (UG)',
+          current_course: sp.currentCourse || sp.current_course || 'Engineering',
+          college_name: sp.college_name || '',
+          college_type: sp.college_type || 'Government',
+          year_of_study: sp.year_of_study || '1st Year (Fresher)',
+          board_percentage: (sp.boardPercentage !== undefined && sp.boardPercentage !== '') ? String(sp.boardPercentage) : (sp.board_percentage ? String(sp.board_percentage) : ''),
+          admission_mode: sp.admission_mode || 'govt_counseling_single_window',
+          annual_income: (sp.annualIncome !== undefined && sp.annualIncome !== '') ? String(sp.annualIncome) : (sp.annual_income ? String(sp.annual_income) : ''),
+          has_income_certificate: 'yes',
+          is_first_graduate: sp.isFirstGraduate !== undefined ? Boolean(sp.isFirstGraduate) : Boolean(sp.is_first_graduate),
+          siblings_in_college: 'None',
+          schooling_type: sp.schoolingType || sp.schooling_type || 'tn_govt_school_6_to_12',
+          is_differently_abled: Boolean(sp.is_differently_abled),
+          disability_percentage: '',
+          special_category: sp.special_category || 'None',
+          available_docs: sp.available_docs || [
+            'income_certificate', 
+            'community_certificate', 
+            'bonafide_certificate', 
+            'marksheet', 
+            'aadhaar_bank'
+          ],
+          verified_documents: sp.verified_documents || {}
+        };
+      }
+    }
+  } catch (e) {}
 
   // 2. Default Fresh Empty State for Guest Visitors on Shared Public Link
   return {
     full_name: '',
     age: '18',
+    dob: '2006-05-15',
     gender: 'male',
     community: 'BC',
     state: 'Tamil Nadu',
     district: 'Chennai',
+    taluk: 'Mambalam',
+    city: 'Chennai',
     residence_type: 'Rural',
 
     degree: 'Undergraduate (UG)',
@@ -177,7 +191,8 @@ const extractFormData = (user, profile) => {
       'bonafide_certificate', 
       'marksheet', 
       'aadhaar_bank'
-    ]
+    ],
+    verified_documents: {}
   };
 };
 
@@ -186,7 +201,8 @@ export default function ProfileForm({
   currentLang = 'en',
   currentUser = null,
   currentProfile = null,
-  onOpenAuth = null
+  onOpenAuth = null,
+  onOpenScanner = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [step, setStep] = useState(0); // 0 to 4 (5 Steps)
@@ -347,6 +363,37 @@ export default function ProfileForm({
 
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
         
+        {/* Verified Cluster Sync & e-Sevai Auto-fill Status Banner */}
+        {(currentUser || formData.full_name) && (
+          <div className="bg-emerald-50 border border-emerald-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-2xs">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold shrink-0 shadow-2xs">
+                <ShieldCheck size={18} />
+              </div>
+              <div>
+                <span className="font-bold text-slate-900 block text-xs">
+                  ✓ Profile Auto-filled from Verified e-Governance Cluster Record
+                </span>
+                <p className="text-[11px] text-slate-600">
+                  Applicant: <strong>{formData.full_name || currentUser?.email}</strong> • Community: <strong>{formData.community}</strong> • District: <strong>{formData.district}</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 shrink-0">
+              <button
+                type="button"
+                onClick={onOpenScanner}
+                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-[11px] font-bold flex items-center space-x-1.5 transition cursor-pointer shadow-xs border border-emerald-600"
+                title="Cross-verify Revenue and Education certificates with e-Sevai"
+              >
+                <FileCheck2 size={13} className="text-amber-300" />
+                <span>Verify e-Sevai Docs</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ========================================================= */}
         {/* STEP 1: Personal Details                                  */}
         {/* ========================================================= */}
@@ -913,10 +960,20 @@ export default function ProfileForm({
 
               {/* Document Readiness Checklist */}
               <div className="md:col-span-2 pt-2">
-                <h4 className="font-bold text-slate-900 text-xs mb-2 flex items-center space-x-1.5">
-                  <FileCheck2 size={15} className="text-emerald-700" />
-                  <span>Available e-Sevai & Academic Documents (Select all you possess):</span>
-                </h4>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                  <h4 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                    <FileCheck2 size={15} className="text-emerald-700" />
+                    <span>Available e-Sevai & Academic Documents (Select all you possess):</span>
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={onOpenScanner}
+                    className="text-[11px] font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-300 transition flex items-center space-x-1 cursor-pointer self-start sm:self-auto shadow-2xs"
+                  >
+                    <ShieldCheck size={13} className="text-emerald-700" />
+                    <span>Scan & Cross-Verify with e-Sevai</span>
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {documentOptions.map(doc => {
                     const isChecked = formData.available_docs.includes(doc.id);

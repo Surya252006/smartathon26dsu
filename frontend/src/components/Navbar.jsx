@@ -14,7 +14,8 @@ import {
   LogIn,
   Bot,
   Sliders,
-  ShieldCheck
+  ShieldCheck,
+  QrCode
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 
@@ -45,7 +46,8 @@ export default function Navbar({
   searchQuery,
   onOpenNotices,
   onOpenGrievance,
-  onOpenAdmin
+  onOpenAdmin,
+  onOpenScanner
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [showSearch, setShowSearch] = useState(false);
@@ -332,11 +334,21 @@ export default function Navbar({
 
           </div>
 
-          {/* Right Side in Secondary Nav: Quick Notice Board Trigger & Search */}
-          <div className="hidden lg:flex items-center space-x-2">
+          {/* Right Side in Secondary Nav: Quick e-Sevai Scanner & Circulars */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onOpenScanner}
+              className="px-2.5 py-1 text-[11px] font-bold text-amber-200 hover:text-white bg-emerald-950/80 hover:bg-emerald-900 rounded-md transition flex items-center space-x-1.5 border border-amber-400/50 cursor-pointer shadow-xs"
+              title="e-Sevai Document Scanner & Live Multi-Field Cross-Verification"
+            >
+              <QrCode size={13} className="text-amber-300" />
+              <span>e-Sevai சரிபார்</span>
+              <span className="bg-amber-400/20 text-amber-300 text-[9px] px-1 py-0.2 rounded font-mono">LIVE</span>
+            </button>
+
             <button
               onClick={onOpenNotices}
-              className="px-2.5 py-1 text-[11px] font-semibold text-emerald-100 hover:text-white bg-emerald-800/80 hover:bg-emerald-800 rounded-md transition flex items-center space-x-1.5 border border-emerald-600/50 cursor-pointer"
+              className="hidden lg:flex px-2.5 py-1 text-[11px] font-semibold text-emerald-100 hover:text-white bg-emerald-800/80 hover:bg-emerald-800 rounded-md transition items-center space-x-1.5 border border-emerald-600/50 cursor-pointer"
               title="Official Government Orders (G.O.) & Gazettes"
             >
               <Bell size={12} className="text-amber-300" />

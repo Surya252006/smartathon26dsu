@@ -49,6 +49,9 @@ export async function saveProfileToCluster(profileData, user = null) {
     community: profileData.community || 'BC',
     annual_income: Number(profileData.annual_income !== undefined ? profileData.annual_income : profileData.annualIncome) || 0,
     district: profileData.district || 'Chennai',
+    taluk: profileData.taluk || 'Mambalam',
+    city: profileData.city || profileData.district || 'Chennai',
+    dob: profileData.dob || '2006-05-15',
     state: profileData.state || 'Tamil Nadu',
     degree: profileData.degree || 'Undergraduate (UG)',
     current_course: profileData.current_course || profileData.currentCourse || 'Engineering',
@@ -57,9 +60,10 @@ export async function saveProfileToCluster(profileData, user = null) {
     schooling_type: profileData.schooling_type || profileData.schoolingType || 'tn_govt_school_6_to_12',
     is_differently_abled: Boolean(profileData.is_differently_abled),
     avatar: avatarData,
+    verified_documents: profileData.verified_documents || user?.profile?.verified_documents || {},
     updated_at: new Date().toISOString(),
     cloud_synced: true,
-    cluster: "tnscheme-ai-dsu-oneyes.firestore.google"
+    cluster: "cluster0.fzucldr.mongodb.net (profile & profiles collections)"
   };
 
   // 1. Instant local persistence (ensures photo & data survive signout -> signin immediately!)

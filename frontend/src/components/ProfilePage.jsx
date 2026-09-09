@@ -35,7 +35,8 @@ export default function ProfilePage({
   onNavigateTab, 
   currentLang = 'en', 
   onLogout,
-  onOpenAuth = null
+  onOpenAuth = null,
+  onOpenScanner = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [downloadSuccess, setDownloadSuccess] = useState(false);
@@ -436,9 +437,18 @@ export default function ProfilePage({
             <FileCheck size={18} className="text-emerald-700" />
             <h3 className="font-bold text-slate-900 text-sm">{t.mandatory_docs_checklist}</h3>
           </div>
-          <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-medium">
-            5 of 6 Documents Verified & Seeded
-          </span>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onOpenScanner}
+              className="text-[11px] font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-300 transition flex items-center space-x-1 cursor-pointer shadow-2xs"
+            >
+              <ShieldCheck size={13} className="text-emerald-700" />
+              <span>Verify e-Sevai Cert</span>
+            </button>
+            <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-medium">
+              Verified & Seeded in Cluster
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">

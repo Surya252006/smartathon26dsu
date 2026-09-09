@@ -13,6 +13,7 @@ import ApplicationTracker from './components/ApplicationTracker';
 import NoticeBoardModal from './components/NoticeBoardModal';
 import GrievanceModal from './components/GrievanceModal';
 import AdminDashboard from './components/AdminDashboard';
+import EsevaiScannerModal from './components/EsevaiScannerModal';
 import { evaluateProfileIntelligently } from './utils/decisionEngine';
 import { DEMO_PERSONAS } from './data/demoPersonas';
 import { TRANSLATIONS } from './utils/translations';
@@ -27,6 +28,9 @@ function App() {
   // Authentication state
   const [currentUser, setCurrentUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // e-Sevai Document Scanner Modal State
+  const [showScannerModal, setShowScannerModal] = useState(false);
 
   // Regional Language State (Handwritten Note Item #5)
   const [currentLang, setCurrentLang] = useState('en');
@@ -90,16 +94,28 @@ function App() {
     const lookupId = user.email || user.user_id;
     const cleanId = String(lookupId).toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
 
-    // Immediate local cache check for avatar (0ms)
+    // Immediate local cache check for avatar and profile (0ms)
     try {
       const cachedAvatar = localStorage.getItem(`tn_avatar_${cleanId}`);
       if (cachedAvatar) {
         resolvedUser.profile = { ...(resolvedUser.profile || {}), avatar: cachedAvatar };
         sessionStorage.setItem('tn_student_avatar', cachedAvatar);
       }
+      const cachedProf = localStorage.getItem(`tn_profile_${cleanId}`);
+      if (cachedProf) {
+        const parsed = JSON.parse(cachedProf);
+        resolvedUser.profile = { ...(resolvedUser.profile || {}), ...parsed };
+      }
     } catch (e) {}
 
     setCurrentUser(resolvedUser);
+    if (resolvedUser.profile) {
+      setCurrentProfile(resolvedUser.profile);
+      try {
+        sessionStorage.setItem('tn_student_profile', JSON.stringify(resolvedUser.profile));
+      } catch (e) {}
+    }
+
     try {
       sessionStorage.setItem('tn_scholarship_user', JSON.stringify(resolvedUser));
       if (resolvedUser.profile) {
@@ -109,18 +125,29 @@ function App() {
       window.dispatchEvent(new Event('avatarUpdated'));
     } catch (e) {}
 
-    // Background cloud check
+    // Background cloud check from MongoDB Atlas 'profiles' & 'profile' collections
     getProfileFromCluster(lookupId).then((remoteData) => {
-      if (remoteData?.avatar && remoteData.avatar !== resolvedUser.profile?.avatar) {
-        resolvedUser.profile = { ...(resolvedUser.profile || {}), avatar: remoteData.avatar };
-        sessionStorage.setItem('tn_student_avatar', remoteData.avatar);
-        window.dispatchEvent(new Event('avatarUpdated'));
+      if (remoteData) {
+        const mergedProfile = { ...(resolvedUser.profile || {}), ...remoteData };
+        resolvedUser.profile = mergedProfile;
+        setCurrentUser({ ...resolvedUser });
+        setCurrentProfile(mergedProfile);
+        try {
+          sessionStorage.setItem('tn_scholarship_user', JSON.stringify(resolvedUser));
+          sessionStorage.setItem('tn_student_profile', JSON.stringify(mergedProfile));
+          if (remoteData.avatar) {
+            sessionStorage.setItem('tn_student_avatar', remoteData.avatar);
+            window.dispatchEvent(new Event('avatarUpdated'));
+          }
+          window.dispatchEvent(new Event('profileUpdated'));
+        } catch (e) {}
       }
     }).catch(() => {});
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setCurrentProfile(null);
     try {
       sessionStorage.removeItem('tn_scholarship_user');
       sessionStorage.removeItem('tn_student_profile');
@@ -240,6 +267,7 @@ function App() {
         onOpenNotices={() => setShowNoticeModal(true)}
         onOpenGrievance={() => setShowGrievanceModal(true)}
         onOpenAdmin={() => setCurrentTab('admin')}
+        onOpenScanner={() => setShowScannerModal(true)}
       />
 
       {/* 2. Main Content Container */}
@@ -256,6 +284,7 @@ function App() {
             currentUser={currentUser}
             onNavigateTab={setCurrentTab}
             onOpenGrievance={() => setShowGrievanceModal(true)}
+            onOpenScanner={() => setShowScannerModal(true)}
           />
         )}
 
@@ -297,6 +326,7 @@ function App() {
                     currentUser={currentUser}
                     currentProfile={currentProfile}
                     onOpenAuth={() => setShowAuthModal(true)}
+                    onOpenScanner={() => setShowScannerModal(true)}
                   />
                 )}
               </div>
@@ -347,6 +377,7 @@ function App() {
                 currentLang={currentLang}
                 onLogout={handleLogout}
                 onOpenAuth={() => setShowAuthModal(true)}
+                onOpenScanner={() => setShowScannerModal(true)}
               />
             )}
 
@@ -449,6 +480,27 @@ function App() {
         currentUser={currentUser}
         currentProfile={currentProfile || currentUser?.profile}
         currentLang={currentLang}
+      />
+
+      {/* 8. e-Sevai Document Scanner & Live Multi-Field Cross-Verification Modal */}
+      <EsevaiScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+        studentProfile={currentProfile || currentUser?.profile}
+        currentUser={currentUser}
+        onVerificationComplete={(updatedProf) => {
+          setCurrentProfile(updatedProf);
+          if (currentUser) {
+            const updatedUser = {
+              ...currentUser,
+              profile: { ...(currentUser.profile || {}), ...updatedProf }
+            };
+            setCurrentUser(updatedUser);
+            try {
+              sessionStorage.setItem('tn_scholarship_user', JSON.stringify(updatedUser));
+            } catch (e) {}
+          }
+        }}
       />
 
       {/* 6. Official Civic Portal Footer */}

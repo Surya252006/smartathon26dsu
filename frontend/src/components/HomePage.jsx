@@ -38,7 +38,8 @@ export default function HomePage({
   currentUser = null,
   onNavigateTab = null,
   onOpenGrievance = null,
-  onOpenAuth = null
+  onOpenAuth = null,
+  onOpenScanner = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
 
@@ -876,6 +877,19 @@ export default function HomePage({
                     </span>
                   </li>
                 </ul>
+
+                {/* e-Sevai Smart Document Scanner Action */}
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={onOpenScanner}
+                    className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-md transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs border border-emerald-600"
+                    title="Launch Tamil Nadu e-Sevai Document Scanner & Multi-Field Cross-Verification"
+                  >
+                    <FileCheck size={14} className="text-amber-300" />
+                    <span>Scan & Cross-Verify with e-Sevai</span>
+                  </button>
+                </div>
               </div>
 
               {/* Quick Action to Check Different Profile */}

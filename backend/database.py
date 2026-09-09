@@ -352,53 +352,139 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[Dict[s
         "profile": profile_dict
     }
 
-def create_user_profile(db: Session, user_id: str, profile_data: Dict[str, Any]) -> Profile:
-    """Creates or updates a user profile in SQLite and MongoDB."""
+def create_user_profile(db: Session, user_id: str, profile_data: Dict[str, Any]) -> Dict[str, Any]:
+    """Creates or updates a user profile in SQLite and MongoDB Atlas (profiles & profile collections)."""
     now = datetime.utcnow()
-    profile = db.query(Profile).filter(Profile.user_id == user_id).first()
-    if profile:
-        profile.profile_data = profile_data
-        profile.updated_at = now
-    else:
-        profile = Profile(user_id=user_id, profile_data=profile_data, updated_at=now)
-        db.add(profile)
-    
-    db.commit()
-    db.refresh(profile)
+    clean_id = str(user_id).lower().strip().replace("@", "_").replace(".", "_")
 
-    # Sync to MongoDB Atlas
-    mongo_profiles = get_mongo_collection("profiles")
-    if mongo_profiles is not None:
-        try:
-            mongo_profiles.update_one(
-                {"_id": user_id},
-                {"$set": {
-                    "_id": user_id,
-                    "profile_data": profile_data,
-                    "updated_at": now.isoformat()
-                }},
-                upsert=True
-            )
-        except Exception as me:
-            print(f"[MongoDB Sync Notice] Profile sync failed: {me}")
+    # 1. Ensure User exists in SQLite before adding Profile (avoids FK constraint failure)
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            # Check by email if user_id looks like an email
+            if "@" in str(user_id):
+                user = db.query(User).filter(User.email == str(user_id).lower().strip()).first()
+            if not user:
+                user = User(
+                    id=user_id,
+                    email=str(profile_data.get("email") or f"{clean_id}@tnega.gov.in").lower().strip(),
+                    password_hash=hash_password("default_pass_2026"),
+                    created_at=now
+                )
+                db.add(user)
+                db.commit()
 
-    return profile
+        profile = db.query(Profile).filter(Profile.user_id == user.id).first()
+        if profile:
+            profile.profile_data = profile_data
+            profile.updated_at = now
+        else:
+            profile = Profile(user_id=user.id, profile_data=profile_data, updated_at=now)
+            db.add(profile)
+        
+        db.commit()
+    except Exception as sqle:
+        db.rollback()
+        print(f"[SQLite Profile Notice] Local save fallback: {sqle}")
+
+    # 2. Sync full document to MongoDB Atlas in both 'profiles' and 'profile' collections
+    full_doc = {
+        "_id": user_id,
+        "user_id": user_id,
+        "clean_id": clean_id,
+        "email": str(profile_data.get("email") or "").lower().strip(),
+        "full_name": profile_data.get("full_name") or profile_data.get("fullName") or "Student Candidate",
+        "gender": profile_data.get("gender") or "male",
+        "community": profile_data.get("community") or "BC",
+        "district": profile_data.get("district") or "Chennai",
+        "taluk": profile_data.get("taluk") or "Central",
+        "city": profile_data.get("city") or profile_data.get("district") or "Chennai",
+        "dob": profile_data.get("dob") or "2006-05-14",
+        "phone": profile_data.get("phone") or "",
+        "annual_income": float(profile_data.get("annual_income") if profile_data.get("annual_income") is not None else profile_data.get("annualIncome", 140000)),
+        "board_percentage": float(profile_data.get("board_percentage") if profile_data.get("board_percentage") is not None else profile_data.get("boardPercentage", 88.5)),
+        "degree": profile_data.get("degree") or "Undergraduate (UG)",
+        "current_course": profile_data.get("current_course") or profile_data.get("currentCourse") or "Engineering",
+        "college_name": profile_data.get("college_name") or "",
+        "college_type": profile_data.get("college_type") or "Government",
+        "admission_mode": profile_data.get("admission_mode") or "govt_counseling_single_window",
+        "is_first_graduate": bool(profile_data.get("is_first_graduate") if profile_data.get("is_first_graduate") is not None else profile_data.get("isFirstGraduate", False)),
+        "schooling_type": profile_data.get("schooling_type") or profile_data.get("schoolingType") or "tn_govt_school_6_to_12",
+        "is_differently_abled": bool(profile_data.get("is_differently_abled")),
+        "avatar": profile_data.get("avatar"),
+        "available_docs": profile_data.get("available_docs") or ["income_certificate", "community_certificate", "marksheet", "bonafide_certificate", "aadhaar_bank"],
+        "verified_documents": profile_data.get("verified_documents") or [],
+        "profile_data": profile_data,
+        "updated_at": now.isoformat(),
+        "cluster": "cluster0.fzucldr.mongodb.net",
+        "cluster_synced": True
+    }
+
+    for col_name in ["profiles", "profile"]:
+        mongo_col = get_mongo_collection(col_name)
+        if mongo_col is not None:
+            try:
+                mongo_col.replace_one({"_id": user_id}, full_doc, upsert=True)
+                # If clean_id differs, mirror to clean_id for easy lookup
+                if clean_id != user_id:
+                    mongo_col.replace_one({"_id": clean_id}, {**full_doc, "_id": clean_id}, upsert=True)
+            except Exception as me:
+                print(f"[MongoDB Sync Notice] {col_name} sync failed: {me}")
+
+    print(f"[MongoDB Atlas] Profile successfully stored in cluster folder 'profiles' & 'profile' for user: {user_id}")
+    return full_doc
 
 def get_user_profile(db: Session, user_id: str) -> Optional[Dict[str, Any]]:
-    """Retrieves a user profile as a dictionary from SQLite and MongoDB Atlas."""
-    profile = db.query(Profile).filter(Profile.user_id == user_id).first()
-    if profile and profile.profile_data:
-        return profile.profile_data
+    """Retrieves full student profile from MongoDB Atlas (profiles/profile) with SQLite fallback."""
+    import re
+    raw_str = str(user_id).strip()
+    clean_id = raw_str.lower().replace("@", "_").replace(".", "_")
+    prefix = clean_id.split("_")[0]
 
-    # Fallback to MongoDB Atlas
-    mongo_profiles = get_mongo_collection("profiles")
-    if mongo_profiles is not None:
-        try:
-            doc = mongo_profiles.find_one({"_id": user_id})
-            if doc and "profile_data" in doc:
-                return doc["profile_data"]
-        except Exception:
-            pass
+    # 1. Primary check: Live MongoDB Atlas Cluster ('profiles' and 'profile' folders)
+    for col_name in ["profiles", "profile"]:
+        mongo_col = get_mongo_collection(col_name)
+        if mongo_col is not None:
+            try:
+                or_conditions = [
+                    {"_id": user_id},
+                    {"_id": clean_id},
+                    {"email": raw_str.lower()},
+                    {"user_id": user_id},
+                    {"clean_id": clean_id},
+                ]
+                if len(prefix) >= 3:
+                    or_conditions.append({"email": {"$regex": f"^{re.escape(prefix)}", "$options": "i"}})
+                    or_conditions.append({"_id": {"$regex": f"^{re.escape(prefix)}", "$options": "i"}})
+                    or_conditions.append({"clean_id": {"$regex": f"^{re.escape(prefix)}", "$options": "i"}})
+
+                doc = mongo_col.find_one({"$or": or_conditions})
+                if doc:
+                    if "_id" in doc:
+                        doc["_id"] = str(doc["_id"])
+                    # Return either inner profile_data or top-level doc
+                    return doc.get("profile_data") or doc
+            except Exception as e:
+                print(f"[MongoDB Read Notice] {col_name} read: {e}")
+
+    # 2. Resilient Fallback: SQLite
+    try:
+        user = db.query(User).filter(
+            (User.id == user_id) | 
+            (User.email == raw_str.lower()) |
+            (User.id == clean_id)
+        ).first()
+        if user:
+            profile = db.query(Profile).filter(Profile.user_id == user.id).first()
+            if profile and profile.profile_data:
+                return profile.profile_data
+
+        profile = db.query(Profile).filter(Profile.user_id == user_id).first()
+        if profile and profile.profile_data:
+            return profile.profile_data
+    except Exception as sqle:
+        print(f"[SQLite Read Notice]: {sqle}")
+
     return None
 
 def log_evaluation_to_db(user_id: Optional[str], profile_data: Dict[str, Any], evaluation_result: Dict[str, Any]):

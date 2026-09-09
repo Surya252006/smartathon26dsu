@@ -308,7 +308,8 @@ def save_student_profile(req: ProfileUpdateRequest):
     db = SessionLocal()
     try:
         saved = create_user_profile(db, req.user_id, req.profile_data)
-        return {"status": "success", "profile": saved.profile_data}
+        prof_res = saved.get("profile_data", saved) if isinstance(saved, dict) else getattr(saved, "profile_data", saved)
+        return {"status": "success", "profile": prof_res}
     finally:
         db.close()
 
