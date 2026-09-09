@@ -28,14 +28,14 @@ import {
   ArrowUpDown,
   Lock,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Edit3
 } from 'lucide-react';
 import { generateRoadmapPdf } from '../utils/generateRoadmapPdf';
 import { saveApplicationToCluster } from '../utils/cloudSync';
 
 export default function ResultsDashboard({ result, profile, onReset, currentUser = null, currentLang = 'en', onEditProfile = null }) {
-  if (!result) return null;
-
+  const safeResult = result || {};
   const { 
     recommended_bundle = [], 
     total_financial_value = 0, 
@@ -47,9 +47,9 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
     alternative_options = [],
     consolidated_docs = [],
     application_roadmap = []
-  } = result;
+  } = safeResult;
 
-  // Modals state
+  // Modals state (Unconditionally called at component top level)
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
@@ -57,12 +57,12 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
 
   // Interactive Document Checklist State (Section 13)
   const [readyDocs, setReadyDocs] = useState(() => {
-    // Default initial checked items (Aadhaar & Marksheet typically ready)
     const initial = {};
-    if (consolidated_docs.length > 0) {
-      consolidated_docs.forEach((d, idx) => {
-        if (d.name.toLowerCase().includes('aadhaar') || d.name.toLowerCase().includes('marksheet')) {
-          initial[d.name] = true;
+    if (consolidated_docs && consolidated_docs.length > 0) {
+      consolidated_docs.forEach((d) => {
+        const dName = typeof d === 'string' ? d : (d?.name || '');
+        if (dName.toLowerCase().includes('aadhaar') || dName.toLowerCase().includes('marksheet')) {
+          initial[dName] = true;
         }
       });
     }
@@ -82,11 +82,13 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
   const [chatMessages, setChatMessages] = useState([
     {
       role: 'model',
-      content: `வணக்கம் ${profile?.full_name || currentUser?.profile?.full_name || 'மாணவர்'}! நான் உங்கள் தமிழ்நாடு அரசு AI கல்வி உதவித்தொகை ஆலோசகர். உங்கள் தகுதிக்குரிய ₹${total_financial_value.toLocaleString('en-IN')}/ஆண்டு நலத்திட்டங்கள் மற்றும் இ-சேவை சான்றிதழ்கள் குறித்து ஏதேனும் கேள்விகள் இருந்தால் கேளுங்கள்!`
+      content: `வணக்கம் ${profile?.full_name || currentUser?.profile?.full_name || 'மாணவர்'}! நான் உங்கள் தமிழ்நாடு அரசு AI கல்வி உதவித்தொகை ஆலோசகர். உங்கள் தகுதிக்குரிய ₹${Number(total_financial_value || 0).toLocaleString('en-IN')}/ஆண்டு நலத்திட்டங்கள் மற்றும் இ-சேவை சான்றிதழ்கள் குறித்து ஏதேனும் கேள்விகள் இருந்தால் கேளுங்கள்!`
     }
   ]);
   const [inputQuery, setInputQuery] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
+
+  if (!result) return null;
 
   const showToast = (msg) => {
     setToastMsg(msg);

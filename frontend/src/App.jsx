@@ -111,11 +111,6 @@ function App() {
     fetchLiveDbStatus()
       .then(data => setDbStatus(data))
       .catch(err => console.warn("Database status check notice", err));
-
-    // Auto-evaluate immediately so Eligibility Checker is instantly open and active
-    setTimeout(() => {
-      handleOpenEligibilityChecker();
-    }, 50);
   }, []);
 
   const handleSelectLang = (lang) => {
