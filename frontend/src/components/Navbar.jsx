@@ -11,6 +11,7 @@ import {
   X, 
   Bell, 
   LogOut,
+  LogIn,
   Bot
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
@@ -150,49 +151,62 @@ export default function Navbar({
               <span>{currentLang === 'ta' ? 'தமிழ்' : 'EN'} / {currentLang === 'ta' ? 'EN' : 'தமிழ்'}</span>
             </button>
 
-            {/* Profile Section: Avatar & Name "Surya Suresh" */}
-            <div 
-              onClick={() => setCurrentTab('profile')}
-              className="flex items-center space-x-2 cursor-pointer group"
-              title="View Student Profile"
-            >
-              <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold text-xs flex items-center justify-center border border-emerald-500 shadow-xs group-hover:ring-2 group-hover:ring-emerald-400 transition overflow-hidden shrink-0">
-                {avatarImage ? (
-                  <img src={avatarImage} alt={profileName} className="w-full h-full object-cover" />
-                ) : (
-                  profileName.charAt(0).toUpperCase()
-                )}
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-300 transition hidden xs:inline">
-                {profileName}
-              </span>
-            </div>
+            {/* Profile / Login Section */}
+            {currentUser ? (
+              <>
+                <div 
+                  onClick={() => setCurrentTab('profile')}
+                  className="flex items-center space-x-2 cursor-pointer group"
+                  title="View Student Profile"
+                >
+                  <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold text-xs flex items-center justify-center border border-emerald-500 shadow-xs group-hover:ring-2 group-hover:ring-emerald-400 transition overflow-hidden shrink-0">
+                    {avatarImage ? (
+                      <img src={avatarImage} alt={profileName} className="w-full h-full object-cover" />
+                    ) : (
+                      profileName.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <span className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-300 transition hidden xs:inline">
+                    {profileName}
+                  </span>
+                </div>
 
-            {/* Green dot indicating "Connected (Student Login)" */}
-            <div className="hidden md:flex items-center space-x-1.5 bg-slate-800/90 px-2.5 py-1 rounded-full border border-slate-700/80">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-[11px] text-emerald-300 font-medium whitespace-nowrap">
-                Connected (Student Login)
-              </span>
-            </div>
+                {/* Green dot indicating "Connected (Student/Admin Login)" */}
+                <div className="hidden md:flex items-center space-x-1.5 bg-slate-800/90 px-2.5 py-1 rounded-full border border-slate-700/80">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span className="text-[11px] text-emerald-300 font-medium whitespace-nowrap">
+                    {currentUser?.role === 'admin' ? 'Connected (Admin)' : 'Connected (Student)'}
+                  </span>
+                </div>
 
-            {/* Search Toggle Icon */}
-            <button
-              onClick={() => setShowSearch(!showSearch)}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition sm:hidden"
-              title="Search Schemes"
-            >
-              <Search size={16} />
-            </button>
+                {/* Quick Account Switcher */}
+                <button
+                  onClick={onOpenAuth}
+                  className="hidden lg:flex items-center space-x-1 text-[11px] font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-md border border-slate-700 transition cursor-pointer"
+                  title="Switch or Sign In to another account"
+                >
+                  <User size={12} />
+                  <span>Switch</span>
+                </button>
 
-            {/* Logout button if authenticated */}
-            {currentUser && (
+                {/* Logout button */}
+                <button
+                  onClick={onLogout}
+                  className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition cursor-pointer"
+                  title="Sign Out / வெளியேறு"
+                >
+                  <LogOut size={16} />
+                </button>
+              </>
+            ) : (
+              /* If NOT Logged In: Prominent Sign In button */
               <button
-                onClick={onLogout}
-                className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition cursor-pointer"
-                title="Sign Out"
+                onClick={onOpenAuth}
+                className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg border border-emerald-400 shadow-sm flex items-center space-x-1.5 transition cursor-pointer"
+                title="Student / Admin Sign In (உள்நுழைவு)"
               >
-                <LogOut size={16} />
+                <LogIn size={13} />
+                <span>Sign In / உள்நுழைவு</span>
               </button>
             )}
 
@@ -298,6 +312,17 @@ export default function Navbar({
               <HelpCircle size={15} />
               <span>{t.nav_grievance || 'Helpdesk'}</span>
             </button>
+
+            {/* If not logged in, also show Sign In in secondary nav */}
+            {!currentUser && (
+              <button
+                onClick={onOpenAuth}
+                className="px-3 py-1.5 rounded-md flex items-center space-x-1.5 bg-emerald-950/80 text-amber-300 hover:text-white hover:bg-emerald-900 border border-amber-400/40 font-bold transition cursor-pointer"
+              >
+                <LogIn size={15} />
+                <span>{t.nav_login || 'Sign In'}</span>
+              </button>
+            )}
 
           </div>
 

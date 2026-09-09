@@ -16,6 +16,7 @@ import {
   Compass, 
   Sparkles, 
   LogOut,
+  LogIn,
   IndianRupee,
   Building,
   Calendar,
@@ -33,7 +34,8 @@ export default function ProfilePage({
   result, 
   onNavigateTab, 
   currentLang = 'en', 
-  onLogout 
+  onLogout,
+  onOpenAuth = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [downloadSuccess, setDownloadSuccess] = useState(false);
@@ -215,6 +217,16 @@ export default function ProfilePage({
                 <Edit3 size={14} className="text-emerald-300" />
                 <span>Edit Profile</span>
               </button>
+              {onOpenAuth && (
+                <button
+                  onClick={onOpenAuth}
+                  className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs border border-emerald-400 transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
+                  title="Sign In with Student Credentials or Switch"
+                >
+                  <LogIn size={14} />
+                  <span>{user ? 'Switch Account' : 'Sign In'}</span>
+                </button>
+              )}
               <button
                 onClick={() => onNavigateTab('matcher')}
                 className="flex-1 sm:flex-initial px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"

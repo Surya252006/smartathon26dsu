@@ -280,6 +280,7 @@ function App() {
                 onNavigateTab={setCurrentTab}
                 currentLang={currentLang}
                 onLogout={handleLogout}
+                onOpenAuth={() => setShowAuthModal(true)}
               />
             )}
 

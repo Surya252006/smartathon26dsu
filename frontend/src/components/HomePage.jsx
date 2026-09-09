@@ -21,7 +21,8 @@ import {
   Upload,
   Trash2,
   Pencil,
-  Edit3
+  Edit3,
+  LogIn
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 import EditProfileModal from './EditProfileModal';
@@ -32,7 +33,8 @@ export default function HomePage({
   currentLang = 'en',
   currentUser = null,
   onNavigateTab = null,
-  onOpenGrievance = null
+  onOpenGrievance = null,
+  onOpenAuth = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
 
@@ -284,22 +286,34 @@ export default function HomePage({
             <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs">
               
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1.5">
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                     Candidate Snapshot
                   </span>
                   <button
                     onClick={() => setShowEditModal(true)}
-                    className="inline-flex items-center space-x-1 text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 px-2 py-0.5 rounded border border-slate-200 hover:border-emerald-300 transition cursor-pointer"
+                    className="inline-flex items-center space-x-1 text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 px-1.5 py-0.5 rounded border border-slate-200 hover:border-emerald-300 transition cursor-pointer"
                     title="Edit candidate profile, income, marks & upload photo"
                   >
                     <Pencil size={10} />
-                    <span>Edit Profile</span>
+                    <span>Edit</span>
                   </button>
                 </div>
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  Verified Profile
-                </span>
+                <div className="flex items-center space-x-1.5">
+                  {onOpenAuth && (
+                    <button
+                      onClick={onOpenAuth}
+                      className="inline-flex items-center space-x-1 text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 transition cursor-pointer"
+                      title="Sign in with your Student ID or Switch User"
+                    >
+                      <LogIn size={10} />
+                      <span>{currentUser ? 'Switch' : 'Sign In'}</span>
+                    </button>
+                  )}
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Verified
+                  </span>
+                </div>
               </div>
 
               {/* Profile section: square photo placeholder on left, compact list on right */}
