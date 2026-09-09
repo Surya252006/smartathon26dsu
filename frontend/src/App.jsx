@@ -83,6 +83,31 @@ function App() {
     setIsEvaluating(true);
     setCurrentTab('matcher');
 
+    // Persist to currentUser and backend if student is authenticated
+    if (currentUser) {
+      const updatedUser = {
+        ...currentUser,
+        profile: {
+          ...(currentUser.profile || {}),
+          ...formData
+        }
+      };
+      setCurrentUser(updatedUser);
+      try {
+        localStorage.setItem('tn_scholarship_user', JSON.stringify(updatedUser));
+        if (currentUser.user_id) {
+          fetch('http://localhost:8000/api/auth/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: currentUser.user_id,
+              profile_data: formData
+            })
+          }).catch(() => {});
+        }
+      } catch (e) {}
+    }
+
     try {
       const response = await fetch('http://localhost:8000/api/evaluate', {
         method: 'POST',
@@ -185,6 +210,9 @@ function App() {
               <ProfileForm 
                 onSubmit={handleEvaluate} 
                 currentLang={currentLang} 
+                currentUser={currentUser}
+                currentProfile={currentProfile}
+                onOpenAuth={() => setShowAuthModal(true)}
               />
             )}
           </div>
@@ -207,6 +235,7 @@ function App() {
             <ResultsDashboard 
               result={result} 
               profile={currentProfile} 
+              currentUser={currentUser}
               onReset={handleReset} 
               currentLang={currentLang}
             />

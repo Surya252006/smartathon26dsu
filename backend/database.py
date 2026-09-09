@@ -131,7 +131,15 @@ def get_mongo_collection(collection_name: str):
 def hash_password(password: str) -> str:
     return hashlib.sha256(f"tn_gov_salt_{password}".encode("utf-8")).hexdigest()
 
-def register_user(db: Session, email: str, password: str, full_name: str, community: str = "BC", district: str = "Chennai") -> User:
+def register_user(
+    db: Session, 
+    email: str, 
+    password: str, 
+    full_name: str, 
+    community: str = "BC", 
+    district: str = "Chennai",
+    custom_profile: Optional[Dict[str, Any]] = None
+) -> User:
     cleaned_email = email.lower().strip()
     existing = db.query(User).filter(User.email == cleaned_email).first()
     if existing:
@@ -164,6 +172,9 @@ def register_user(db: Session, email: str, password: str, full_name: str, commun
         "admission_mode": "govt_counseling_single_window",
         "available_docs": ["income_certificate", "community_certificate"]
     }
+    if custom_profile:
+        profile_data.update(custom_profile)
+
     profile = Profile(user_id=user_id, profile_data=profile_data, updated_at=now)
     db.add(profile)
     db.commit()
@@ -197,19 +208,64 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[Dict[s
     if cleaned_email in ["admin@tnega.tn.gov.in", "admin@tn.gov.in", "admin@dsu.tn.gov.in"]:
         user = db.query(User).filter(User.email == cleaned_email).first()
         if not user and password in ["admin2026", "admin123"]:
-            # Auto-provision admin
             user = register_user(
                 db, 
                 cleaned_email, 
                 password, 
                 "TNeGA System Administrator", 
                 community="OC", 
-                district="Chennai"
+                district="Chennai",
+                custom_profile={"role": "admin"}
             )
         elif user and user.password_hash != hash_password(password) and password in ["admin2026", "admin123"]:
-            # Reset password to demo default
             user.password_hash = hash_password(password)
             db.commit()
+
+    # Auto-provision official demo student Priya if requested
+    elif cleaned_email == "priya.demo@dsu.tn.gov.in":
+        user = db.query(User).filter(User.email == cleaned_email).first()
+        if not user and password in ["tnstudent2026", "student123", "priya2026"]:
+            user = register_user(
+                db,
+                cleaned_email,
+                password,
+                "Priya Murugesan",
+                community="BC",
+                district="Pudukkottai",
+                custom_profile={
+                    "gender": "female",
+                    "annual_income": 120000,
+                    "schooling_type": "tn_govt_school_6_to_12",
+                    "is_first_graduate": True,
+                    "board_percentage": 88.5,
+                    "current_course": "Engineering",
+                    "admission_mode": "govt_counseling_single_window",
+                    "available_docs": ['income_certificate', 'community_certificate', 'first_graduate_certificate', 'bonafide_certificate', 'marksheet', 'aadhaar_bank']
+                }
+            )
+
+    # Auto-provision official demo student Karthik if requested
+    elif cleaned_email == "karthik.demo@dsu.tn.gov.in":
+        user = db.query(User).filter(User.email == cleaned_email).first()
+        if not user and password in ["tnstudent2026", "student123", "karthik2026"]:
+            user = register_user(
+                db,
+                cleaned_email,
+                password,
+                "Karthikeyan R",
+                community="OC",
+                district="Chennai",
+                custom_profile={
+                    "gender": "male",
+                    "annual_income": 350000,
+                    "schooling_type": "private_matric",
+                    "is_first_graduate": False,
+                    "board_percentage": 94.2,
+                    "current_course": "Medical",
+                    "admission_mode": "govt_counseling_single_window",
+                    "available_docs": ['income_certificate', 'community_certificate', 'bonafide_certificate', 'marksheet', 'aadhaar_bank']
+                }
+            )
 
     user = db.query(User).filter(User.email == cleaned_email).first()
     if not user:

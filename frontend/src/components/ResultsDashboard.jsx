@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { generateRoadmapPdf } from '../utils/generateRoadmapPdf';
 
-export default function ResultsDashboard({ result, profile, onReset }) {
+export default function ResultsDashboard({ result, profile, onReset, currentUser = null }) {
   if (!result) return null;
 
   const { recommended_bundle, total_financial_value, excluded_schemes, selection_probabilities } = result;
@@ -48,7 +48,7 @@ export default function ResultsDashboard({ result, profile, onReset }) {
   const [chatMessages, setChatMessages] = useState([
     {
       role: 'model',
-      content: `வணக்கம் ${profile?.full_name || 'மாணவர்'}! நான் உங்கள் தமிழ்நாடு அரசு கல்வி உதவித்தொகை ஆலோசகர் (TN e-Vidya AI). உங்கள் தகுதிக்குரிய ₹${total_financial_value.toLocaleString('en-IN')}/ஆண்டு நலத்திட்டங்கள் மற்றும் இ-சேவை சான்றிதழ்கள் குறித்து ஏதேனும் கேள்விகள் இருந்தால் கேளுங்கள்!`
+      content: `வணக்கம் ${profile?.full_name || currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || 'மாணவர்'}! நான் உங்கள் தமிழ்நாடு அரசு கல்வி உதவித்தொகை ஆலோசகர் (TN e-Vidya AI). உங்கள் தகுதிக்குரிய ₹${total_financial_value.toLocaleString('en-IN')}/ஆண்டு நலத்திட்டங்கள் மற்றும் இ-சேவை சான்றிதழ்கள் குறித்து ஏதேனும் கேள்விகள் இருந்தால் கேளுங்கள்!`
     }
   ]);
   const [inputQuery, setInputQuery] = useState('');
@@ -62,7 +62,7 @@ export default function ResultsDashboard({ result, profile, onReset }) {
   const handleExportPdf = () => {
     setIsPdfGenerating(true);
     try {
-      generateRoadmapPdf(profile, result);
+      generateRoadmapPdf(profile || currentUser?.profile || {}, result);
       showToast("Official Sanction Roadmap PDF successfully generated!");
     } catch (err) {
       console.error(err);
@@ -223,7 +223,7 @@ export default function ResultsDashboard({ result, profile, onReset }) {
                   Candidate Profile Verified
                 </span>
                 <h2 className="text-2xl font-bold text-slate-900">
-                  {profile?.full_name || "Priya Murugesan"}
+                  {profile?.full_name || currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || "Student Candidate"}
                 </h2>
                 <p className="text-xs text-slate-600 mt-0.5">
                   Admitted under <strong className="text-slate-800">{profile?.admission_mode?.replace(/_/g, ' ') || 'Single Window Counseling'}</strong> for <strong className="text-slate-800">{profile?.current_course || 'Engineering'}</strong>.

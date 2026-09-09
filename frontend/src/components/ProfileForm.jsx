@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ChevronRight, 
   ChevronLeft, 
@@ -9,15 +9,101 @@ import {
   ShieldCheck, 
   GraduationCap, 
   Landmark, 
-  HelpCircle,
-  AlertCircle,
-  FileCheck2,
-  Sparkles
+  HelpCircle, 
+  AlertCircle, 
+  FileCheck2, 
+  Sparkles,
+  User,
+  CheckCircle2,
+  RefreshCw
 } from 'lucide-react';
 import VoiceAssistModal from './VoiceAssistModal';
 import { TRANSLATIONS } from '../utils/translations';
 
-export default function ProfileForm({ onSubmit, currentLang = 'en' }) {
+const extractFormData = (user, profile) => {
+  // 1. If profile was already evaluated in current session
+  if (profile && (profile.full_name || profile.community)) {
+    return {
+      full_name: profile.full_name || '',
+      schooling_type: profile.schooling_type || 'tn_govt_school_6_to_12',
+      admission_mode: profile.admission_mode || 'govt_counseling_single_window',
+      current_course: profile.current_course || 'Engineering',
+      board_percentage: profile.board_percentage ? String(profile.board_percentage) : '',
+      gender: profile.gender || 'female',
+      community: profile.community || 'BC',
+      annual_income: profile.annual_income ? String(profile.annual_income) : '',
+      is_first_graduate: profile.is_first_graduate !== undefined ? profile.is_first_graduate : true,
+      is_differently_abled: Boolean(profile.is_differently_abled),
+      disability_percentage: profile.disability_percentage ? String(profile.disability_percentage) : '',
+      available_docs: profile.available_docs || [
+        'income_certificate', 
+        'community_certificate', 
+        'first_graduate_certificate', 
+        'bonafide_certificate', 
+        'marksheet', 
+        'aadhaar_bank'
+      ]
+    };
+  }
+
+  // 2. If a user is logged in, extract ALL profile credentials
+  if (user) {
+    const p = user.profile || {};
+    const derivedName = p.full_name || user.full_name || (user.email ? user.email.split('@')[0].replace(/[._]/g, ' ').toUpperCase() : '');
+    return {
+      full_name: derivedName,
+      schooling_type: p.schooling_type || 'tn_govt_school_6_to_12',
+      admission_mode: p.admission_mode || 'govt_counseling_single_window',
+      current_course: p.current_course || 'Engineering',
+      board_percentage: p.board_percentage ? String(p.board_percentage) : '85.0',
+      gender: p.gender || 'female',
+      community: p.community || 'BC',
+      annual_income: p.annual_income ? String(p.annual_income) : '120000',
+      is_first_graduate: p.is_first_graduate !== undefined ? p.is_first_graduate : true,
+      is_differently_abled: Boolean(p.is_differently_abled),
+      disability_percentage: p.disability_percentage ? String(p.disability_percentage) : '',
+      available_docs: p.available_docs || [
+        'income_certificate', 
+        'community_certificate', 
+        'first_graduate_certificate', 
+        'bonafide_certificate', 
+        'marksheet', 
+        'aadhaar_bank'
+      ]
+    };
+  }
+
+  // 3. Clean neutral defaults (no hardcoded name)
+  return {
+    full_name: '',
+    schooling_type: 'tn_govt_school_6_to_12',
+    admission_mode: 'govt_counseling_single_window',
+    current_course: 'Engineering',
+    board_percentage: '',
+    gender: 'female',
+    community: 'BC',
+    annual_income: '',
+    is_first_graduate: true,
+    is_differently_abled: false,
+    disability_percentage: '',
+    available_docs: [
+      'income_certificate', 
+      'community_certificate', 
+      'first_graduate_certificate', 
+      'bonafide_certificate', 
+      'marksheet', 
+      'aadhaar_bank'
+    ]
+  };
+};
+
+export default function ProfileForm({ 
+  onSubmit, 
+  currentLang = 'en',
+  currentUser = null,
+  currentProfile = null,
+  onOpenAuth = null
+}) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [step, setStep] = useState(0);
   const [isVoiceModalOpen, setVoiceModalOpen] = useState(false);
@@ -28,27 +114,12 @@ export default function ProfileForm({ onSubmit, currentLang = 'en' }) {
     { title: currentLang === 'ta' ? 'இ-சேவை ஆவணங்கள்' : 'e-Sevai Certificates', sub: 'Document Readiness' }
   ];
 
-  const [formData, setFormData] = useState({
-    full_name: "Priya Murugesan",
-    schooling_type: "tn_govt_school_6_to_12",
-    admission_mode: "govt_counseling_single_window",
-    current_course: "Engineering",
-    board_percentage: "88.5",
-    gender: "female",
-    community: "BC",
-    annual_income: "120000",
-    is_first_graduate: true,
-    is_differently_abled: false,
-    disability_percentage: "",
-    available_docs: [
-      'income_certificate', 
-      'community_certificate', 
-      'first_graduate_certificate', 
-      'bonafide_certificate', 
-      'marksheet', 
-      'aadhaar_bank'
-    ]
-  });
+  const [formData, setFormData] = useState(() => extractFormData(currentUser, currentProfile));
+
+  // Automatically sync and prefill form data when user logs in or switches profile
+  useEffect(() => {
+    setFormData(extractFormData(currentUser, currentProfile));
+  }, [currentUser, currentProfile]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -219,6 +290,61 @@ export default function ProfileForm({ onSubmit, currentLang = 'en' }) {
               </p>
             </div>
 
+            {/* Logged-In User Sync Banner */}
+            {currentUser ? (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between text-xs">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#006a4e] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    {(formData.full_name || currentUser.email || 'S').charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="font-bold text-slate-900">
+                        {formData.full_name || currentUser.profile?.full_name || currentUser.email}
+                      </span>
+                      <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300">
+                        {currentLang === 'ta' ? 'தானாக நிரப்பப்பட்டது' : 'Auto-Prefilled from Login'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-0.5">
+                      {currentLang === 'ta' 
+                        ? 'உங்கள் கணக்கின் விவரங்கள் படிவத்தில் தானாக நிரப்பப்பட்டுள்ளன. தேவைப்பட்டால் மாற்றலாம்.' 
+                        : 'Credentials prefilled from your authenticated student account. You can edit any value below.'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData(extractFormData(currentUser, currentProfile))}
+                  className="flex items-center space-x-1 text-[11px] text-slate-500 hover:text-emerald-700 font-semibold transition px-2 py-1 rounded hover:bg-emerald-100/50 cursor-pointer shrink-0"
+                  title="Reload default credentials"
+                >
+                  <RefreshCw size={11} />
+                  <span className="hidden sm:inline">{currentLang === 'ta' ? 'மீட்டமை' : 'Reset to Profile'}</span>
+                </button>
+              </div>
+            ) : (
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between text-xs text-slate-600">
+                <div className="flex items-center space-x-2">
+                  <User size={15} className="text-slate-400 shrink-0" />
+                  <span>
+                    {currentLang === 'ta' 
+                      ? 'உங்கள் மாணவர் சுயவிவர விவரங்களை தானாக நிரப்ப உள்நுழையவும்.' 
+                      : 'Sign in to automatically populate and sync your student credentials.'}
+                  </span>
+                </div>
+                {onOpenAuth && (
+                  <button 
+                    type="button" 
+                    onClick={onOpenAuth}
+                    className="text-[11px] font-bold text-[#006a4e] hover:underline cursor-pointer shrink-0 ml-2"
+                  >
+                    {currentLang === 'ta' ? 'உள்நுழைய →' : 'Sign In →'}
+                  </button>
+                )}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Full Name */}
               <div className="md:col-span-2">
@@ -230,7 +356,7 @@ export default function ProfileForm({ onSubmit, currentLang = 'en' }) {
                   name="full_name" 
                   value={formData.full_name} 
                   onChange={handleChange} 
-                  placeholder="e.g. Priya Murugesan" 
+                  placeholder={currentLang === 'ta' ? 'மாணவரின் முழுப் பெயர் (சான்றிதழின்படி)...' : 'Enter student full name as per certificate...'} 
                   required 
                   className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition" 
                 />
