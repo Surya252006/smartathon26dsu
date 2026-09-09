@@ -177,9 +177,9 @@ function App() {
       />
 
       {/* 2. Main Content Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+      <main className="flex-1 w-full mx-auto bg-slate-50">
         
-        {/* VIEW A: Home Page */}
+        {/* VIEW A: Official TN e-Vidya Dashboard (Home Page) */}
         {currentTab === 'home' && (
           <HomePage
             onStartMatcher={() => setCurrentTab('matcher')}
@@ -187,120 +187,132 @@ function App() {
             onViewSchemes={() => setCurrentTab('schemes')}
             onOpenAuth={() => setShowAuthModal(true)}
             currentLang={currentLang}
-          />
-        )}
-
-        {/* VIEW B: Eligibility Matcher / Form */}
-        {currentTab === 'matcher' && (
-          <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-widest block mb-1">
-                Step 1 of 2 • Student Profile
-              </span>
-              <h2 className="text-2xl font-bold text-slate-900">
-                Check Higher Education Scheme Eligibility
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
-                Fill in your accurate academic credentials and community certificates. Our MWIS constraint solver cross-references 18+ welfare rules to find the highest legal payout.
-              </p>
-            </div>
-
-            {isEvaluating ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-xs border border-slate-200">
-                <div className="relative mb-4">
-                  <Loader2 className="animate-spin text-emerald-700" size={54} />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">
-                  Optimizing Scholarship Allocation...
-                </h3>
-                <p className="text-xs text-slate-500 mt-1.5 text-center max-w-sm">
-                  Checking mutual exclusivity matrices, quota provisions, and scoring merit-cum-means probabilities...
-                </p>
-              </div>
-            ) : (
-              <ProfileForm 
-                onSubmit={handleEvaluate} 
-                currentLang={currentLang} 
-                currentUser={currentUser}
-                currentProfile={currentProfile}
-                onOpenAuth={() => setShowAuthModal(true)}
-              />
-            )}
-          </div>
-        )}
-
-        {/* VIEW C: Results Dashboard */}
-        {currentTab === 'results' && (
-          <div className="animate-in fade-in duration-300">
-            <div className="mb-4 flex items-center justify-between">
-              <button
-                onClick={() => setCurrentTab('home')}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition flex items-center space-x-1 cursor-pointer"
-              >
-                <span>← Back to Portal Home</span>
-              </button>
-              <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                Official Result • Policy Compliant
-              </span>
-            </div>
-            <ResultsDashboard 
-              result={result} 
-              profile={currentProfile} 
-              currentUser={currentUser}
-              onReset={handleReset} 
-              currentLang={currentLang}
-            />
-          </div>
-        )}
-
-        {/* VIEW D: Schemes Directory */}
-        {currentTab === 'schemes' && (
-          <SchemesDirectory
-            onBackToHome={() => setCurrentTab('home')}
-            onApplyWithProfile={() => setCurrentTab('matcher')}
-            searchQuery={searchQuery}
-            onSearchChange={(q) => setSearchQuery(q)}
-            currentLang={currentLang}
-          />
-        )}
-
-        {/* VIEW E: Dedicated Student Profile Page */}
-        {currentTab === 'profile' && (
-          <ProfilePage
-            user={currentUser}
-            profile={currentProfile || currentUser?.profile}
-            result={result}
-            onNavigateTab={setCurrentTab}
-            currentLang={currentLang}
-            onLogout={handleLogout}
-          />
-        )}
-
-        {/* VIEW F: Application & DBT Status Tracker */}
-        {currentTab === 'tracker' && (
-          <ApplicationTracker
             currentUser={currentUser}
-            currentProfile={currentProfile || currentUser?.profile}
-            currentLang={currentLang}
-            onBackToHome={() => setCurrentTab('home')}
+            onNavigateTab={setCurrentTab}
             onOpenGrievance={() => setShowGrievanceModal(true)}
           />
         )}
 
+        {/* Other Views wrapped in structured container */}
+        {currentTab !== 'home' && (
+          <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8">
+            
+            {/* VIEW B: Eligibility Matcher / Form */}
+            {currentTab === 'matcher' && (
+              <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
+                <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+                  <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-widest block mb-1">
+                    Step 1 of 2 • Student Profile
+                  </span>
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    Check Higher Education Scheme Eligibility
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+                    Fill in your accurate academic credentials and community certificates. Our MWIS constraint solver cross-references 18+ welfare rules to find the highest legal payout.
+                  </p>
+                </div>
+
+                {isEvaluating ? (
+                  <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-xs border border-slate-200">
+                    <div className="relative mb-4">
+                      <Loader2 className="animate-spin text-emerald-700" size={54} />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900">
+                      Optimizing Scholarship Allocation...
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1.5 text-center max-w-sm">
+                      Checking mutual exclusivity matrices, quota provisions, and scoring merit-cum-means probabilities...
+                    </p>
+                  </div>
+                ) : (
+                  <ProfileForm 
+                    onSubmit={handleEvaluate} 
+                    currentLang={currentLang} 
+                    currentUser={currentUser}
+                    currentProfile={currentProfile}
+                    onOpenAuth={() => setShowAuthModal(true)}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* VIEW C: Results Dashboard */}
+            {currentTab === 'results' && (
+              <div className="animate-in fade-in duration-300">
+                <div className="mb-4 flex items-center justify-between">
+                  <button
+                    onClick={() => setCurrentTab('home')}
+                    className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition flex items-center space-x-1 cursor-pointer"
+                  >
+                    <span>← Back to Portal Home</span>
+                  </button>
+                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    Official Result • Policy Compliant
+                  </span>
+                </div>
+                <ResultsDashboard 
+                  result={result} 
+                  profile={currentProfile} 
+                  currentUser={currentUser}
+                  onReset={handleReset} 
+                  currentLang={currentLang}
+                />
+              </div>
+            )}
+
+            {/* VIEW D: Schemes Directory */}
+            {currentTab === 'schemes' && (
+              <SchemesDirectory
+                onBackToHome={() => setCurrentTab('home')}
+                onApplyWithProfile={() => setCurrentTab('matcher')}
+                searchQuery={searchQuery}
+                onSearchChange={(q) => setSearchQuery(q)}
+                currentLang={currentLang}
+              />
+            )}
+
+            {/* VIEW E: Dedicated Student Profile Page */}
+            {currentTab === 'profile' && (
+              <ProfilePage
+                user={currentUser}
+                profile={currentProfile || currentUser?.profile}
+                result={result}
+                onNavigateTab={setCurrentTab}
+                currentLang={currentLang}
+                onLogout={handleLogout}
+              />
+            )}
+
+            {/* VIEW F: Application & DBT Status Tracker */}
+            {currentTab === 'tracker' && (
+              <ApplicationTracker
+                currentUser={currentUser}
+                currentProfile={currentProfile || currentUser?.profile}
+                currentLang={currentLang}
+                onBackToHome={() => setCurrentTab('home')}
+                onOpenGrievance={() => setShowGrievanceModal(true)}
+              />
+            )}
+
+          </div>
+        )}
+
       </main>
 
-      {/* 3. Persistent Side AI Chatbox with Live Counselor Streaming & Voice */}
-      <SideAiChat
-        isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(prev => !prev)}
-        currentProfile={currentProfile}
-        currentResult={result}
-        currentLang={currentLang}
-        currentUser={currentUser}
-        onNavigateTab={setCurrentTab}
-        onOpenGrievance={() => setShowGrievanceModal(true)}
-        onOpenNotices={() => setShowNoticeModal(true)}
-      />
+      {/* 3. Persistent Side AI Chatbox (Available across other pages) */}
+      {currentTab !== 'home' && (
+        <SideAiChat
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(prev => !prev)}
+          currentProfile={currentProfile}
+          currentResult={result}
+          currentLang={currentLang}
+          currentUser={currentUser}
+          onNavigateTab={setCurrentTab}
+          onOpenGrievance={() => setShowGrievanceModal(true)}
+          onOpenNotices={() => setShowNoticeModal(true)}
+        />
+      )}
 
       {/* 4. Student Auth Modal (Login / Register) */}
       <AuthModal

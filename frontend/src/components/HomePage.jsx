@@ -1,583 +1,614 @@
 import React, { useState } from 'react';
 import { 
-  ShieldCheck, 
-  Compass, 
-  FileText, 
-  ArrowRight, 
-  CheckCircle2, 
-  Users, 
-  Building2, 
-  Landmark, 
+  CheckCircle, 
   Sparkles, 
-  AlertCircle,
+  Bot, 
+  X, 
+  Minus, 
+  Send, 
+  Mic, 
+  MicOff, 
+  ExternalLink, 
+  Clock, 
+  FileText, 
+  ShieldCheck, 
+  User, 
   HelpCircle,
-  PhoneCall,
-  ExternalLink,
-  Award,
-  Zap,
-  TrendingUp,
-  Laptop
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 
 export default function HomePage({ 
   onStartMatcher, 
-  onInjectPersona, 
   onViewSchemes, 
-  onOpenAuth,
-  currentLang = 'en'
+  currentLang = 'en',
+  currentUser = null,
+  onNavigateTab = null,
+  onOpenGrievance = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
 
-  // AI Prediction Quick Widget State (Handwritten Note Item #7)
-  const [predCommunity, setPredCommunity] = useState('BC');
-  const [predGender, setPredGender] = useState('female');
-  const [predIncome, setPredIncome] = useState(120000);
-  const [predFirstGrad, setPredFirstGrad] = useState(true);
-  const [predGovtSchool, setPredGovtSchool] = useState(true);
-  const [predLoading, setPredLoading] = useState(false);
-  const [prediction, setPrediction] = useState(null);
-
-  const handlePredict = async (e) => {
-    e.preventDefault();
-    setPredLoading(true);
-    try {
-      const res = await fetch('http://localhost:8000/api/predict-entitlement', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          community: predCommunity,
-          gender: predGender,
-          annual_income: predIncome,
-          board_percentage: 85.0,
-          schooling_type: predGovtSchool ? 'tn_govt_school_6_to_12' : 'private',
-          is_first_graduate: predFirstGrad,
-          current_course: 'Engineering'
-        })
-      });
-      const data = await res.json();
-      setPrediction(data);
-    } catch (err) {
-      console.error("Prediction error", err);
-    } finally {
-      setPredLoading(false);
+  // Floating AI Advisor state
+  const [isAiOpen, setIsAiOpen] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState([
+    {
+      sender: 'user',
+      text: 'NSP applying rules?'
+    },
+    {
+      sender: 'bot',
+      text: 'For the Central Sector Scheme (NSP CSSS), you must be in the top 20th percentile in your 12th Board (>80%) with family annual income under ₹4.50 Lakh.\n\n⚠️ Important Policy Constraint: Under Section 4(c) guidelines, claiming NSP directly conflicts with your First Graduate fee waiver (₹25,000). The MWIS optimization engine selected your optimal package (₹37,000/yr) to prevent legal claim collisions.'
     }
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+
+  // Application Success Confirmation Modal State
+  const [appliedScheme, setAppliedScheme] = useState(null);
+
+  const handleSendMessage = (e) => {
+    e?.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userText = chatInput;
+    setChatMessages(prev => [...prev, { sender: 'user', text: userText }]);
+    setChatInput('');
+    setIsTyping(true);
+
+    setTimeout(() => {
+      let reply = "";
+      const lower = userText.toLowerCase();
+      if (lower.includes('pudhumai') || lower.includes('girl') || lower.includes('1000')) {
+        reply = "Under G.O. (Ms) No. 47/2026, Pudhumai Penn provides ₹1,000/month (₹12,000/yr) via DBT for students who studied in TN Government schools from classes 6 to 12. No parental income ceiling applies!";
+      } else if (lower.includes('first graduate') || lower.includes('fg')) {
+        reply = "First Graduate Tuition Concession waives up to ₹25,000/yr for professional courses through Single Window Counseling, provided no sibling has previously availed the benefit.";
+      } else if (lower.includes('income') || lower.includes('certificate')) {
+        reply = "Income certificates can be downloaded from Tamil Nadu e-District portal with code REV-INC-01. The validity is 1 year from the date of issue.";
+      } else {
+        reply = "I am cross-referencing your candidate profile (BC, ₹1.40L, 88.5% Board marks) with the Tamil Nadu Higher Education welfare database. You qualify for 100% legal coverage under Pudhumai Penn and First Graduate fee waivers!";
+      }
+
+      setChatMessages(prev => [...prev, { sender: 'bot', text: reply }]);
+      setIsTyping(false);
+    }, 700);
+  };
+
+  const handleApply = (schemeName, schemeAmount) => {
+    setAppliedScheme({ name: schemeName, amount: schemeAmount, refId: 'TNEV-2026-849204' });
   };
 
   return (
-    <div className="space-y-16 pb-20 animate-in fade-in duration-300">
+    <div className="bg-slate-50 min-h-screen text-slate-900 pb-20">
       
-      {/* 1. HERO BANNER - INSTITUTIONAL, SPLIT-LAYOUT WITH AUTHENTIC STUDENT PHOTOGRAPHY */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-950 text-white shadow-2xl border border-emerald-800/40">
+      {/* MAIN GRID LAYOUT: max-w-7xl mx-auto p-6 */}
+      <div className="max-w-7xl mx-auto p-4 sm:p-6">
         
-        {/* Subtle geometric pattern */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div>
-
-        <div className="relative z-10 px-6 py-10 sm:px-10 sm:py-14 max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-            
-            {/* Left Column: Official Policy Text & Actions */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              
-              {/* Official Seal / Badge */}
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 text-xs font-semibold text-emerald-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>{t.hero_badge}</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                {t.hero_title}
-              </h1>
-
-              <p className="text-sm sm:text-base text-emerald-100/90 leading-relaxed max-w-xl">
-                {t.hero_subtitle}
-              </p>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                <button
-                  onClick={onStartMatcher}
-                  className="px-7 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition shadow-lg flex items-center justify-center space-x-2 text-sm cursor-pointer"
-                >
-                  <Compass size={18} />
-                  <span>{t.btn_check_eligibility}</span>
-                  <ArrowRight size={16} />
-                </button>
-
-                <button
-                  onClick={onViewSchemes}
-                  className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl transition border border-white/20 text-sm flex items-center justify-center space-x-2 cursor-pointer"
-                >
-                  <FileText size={18} />
-                  <span>{t.btn_browse_schemes}</span>
-                </button>
-              </div>
-
-              {/* Verified Trust Badges */}
-              <div className="pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
-                <div className="flex items-center space-x-2">
-                  <ShieldCheck size={18} className="text-emerald-400 shrink-0" />
-                  <div className="text-[11px]">
-                    <strong className="block text-white font-bold">100% Legal</strong>
-                    <span className="text-emerald-200/70">No double-claims</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Landmark size={18} className="text-emerald-400 shrink-0" />
-                  <div className="text-[11px]">
-                    <strong className="block text-white font-bold">State & Central</strong>
-                    <span className="text-emerald-200/70">TNeGA + NSP</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users size={18} className="text-emerald-400 shrink-0" />
-                  <div className="text-[11px]">
-                    <strong className="block text-white font-bold">All 38 Districts</strong>
-                    <span className="text-emerald-200/70">Rural focus</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Award size={18} className="text-emerald-400 shrink-0" />
-                  <div className="text-[11px]">
-                    <strong className="block text-white font-bold">e-Sevai Ready</strong>
-                    <span className="text-emerald-200/70">PDF roadmap</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Right Column: Authentic Human Student Photo Banner (Generated Photo Reference) */}
-            <div className="lg:col-span-5">
-              <div className="relative rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl group bg-slate-900">
-                <img 
-                  src="/hero_students.jpg" 
-                  alt="Tamil Nadu college students on campus" 
-                  className="w-full h-72 sm:h-80 object-cover object-center group-hover:scale-102 transition duration-500"
-                  onError={(e) => {
-                    // Fallback to stylized card if image is loading
-                    e.target.style.display = 'none';
-                  }}
-                />
-                
-                {/* Floating Institutional Badge */}
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent p-4 text-left">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span className="text-xs font-bold text-white tracking-wide uppercase">
-                      Higher Education Welfare Beneficiaries
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-300">
-                    Supporting students across Anna University, Government Engineering Colleges, Arts & Science Institutes in Tamil Nadu.
-                  </p>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-emerald-300 font-semibold">
-                    <span>18+ Active Welfare Schemes</span>
-                    <span>₹37,000+ Average Payout</span>
-                  </div>
-                </div>
-
-                <div className="absolute top-3 right-3 bg-emerald-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-emerald-400/40 text-[10px] font-bold text-white">
-                  Tamil Nadu e-Governance
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-
-      {/* 3. INSTANT AI PREDICTION FORECAST (Handwritten Note Item #7) */}
-      <section className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-lg">
-        <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-slate-800 pb-4">
-            <div>
-              <div className="flex items-center space-x-2">
-                <Zap size={18} className="text-amber-400" />
-                <h2 className="text-lg sm:text-xl font-bold text-white">
-                  {t.ai_predictor_title}
-                </h2>
-                <span className="text-[10px] font-bold bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded border border-amber-400/30">
-                  Instant Forecast
+          {/* ========================================================= */}
+          {/* LEFT COLUMN (4/12 span): Candidate Snapshot               */}
+          {/* ========================================================= */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            {/* White card with subtle border and shadow */}
+            <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs">
+              
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Candidate Snapshot
+                </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  Verified Profile
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
-                {t.ai_predictor_desc}
-              </p>
+
+              {/* Profile section: square photo placeholder on left, compact list on right */}
+              <div className="flex items-start space-x-4">
+                
+                {/* Square Profile Photo Placeholder */}
+                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-md bg-slate-100 border border-slate-300 flex flex-col items-center justify-center shrink-0 relative overflow-hidden text-slate-400">
+                  <User size={36} className="text-slate-400 mb-0.5" />
+                  <span className="text-[9px] font-bold text-slate-500 font-mono">PHOTO</span>
+                  <div className="absolute bottom-0 inset-x-0 bg-slate-800/80 text-[8px] font-mono text-center text-white py-0.5">
+                    ID: 849204
+                  </div>
+                </div>
+
+                {/* Compact List of Credentials */}
+                <div className="flex-1 min-w-0 space-y-1 text-xs">
+                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                    <span className="text-slate-500 font-medium">Name</span>
+                    <strong className="text-slate-900 font-semibold truncate ml-2">Surya Suresh</strong>
+                  </div>
+                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                    <span className="text-slate-500 font-medium">Gender</span>
+                    <span className="text-slate-800 font-medium">Male</span>
+                  </div>
+                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                    <span className="text-slate-500 font-medium">Community</span>
+                    <span className="text-slate-800 font-semibold bg-slate-100 px-1.5 py-0.2 rounded font-mono">BC</span>
+                  </div>
+                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                    <span className="text-slate-500 font-medium">Income</span>
+                    <span className="text-slate-900 font-semibold font-mono">₹1,40,000</span>
+                  </div>
+                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                    <span className="text-slate-500 font-medium">12th Marks</span>
+                    <span className="text-emerald-700 font-bold font-mono">88.5%</span>
+                  </div>
+                  <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
+                    <span className="text-slate-500 font-medium">Course</span>
+                    <span className="text-slate-800 font-medium truncate ml-2">B.E CSE</span>
+                  </div>
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-slate-500 font-medium">FG</span>
+                    <span className="inline-flex items-center text-emerald-700 font-bold">Yes</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Bottom half: "Verification Status" title with a divider */}
+              <hr className="my-4 border-slate-200" />
+
+              <div>
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
+                  <ShieldCheck size={14} className="text-emerald-700" />
+                  <span>Verification Status</span>
+                </h4>
+
+                {/* List with green CheckCircle icons */}
+                <ul className="space-y-2.5 text-xs">
+                  <li className="flex items-center justify-between p-2 rounded-md bg-emerald-50/50 border border-emerald-200/60">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle size={15} className="text-emerald-600 shrink-0" />
+                      <span className="font-semibold text-slate-800">Aadhaar</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                      UIDAI e-KYC Verified
+                    </span>
+                  </li>
+
+                  <li className="flex items-center justify-between p-2 rounded-md bg-emerald-50/50 border border-emerald-200/60">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle size={15} className="text-emerald-600 shrink-0" />
+                      <span className="font-semibold text-slate-800">Income Cert</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
+                      REV-INC-01 Verified
+                    </span>
+                  </li>
+
+                  <li className="flex items-center justify-between p-2 rounded-md bg-emerald-50/50 border border-emerald-200/60">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle size={15} className="text-emerald-600 shrink-0" />
+                      <span className="font-semibold text-slate-800">Community Cert</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
+                      REV-COM-02 Verified
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Quick Action to Check Different Profile */}
+              <div className="mt-4 pt-3 border-t border-slate-100">
+                <button
+                  onClick={onStartMatcher}
+                  className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                >
+                  <span>Edit Academic Profile / Retest</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
             </div>
 
-            <button
-              onClick={onStartMatcher}
-              className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center space-x-1 transition"
-            >
-              <span>Full Application Flow</span>
-              <ArrowRight size={13} />
-            </button>
+            {/* Helpline quick card */}
+            <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-xs text-xs text-slate-600 space-y-2">
+              <div className="flex items-center space-x-2 font-bold text-slate-800">
+                <HelpCircle size={14} className="text-emerald-700" />
+                <span>Student Direct Benefit Transfer (DBT) Cell</span>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Stipends and college fee waivers are sanctioned under statutory Government Orders. Inquiries can be lodged directly at the Helpdesk.
+              </p>
+              <div className="pt-1 flex items-center justify-between text-[11px] font-semibold">
+                <span className="text-emerald-700">Toll Free: 14417</span>
+                <button 
+                  onClick={onOpenGrievance}
+                  className="text-slate-800 hover:underline cursor-pointer"
+                >
+                  File Grievance →
+                </button>
+              </div>
+            </div>
+
           </div>
 
-          <form onSubmit={handlePredict} className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+          {/* ========================================================= */}
+          {/* RIGHT COLUMN (8/12 span): Schemes Area                    */}
+          {/* ========================================================= */}
+          <div className="lg:col-span-8 space-y-6">
             
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">Community</label>
-              <select
-                value={predCommunity}
-                onChange={(e) => setPredCommunity(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="BC">BC (Backward Class)</option>
-                <option value="MBC">MBC / DNC</option>
-                <option value="SC">SC (Scheduled Caste)</option>
-                <option value="ST">ST (Scheduled Tribe)</option>
-                <option value="OC">OC (General)</option>
-              </select>
+            {/* Column Title */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                My Matching Schemes
+              </h2>
+              <span className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200">
+                MWIS Solver Verified • Zero Collision
+              </span>
             </div>
 
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">Gender</label>
-              <select
-                value={predGender}
-                onChange={(e) => setPredGender(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="female">Female (பெண்)</option>
-                <option value="male">Male (ஆண்)</option>
-              </select>
+            {/* HERO CARD: Solid Forest Green background (bg-emerald-700 / #006a4e) */}
+            <div className="bg-[#006a4e] text-white rounded-xl p-5 sm:p-6 shadow-sm">
+              
+              {/* Title with star icons: "Optimal Stacking Recommendation (Max Benefit): ₹37,000 /yr" */}
+              <div className="flex items-center space-x-2 pb-4 border-b border-emerald-600/60">
+                <Sparkles size={20} className="text-amber-300 fill-amber-300 shrink-0" />
+                <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
+                  Optimal Stacking Recommendation (Max Benefit): <span className="text-amber-200 font-mono">₹37,000 /yr</span>
+                </h3>
+              </div>
+
+              {/* Inside green card, two schemes separated by faint borders */}
+              <div className="divide-y divide-emerald-600/50">
+                
+                {/* Scheme 1: Pudhumai Penn Thittam (₹12,000/yr) */}
+                <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
+                      <h4 className="font-bold text-sm sm:text-base text-white">
+                        1. Pudhumai Penn Thittam (₹12,000/yr)
+                      </h4>
+                    </div>
+                    <p className="text-xs text-emerald-100/90 pl-3.5 leading-relaxed">
+                      Monthly financial assistance of ₹1,000 directly credited via Direct Benefit Transfer (DBT) to student Aadhaar-seeded bank account.
+                    </p>
+                  </div>
+
+                  {/* White "Apply Now" button with green text */}
+                  <button
+                    onClick={() => handleApply('Pudhumai Penn Thittam', '₹12,000/yr')}
+                    className="bg-white hover:bg-emerald-50 text-[#006a4e] font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm whitespace-nowrap self-start sm:self-auto cursor-pointer"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+
+                {/* Scheme 2: First Graduate Fee Concession (₹25,000/yr) */}
+                <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
+                      <h4 className="font-bold text-sm sm:text-base text-white">
+                        2. First Graduate Fee Concession (₹25,000/yr)
+                      </h4>
+                    </div>
+                    <p className="text-xs text-emerald-100/90 pl-3.5 leading-relaxed">
+                      100% Tuition Fee Concession automatically credited directly to the college academic cell via Single Window Counseling.
+                    </p>
+                  </div>
+
+                  {/* White "Apply Now" button with green text */}
+                  <button
+                    onClick={() => handleApply('First Graduate Fee Concession', '₹25,000/yr')}
+                    className="bg-white hover:bg-emerald-50 text-[#006a4e] font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm whitespace-nowrap self-start sm:self-auto cursor-pointer"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+
+              </div>
+
             </div>
 
+            {/* OTHER SCHEMES SECTION */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">Annual Family Income</label>
-              <select
-                value={predIncome}
-                onChange={(e) => setPredIncome(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value={120000}>Under ₹1.5 Lakhs</option>
-                <option value={220000}>₹1.5L – ₹2.5 Lakhs</option>
-                <option value={400000}>₹2.5L – ₹4.5 Lakhs</option>
-                <option value={700000}>Above ₹4.5 Lakhs</option>
-              </select>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm sm:text-base font-bold text-slate-800">
+                  Other Potential Schemes
+                </h3>
+                <button
+                  onClick={onViewSchemes}
+                  className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition flex items-center space-x-1 cursor-pointer"
+                >
+                  <span>Browse All 18+ Catalog</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* Grid with two white outline cards side-by-side */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* Outline Card 1: Central Sector Scheme (NSP) */}
+                <div className="bg-white rounded-lg border border-slate-200 p-4.5 hover:border-slate-300 transition shadow-xs flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                        Central Sector Scheme (NSP)
+                      </h4>
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
+                        ₹12,000 / yr
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Requires 80th percentile in Class 12 Board exams (&gt;80%). Family annual income must be under ₹4.50 Lakh. Subject to Central Ministry quota allocation.
+                    </p>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded p-2 text-[11px] text-amber-800 font-medium">
+                      ⚠️ Mutually Exclusive: Cannot co-claim with state First Graduate tuition concession.
+                    </div>
+                  </div>
+
+                  <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="text-[11px] font-bold text-slate-400">Single Welfare Rule</span>
+                    <a
+                      href="https://scholarships.gov.in"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
+                    >
+                      <span>NSP Guidelines</span>
+                      <ExternalLink size={11} />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Outline Card 2: AICTE Pragati */}
+                <div className="bg-white rounded-lg border border-slate-200 p-4.5 hover:border-slate-300 transition shadow-xs flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                        AICTE Pragati
+                      </h4>
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
+                        ₹50,000 / yr
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Technical degree scholarship for eligible female candidates in AICTE approved engineering institutes with family income under ₹8.00 Lakh.
+                    </p>
+
+                    <div className="bg-slate-100 border border-slate-200 rounded p-2 text-[11px] text-slate-600 font-medium">
+                      ℹ️ Category Quota: Limited to 2 girl students per family. Excludes state quota waivers.
+                    </div>
+                  </div>
+
+                  <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="text-[11px] font-bold text-slate-400">Quota Restricted</span>
+                    <a
+                      href="https://www.aicte-india.org"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
+                    >
+                      <span>AICTE Portal</span>
+                      <ExternalLink size={11} />
+                    </a>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">First Graduate?</label>
-              <select
-                value={predFirstGrad ? 'yes' : 'no'}
-                onChange={(e) => setPredFirstGrad(e.target.value === 'yes')}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="yes">Yes (முதல் பட்டதாரி)</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-
-            <div className="col-span-2 sm:col-span-1 flex items-end">
+            {/* Policy Guarantee Banner */}
+            <div className="bg-emerald-50/70 border border-emerald-200 rounded-lg p-4 flex items-center justify-between gap-3 text-xs text-emerald-900">
+              <div className="flex items-center space-x-2">
+                <CheckCircle2 size={18} className="text-emerald-700 shrink-0" />
+                <span className="font-medium">
+                  All recommendations are backed by Government of Tamil Nadu Welfare Orders (G.O. 47/2026).
+                </span>
+              </div>
               <button
-                type="submit"
-                disabled={predLoading}
-                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
+                onClick={() => onNavigateTab && onNavigateTab('tracker')}
+                className="font-bold text-emerald-800 hover:underline whitespace-nowrap cursor-pointer"
               >
-                {predLoading ? (
-                  <span>Predicting...</span>
-                ) : (
-                  <>
-                    <TrendingUp size={14} />
-                    <span>Run AI Forecast</span>
-                  </>
-                )}
+                Track My Status →
               </button>
             </div>
 
-          </form>
+          </div>
 
-          {/* Prediction Result Display */}
-          {prediction && (
-            <div className="bg-slate-800/80 rounded-2xl p-4 border border-slate-700 animate-in fade-in duration-200">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-700/80 pb-3 mb-3">
-                <div>
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">
-                    Forecast Result
-                  </span>
-                  <div className="text-xl sm:text-2xl font-extrabold text-white flex items-center space-x-2">
-                    <span>₹{prediction.estimated_annual_entitlement.toLocaleString('en-IN')}</span>
-                    <span className="text-xs font-normal text-slate-400">/ estimated annual grants</span>
+        </div>
+
+      </div>
+
+      {/* ========================================================= */}
+      {/* FLOATING AI ADVISOR: fixed bottom-20 right-6               */}
+      {/* ========================================================= */}
+      {isAiOpen && (
+        <div className={`fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-200 transition-all duration-200 ${
+          isMinimized ? 'h-13' : 'max-h-[500px]'
+        }`}>
+          
+          {/* Forest green header: "AI Advisor (Tamil/EN)" with close/minimize icons */}
+          <div className="bg-[#006a4e] text-white px-4 py-3 flex items-center justify-between shadow-xs select-none">
+            <div className="flex items-center space-x-2">
+              <Bot size={18} className="text-emerald-200" />
+              <span className="font-bold text-xs sm:text-sm">
+                AI Advisor (Tamil/EN)
+              </span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+
+            <div className="flex items-center space-x-1">
+              {/* Minimize Icon */}
+              <button
+                onClick={() => setIsMinimized(!isMinimized)}
+                className="p-1 hover:bg-emerald-800 rounded transition cursor-pointer text-emerald-100 hover:text-white"
+                title={isMinimized ? "Expand" : "Minimize"}
+              >
+                <Minus size={15} />
+              </button>
+              {/* Close Icon */}
+              <button
+                onClick={() => setIsAiOpen(false)}
+                className="p-1 hover:bg-emerald-800 rounded transition cursor-pointer text-emerald-100 hover:text-white"
+                title="Close"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* White chat body showing grey user bubble "NSP applying rules?" */}
+          {!isMinimized && (
+            <div className="flex flex-col h-80 bg-white">
+              
+              {/* Chat Messages Log */}
+              <div className="flex-1 p-3.5 space-y-3 overflow-y-auto text-xs bg-slate-50/50">
+                
+                {chatMessages.map((msg, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    {msg.sender === 'user' ? (
+                      /* Grey user bubble */
+                      <div className="bg-slate-200 text-slate-800 px-3.5 py-2 rounded-2xl rounded-tr-xs max-w-[85%] font-medium">
+                        {msg.text}
+                      </div>
+                    ) : (
+                      /* Bot counselor bubble */
+                      <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-tl-xs shadow-xs max-w-[90%] space-y-1.5">
+                        <div className="flex items-center space-x-1 text-[11px] font-bold text-emerald-800">
+                          <Sparkles size={12} />
+                          <span>TN e-Vidya Counselor</span>
+                        </div>
+                        <p className="whitespace-pre-line leading-relaxed text-slate-700">
+                          {msg.text}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
+                ))}
 
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-white border border-slate-200 text-slate-500 text-[11px] px-3 py-1.5 rounded-full flex items-center space-x-1.5 shadow-xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
+                      <span>Counselor is composing reply...</span>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+
+              {/* Chat Input Bar */}
+              <form 
+                onSubmit={handleSendMessage}
+                className="p-2.5 bg-white border-t border-slate-200 flex items-center space-x-2"
+              >
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ask policy, document, or scheme question..."
+                  className="flex-1 px-3 py-1.5 bg-slate-100 focus:bg-white text-xs text-slate-800 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                />
                 <button
-                  onClick={onStartMatcher}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition cursor-pointer"
+                  type="submit"
+                  disabled={!chatInput.trim()}
+                  className="p-1.5 bg-[#006a4e] hover:bg-emerald-800 disabled:opacity-40 text-white rounded-lg transition cursor-pointer"
+                  title="Send message"
                 >
-                  <span>Verify with Full Solver →</span>
+                  <Send size={14} />
                 </button>
-              </div>
+              </form>
 
-              <div className="space-y-1.5">
-                <span className="text-[11px] font-semibold text-slate-300">Likely Qualifying Schemes:</span>
-                <div className="flex flex-wrap gap-2">
-                  {prediction.likely_schemes.map((s, idx) => (
-                    <span 
-                      key={idx} 
-                      className="px-2.5 py-1 bg-slate-900 border border-slate-700 text-emerald-300 rounded-lg text-xs flex items-center space-x-1"
-                    >
-                      <CheckCircle2 size={11} className="text-emerald-400" />
-                      <span>{s.name} (₹{s.financial_value.toLocaleString('en-IN')})</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
 
         </div>
-      </section>
+      )}
 
-      {/* 4. HOW THE OPTIMIZER WORKS (3 HUMAN STEPS) */}
-      <section className="space-y-6">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">
-            {t.how_it_works_badge}
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-            {t.how_it_works_title}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-2">
-            No more browsing 40-page PDFs or risking disqualification from accidental double-claiming.
-          </p>
-        </div>
+      {/* Floating Circular Chat Toggle Button anchored to bottom-5 right-6 */}
+      <button
+        onClick={() => {
+          setIsAiOpen(true);
+          setIsMinimized(false);
+        }}
+        className="fixed bottom-5 right-6 z-50 w-13 h-13 rounded-full bg-[#006a4e] hover:bg-emerald-800 text-white shadow-xl flex items-center justify-center cursor-pointer transition transform hover:scale-105 border-2 border-white"
+        title="Open AI Counselor"
+      >
+        <Bot size={24} />
+        {!isAiOpen && (
+          <span className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-white animate-pulse"></span>
+        )}
+      </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs relative">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center text-sm mb-4">
-              1
+      {/* ========================================================= */}
+      {/* APPLICATION CONFIRMATION MODAL (Civic Feedback)           */}
+      {/* ========================================================= */}
+      {appliedScheme && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-2xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200 space-y-4">
+            
+            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-xs">
+              <CheckCircle2 size={28} />
             </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1.5">{t.step1_title}</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {t.step1_desc}
-            </p>
-          </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs relative">
-            <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white font-bold flex items-center justify-center text-sm mb-4">
-              2
-            </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1.5">{t.step2_title}</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {t.step2_desc}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs relative">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center text-sm mb-4">
-              3
-            </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1.5">{t.step3_title}</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {t.step3_desc}
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. KEY SCHEMES SHOWCASE (INCORPORATING PDF SCHEMES) */}
-      <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-          <div>
-            <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">
-              Coverage & Schemes
-            </span>
-            <h2 className="text-2xl font-bold text-slate-900">
-              {t.featured_schemes_title}
-            </h2>
-          </div>
-          <button
-            onClick={onViewSchemes}
-            className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center space-x-1 cursor-pointer"
-          >
-            <span>{t.btn_browse_schemes}</span>
-            <ArrowRight size={14} />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          
-          {/* Pudhumai Penn */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                ₹12,000 / Year
+            <div className="text-center space-y-1">
+              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider font-mono">
+                Official Receipt • TNeGA
               </span>
-              <span className="text-[11px] text-slate-400">Girls Only</span>
+              <h3 className="text-lg font-bold text-slate-900">
+                Application Successfully Submitted!
+              </h3>
+              <p className="text-xs text-slate-500">
+                Your application for <strong>{appliedScheme.name}</strong> ({appliedScheme.amount}) has been registered into the direct disbursement queue.
+              </p>
             </div>
-            <h3 className="font-bold text-slate-900 text-sm mb-1">Pudhumai Penn Thittam</h3>
-            <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-              Monthly stipend of ₹1,000 directly into student bank accounts for girl students who studied Classes 6–12 in TN Government Schools.
-            </p>
-            <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
-              <span>Portal: Penkalvi</span>
-              <span className="text-emerald-700 font-semibold">100% Guaranteed</span>
-            </div>
-          </div>
 
-          {/* Vetri Laptop Scheme (PDF) */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-indigo-800 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
-                ₹30,000 Laptop
-              </span>
-              <span className="text-[11px] text-slate-400">College Students</span>
-            </div>
-            <h3 className="font-bold text-slate-900 text-sm mb-1">Vetri Laptop Scheme</h3>
-            <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-              Tamil Nadu State Government allocation of ₹2,000 crore providing free high-performance laptops to Arts, Science, and Engineering college students.
-            </p>
-            <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
-              <span>ELCOT Distribution</span>
-              <span className="text-indigo-700 font-semibold">In-Kind Entitlement</span>
-            </div>
-          </div>
-
-          {/* Tamil Nadu First Graduate */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
-                ₹25,000 / Year
-              </span>
-              <span className="text-[11px] text-slate-400">All Communities</span>
-            </div>
-            <h3 className="font-bold text-slate-900 text-sm mb-1">TN First Graduate Concession</h3>
-            <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-              Complete tuition fee waiver of ₹25,000 per year for students who are the first in their immediate family to earn a degree.
-            </p>
-            <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
-              <span>Portal: TNEA Counseling</span>
-              <span className="text-purple-700 font-semibold">Tuition Waiver</span>
-            </div>
-          </div>
-
-          {/* Post-Matric SC/ST */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-blue-800 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-                ₹50,000 / Year
-              </span>
-              <span className="text-[11px] text-slate-400">SC / ST / SCC</span>
-            </div>
-            <h3 className="font-bold text-slate-900 text-sm mb-1">Post-Matric Scholarship (ADW)</h3>
-            <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-              Full tuition fee reimbursement and maintenance allowance for SC/ST students with family income under ₹2.5 Lakhs.
-            </p>
-            <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
-              <span>Portal: TN SSP e-District</span>
-              <span className="text-blue-700 font-semibold">ADW Dept</span>
-            </div>
-          </div>
-
-          {/* Vettri Payana Thittam (Free Bus Travel) */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                ₹10,000 Savings
-              </span>
-              <span className="text-[11px] text-slate-400">Free Commute</span>
-            </div>
-            <h3 className="font-bold text-slate-900 text-sm mb-1">Vettri Payana Thittam (Bus)</h3>
-            <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-              State-wide zero-fare public bus transport across TNSTC & MTC routes for female and transgender higher education students.
-            </p>
-            <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
-              <span>TNSTC Smart Card</span>
-              <span className="text-emerald-700 font-semibold">Commute Waiver</span>
-            </div>
-          </div>
-
-          {/* AICTE Pragati */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-indigo-800 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
-                ₹50,000 / Year
-              </span>
-              <span className="text-[11px] text-slate-400">AICTE Colleges</span>
-            </div>
-            <h3 className="font-bold text-slate-900 text-sm mb-1">AICTE Pragati for Girls</h3>
-            <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-              Central scholarship grant of ₹50,000 per year for meritorious girls pursuing Degree or Diploma in Engineering courses.
-            </p>
-            <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
-              <span>Portal: scholarships.gov.in</span>
-              <span className="text-indigo-700 font-semibold">National Quota</span>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 6. REAL STUDENT EXPERIENCES */}
-      <section className="bg-slate-50 rounded-3xl p-8 border border-slate-200">
-        <div className="text-center max-w-xl mx-auto mb-8">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">
-            Real Student Experiences
-          </span>
-          <h2 className="text-2xl font-bold text-slate-900">
-            {t.testimonials_title}
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-            <p className="text-xs text-slate-600 italic leading-relaxed mb-4">
-              "I studied in a government higher secondary school in Pudukkottai. Nobody in my family knew I could claim both the First Graduate fee concession and the Pudhumai Penn monthly stipend together. This system gave me the official roadmap in seconds."
-            </p>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs">
-                P
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 space-y-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Ack Reference No:</span>
+                <strong className="font-mono text-emerald-800">{appliedScheme.refId}</strong>
               </div>
-              <div>
-                <strong className="block text-xs text-slate-900 font-bold">Priya M.</strong>
-                <span className="text-[11px] text-slate-500">1st Year B.E. Computer Science, Anna University</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Candidate Name:</span>
+                <span className="text-slate-800 font-semibold">Surya Suresh</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Sanction Category:</span>
+                <span className="text-slate-800">BC Welfare & First Graduate</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Disbursement Mode:</span>
+                <span className="text-slate-800 font-medium">Direct Benefit Transfer (DBT)</span>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-            <p className="text-xs text-slate-600 italic leading-relaxed mb-4">
-              "I almost applied for both Central CSSS and the State scholarship on the National Portal. The advisor warned me about the mutual exclusivity rule and selected the state package that gave me ₹25,000 more with zero rejection risk."
-            </p>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold flex items-center justify-center text-xs">
-                K
-              </div>
-              <div>
-                <strong className="block text-xs text-slate-900 font-bold">Karthikeyan R.</strong>
-                <span className="text-[11px] text-slate-500">2nd Year B.Tech, Coimbatore</span>
-              </div>
+            <div className="flex space-x-3 pt-2">
+              <button
+                onClick={() => setAppliedScheme(null)}
+                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setAppliedScheme(null);
+                  if (onNavigateTab) onNavigateTab('tracker');
+                }}
+                className="flex-1 py-2 bg-[#006a4e] hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center space-x-1 cursor-pointer"
+              >
+                <Clock size={13} />
+                <span>Track My Status</span>
+              </button>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 7. CALL TO ACTION - BOTTOM BANNER */}
-      <section className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
-        <div className="max-w-2xl mx-auto space-y-4">
-          <h2 className="text-2xl sm:text-3xl font-bold">
-            {t.cta_title}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
-            No registration fee. No agent commission. 100% transparent algorithmic matching for students across Tamil Nadu.
-          </p>
-          <div className="pt-2">
-            <button
-              onClick={onStartMatcher}
-              className="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition shadow-md cursor-pointer"
-            >
-              {t.cta_btn}
-            </button>
           </div>
         </div>
-      </section>
+      )}
 
     </div>
   );
