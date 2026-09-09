@@ -117,7 +117,7 @@ export default function DbConfigModal({ isOpen, onClose, dbStatus, onUpdateStatu
           <form onSubmit={handleTestConnect} className="space-y-3.5">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                MongoDB Atlas Username
+                MongoDB Atlas Username or Full Connection URI
               </label>
               <div className="relative">
                 <Key size={15} className="absolute left-3.5 top-3 text-slate-400" />
@@ -125,12 +125,12 @@ export default function DbConfigModal({ isOpen, onClose, dbStatus, onUpdateStatu
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username (e.g. tnega_admin)..."
+                  placeholder="Enter username (e.g. surya) or full mongodb+srv:// URI..."
                   className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <p className="text-[10px] text-slate-400 mt-1">
-                Password <code className="font-mono text-slate-600">YwNJOZkLIRefHTaU</code> is preset from your connection URI.
+                Password <code className="font-mono text-slate-600">YwNJOZkLIRefHTaU</code> is preset for cluster0.fzucldr. You can also paste your full URI.
               </p>
             </div>
 
@@ -147,7 +147,7 @@ export default function DbConfigModal({ isOpen, onClose, dbStatus, onUpdateStatu
               ) : (
                 <>
                   <ShieldCheck size={15} className="text-emerald-400" />
-                  <span>Authenticate & Sync Atlas</span>
+                  <span>Connect & Sync Cluster</span>
                 </>
               )}
             </button>

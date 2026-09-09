@@ -33,61 +33,124 @@ class Profile(Base):
 Base.metadata.create_all(bind=engine)
 
 # --- 2. MongoDB Atlas Integration ---
+ENV_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+
+def _load_env():
+    if os.path.exists(ENV_PATH):
+        try:
+            with open(ENV_PATH, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        os.environ[k.strip()] = v.strip()
+        except Exception:
+            pass
+
+_load_env()
+
 MONGODB_CLUSTER_URI_TEMPLATE = os.getenv(
     "MONGODB_URI",
     "mongodb+srv://<db_username>:YwNJOZkLIRefHTaU@cluster0.fzucldr.mongodb.net/?appName=Cluster0"
 )
 MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "smartathon_scholarships")
+DIRECT_SHARD_HOSTS = "ac-1agfibl-shard-00-00.fzucldr.mongodb.net:27017,ac-1agfibl-shard-00-01.fzucldr.mongodb.net:27017,ac-1agfibl-shard-00-02.fzucldr.mongodb.net:27017"
+DIRECT_SHARD_OPTS = "ssl=true&replicaSet=atlas-eotjuz-shard-0&authSource=admin&appName=Cluster0"
 
 _mongo_client = None
 _mongo_connected = False
 _mongo_error_reason = None
 _configured_username = os.getenv("MONGODB_USERNAME", "")
 
-def init_mongodb(username: Optional[str] = None):
+def _save_env_var(key: str, value: str):
+    """Persists an environment variable to the root .env file."""
+    try:
+        env_lines = []
+        found = False
+        if os.path.exists(ENV_PATH):
+            with open(ENV_PATH, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip().startswith(f"{key}="):
+                        env_lines.append(f"{key}={value}\n")
+                        found = True
+                    else:
+                        env_lines.append(line)
+        if not found:
+            env_lines.append(f"{key}={value}\n")
+        with open(ENV_PATH, "w", encoding="utf-8") as f:
+            f.writelines(env_lines)
+    except Exception as e:
+        print(f"[ENV Persistence Notice] Could not write to .env: {e}")
+
+def init_mongodb(username_or_uri: Optional[str] = None):
     """
-    Initializes MongoDB client using the provided cluster URI.
-    Replaces '<db_username>' if a username is supplied or configured.
+    Initializes MongoDB client. Supports username, full connection URI, and automatic
+    direct replica set fallback to bypass local network DNS SRV issues.
     """
     global _mongo_client, _mongo_connected, _mongo_error_reason, _configured_username
     
-    if username:
-        _configured_username = username.strip()
+    from pymongo import MongoClient
 
-    raw_uri = MONGODB_CLUSTER_URI_TEMPLATE
-    
-    # If the raw URI contains <db_username> and we have a configured username, replace it
-    if "<db_username>" in raw_uri:
-        if _configured_username:
-            target_uri = raw_uri.replace("<db_username>", _configured_username)
+    if username_or_uri:
+        val = username_or_uri.strip()
+        if val.startswith("mongodb://") or val.startswith("mongodb+srv://"):
+            target_uri = val
+            _configured_username = "custom_uri"
         else:
-            _mongo_connected = False
-            _mongo_error_reason = "MongoDB URI contains placeholder '<db_username>'. Set MONGODB_USERNAME or configure via API/UI."
-            return False
+            _configured_username = val
+            raw_uri = MONGODB_CLUSTER_URI_TEMPLATE
+            if "<db_username>" in raw_uri:
+                target_uri = raw_uri.replace("<db_username>", _configured_username)
+            else:
+                target_uri = raw_uri
     else:
-        target_uri = raw_uri
+        raw_uri = MONGODB_CLUSTER_URI_TEMPLATE
+        if "<db_username>" in raw_uri:
+            if _configured_username:
+                target_uri = raw_uri.replace("<db_username>", _configured_username)
+            else:
+                _mongo_connected = False
+                _mongo_error_reason = "MongoDB URI contains placeholder '<db_username>'. Set MONGODB_USERNAME or configure via UI/API."
+                return False
+        else:
+            target_uri = raw_uri
 
-    try:
-        from pymongo import MongoClient
-        import pymongo.errors
+    # Attempt 1: Connect with target URI (SRV or direct)
+    uris_to_try = [target_uri]
+    
+    # If the target URI has cluster0.fzucldr and we know the username, also prepare the direct replica set fallback
+    if _configured_username and _configured_username != "custom_uri" and "cluster0.fzucldr" in target_uri:
+        direct_uri = f"mongodb://{_configured_username}:YwNJOZkLIRefHTaU@{DIRECT_SHARD_HOSTS}/?{DIRECT_SHARD_OPTS}"
+        if direct_uri != target_uri:
+            uris_to_try.append(direct_uri)
 
-        client = MongoClient(
-            target_uri, 
-            serverSelectionTimeoutMS=3000,
-            connectTimeoutMS=3000
-        )
-        # Ping the server to verify credentials
-        client.admin.command('ping')
-        _mongo_client = client
-        _mongo_connected = True
-        _mongo_error_reason = None
-        print(f"[MongoDB Atlas] Successfully connected to cluster! Active database: {MONGODB_DB_NAME}")
-        return True
-    except Exception as e:
-        _mongo_connected = False
-        _mongo_error_reason = str(e)
-        print(f"[MongoDB Atlas] Connection notice: {e}. Fallback to SQLite is active.")
-        return False
+    last_error = None
+    for uri in uris_to_try:
+        try:
+            client = MongoClient(
+                uri,
+                serverSelectionTimeoutMS=4000,
+                connectTimeoutMS=4000
+            )
+            client.admin.command('ping')
+            _mongo_client = client
+            _mongo_connected = True
+            _mongo_error_reason = None
+            print(f"[MongoDB Atlas] Successfully connected to cluster! Active database: {MONGODB_DB_NAME}")
+            
+            # Save working config to .env
+            if _configured_username and _configured_username != "custom_uri":
+                _save_env_var("MONGODB_USERNAME", _configured_username)
+            elif target_uri.startswith("mongodb"):
+                _save_env_var("MONGODB_URI", target_uri)
+            return True
+        except Exception as e:
+            last_error = e
+
+    _mongo_connected = False
+    _mongo_error_reason = str(last_error) if last_error else "Connection failed"
+    print(f"[MongoDB Atlas] Connection notice: {_mongo_error_reason}. Fallback to SQLite is active.")
+    return False
 
 # Attempt initial connection with environment settings
 init_mongodb()
