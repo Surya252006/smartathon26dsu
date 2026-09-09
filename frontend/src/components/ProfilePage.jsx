@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   GraduationCap, 
@@ -19,10 +19,13 @@ import {
   IndianRupee,
   Building,
   Calendar,
-  Check
+  Check,
+  Edit3,
+  Camera
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 import { generateRoadmapPdf } from '../utils/generateRoadmapPdf';
+import EditProfileModal from './EditProfileModal';
 
 export default function ProfilePage({ 
   user, 
@@ -34,21 +37,56 @@ export default function ProfilePage({
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const [localProfile, setLocalProfile] = useState(() => {
+    try {
+      const saved = localStorage.getItem('tn_student_profile');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
+
+  const [avatarImage, setAvatarImage] = useState(() => {
+    try {
+      return localStorage.getItem('tn_student_avatar') || user?.profile?.avatar || null;
+    } catch (e) {}
+    return null;
+  });
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      try {
+        const saved = localStorage.getItem('tn_student_profile');
+        if (saved) setLocalProfile(JSON.parse(saved));
+        const av = localStorage.getItem('tn_student_avatar');
+        setAvatarImage(av || null);
+      } catch (e) {}
+    };
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    window.addEventListener('avatarUpdated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      window.removeEventListener('avatarUpdated', handleProfileUpdate);
+    };
+  }, []);
 
   // Derive display values from user account or profile form
   const studentData = {
-    fullName: profile?.full_name || user?.profile?.full_name || user?.email?.split('@')[0] || 'Tamil Nadu Student',
-    email: user?.email || profile?.email || 'student@tnega.gov.in',
-    community: profile?.community || user?.profile?.community || 'BC',
+    fullName: localProfile?.fullName || profile?.full_name || user?.profile?.full_name || user?.email?.split('@')[0] || 'Surya Suresh',
+    email: user?.email || profile?.email || 'surya.suresh@tnega.gov.in',
+    gender: localProfile?.gender || profile?.gender || user?.profile?.gender || 'male',
+    community: localProfile?.community || profile?.community || user?.profile?.community || 'BC',
     district: profile?.district || user?.profile?.district || 'Pudukkottai',
-    annualIncome: profile?.annual_income || user?.profile?.annual_income || 120000,
-    boardPercentage: profile?.board_percentage || user?.profile?.board_percentage || 88.5,
-    schoolingType: profile?.schooling_type || user?.profile?.schooling_type || 'tn_govt_school_6_to_12',
-    isFirstGraduate: profile?.is_first_graduate !== undefined ? profile.is_first_graduate : true,
+    annualIncome: localProfile?.annualIncome || profile?.annual_income || user?.profile?.annual_income || 140000,
+    boardPercentage: localProfile?.boardPercentage || profile?.board_percentage || user?.profile?.board_percentage || 88.5,
+    schoolingType: localProfile?.schoolingType || profile?.schooling_type || user?.profile?.schooling_type || 'tn_govt_school_6_to_12',
+    isFirstGraduate: localProfile?.isFirstGraduate !== undefined ? localProfile.isFirstGraduate : (profile?.is_first_graduate !== undefined ? profile.is_first_graduate : true),
     admissionMode: profile?.admission_mode || 'govt_counseling_single_window',
-    currentCourse: profile?.current_course || 'B.E. Computer Science & Engineering',
+    currentCourse: localProfile?.currentCourse || profile?.current_course || 'B.E. Computer Science & Engineering (B.E CSE)',
     role: user?.role || (user?.email?.includes('admin') ? 'admin' : 'student'),
-    userId: user?.user_id || 'TN-849204'
+    userId: user?.user_id || 'TN-849204',
+    avatar: avatarImage
   };
 
   const isGovtSchool = studentData.schoolingType === 'tn_govt_school_6_to_12';
@@ -130,8 +168,19 @@ export default function ProfilePage({
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white font-extrabold text-2xl sm:text-3xl shadow-lg border-2 border-white/20">
-                {studentData.fullName.charAt(0).toUpperCase()}
+              <div 
+                onClick={() => setShowEditModal(true)}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white font-extrabold text-2xl sm:text-3xl shadow-lg border-2 border-white/20 overflow-hidden relative cursor-pointer group shrink-0"
+                title="Click to edit profile and photo"
+              >
+                {avatarImage ? (
+                  <img src={avatarImage} alt={studentData.fullName} className="w-full h-full object-cover" />
+                ) : (
+                  studentData.fullName.charAt(0).toUpperCase()
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                  <Camera size={18} />
+                </div>
               </div>
               <div>
                 <div className="flex items-center space-x-2">
@@ -159,6 +208,13 @@ export default function ProfilePage({
 
             {/* Quick Actions */}
             <div className="flex items-center space-x-2 w-full sm:w-auto">
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-xs border border-white/20 transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
+              >
+                <Edit3 size={14} className="text-emerald-300" />
+                <span>Edit Profile</span>
+              </button>
               <button
                 onClick={() => onNavigateTab('matcher')}
                 className="flex-1 sm:flex-initial px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
@@ -396,6 +452,18 @@ export default function ProfilePage({
           ))}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        profile={studentData}
+        onSave={(updated) => {
+          setLocalProfile(updated);
+          if (updated.avatar !== undefined) setAvatarImage(updated.avatar);
+        }}
+        currentLang={currentLang}
+      />
 
     </div>
   );

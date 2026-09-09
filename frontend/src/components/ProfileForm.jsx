@@ -21,6 +21,37 @@ import VoiceAssistModal from './VoiceAssistModal';
 import { TRANSLATIONS } from '../utils/translations';
 
 const extractFormData = (user, profile) => {
+  // 0. Check localStorage tn_student_profile edited by student
+  try {
+    const savedProfile = localStorage.getItem('tn_student_profile');
+    if (savedProfile) {
+      const sp = JSON.parse(savedProfile);
+      if (sp.fullName) {
+        return {
+          full_name: sp.fullName,
+          schooling_type: sp.schoolingType || 'tn_govt_school_6_to_12',
+          admission_mode: 'govt_counseling_single_window',
+          current_course: (sp.currentCourse && sp.currentCourse.includes('Engineering')) ? 'Engineering' : (sp.currentCourse || 'Engineering'),
+          board_percentage: sp.boardPercentage ? String(sp.boardPercentage) : '88.5',
+          gender: sp.gender || 'male',
+          community: sp.community || 'BC',
+          annual_income: sp.annualIncome ? String(sp.annualIncome) : '140000',
+          is_first_graduate: sp.isFirstGraduate !== undefined ? sp.isFirstGraduate : true,
+          is_differently_abled: false,
+          disability_percentage: '',
+          available_docs: [
+            'income_certificate', 
+            'community_certificate', 
+            'first_graduate_certificate', 
+            'bonafide_certificate', 
+            'marksheet', 
+            'aadhaar_bank'
+          ]
+        };
+      }
+    }
+  } catch (e) {}
+
   // 1. If profile was already evaluated in current session
   if (profile && (profile.full_name || profile.community)) {
     return {

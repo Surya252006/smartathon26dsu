@@ -19,9 +19,12 @@ import {
   AlertCircle,
   Camera,
   Upload,
-  Trash2
+  Trash2,
+  Pencil,
+  Edit3
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
+import EditProfileModal from './EditProfileModal';
 
 export default function HomePage({ 
   onStartMatcher, 
@@ -33,6 +36,45 @@ export default function HomePage({
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
 
+  // Edit Profile Modal State
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  // Student Profile State (Persisted in localStorage)
+  const [studentProfile, setStudentProfile] = useState(() => {
+    try {
+      const saved = localStorage.getItem('tn_student_profile');
+      if (saved) return JSON.parse(saved);
+      const userSaved = localStorage.getItem('tn_scholarship_user');
+      if (userSaved) {
+        const u = JSON.parse(userSaved);
+        if (u?.profile) {
+          return {
+            fullName: u.profile.full_name || 'Surya Suresh',
+            gender: u.profile.gender || 'male',
+            community: u.profile.community || 'BC',
+            annualIncome: u.profile.annual_income || 140000,
+            boardPercentage: u.profile.board_percentage || 88.5,
+            currentCourse: u.profile.current_course || 'B.E CSE',
+            isFirstGraduate: u.profile.is_first_graduate !== undefined ? u.profile.is_first_graduate : true,
+            schoolingType: u.profile.schooling_type || 'tn_govt_school_6_to_12',
+            avatar: u.profile.avatar || null
+          };
+        }
+      }
+    } catch (e) {}
+    return {
+      fullName: 'Surya Suresh',
+      gender: 'male',
+      community: 'BC',
+      annualIncome: 140000,
+      boardPercentage: 88.5,
+      currentCourse: 'B.E CSE',
+      isFirstGraduate: true,
+      schoolingType: 'tn_govt_school_6_to_12',
+      avatar: null
+    };
+  });
+
   // Student Profile Image State (Persisted in localStorage)
   const fileInputRef = useRef(null);
   const [profileImage, setProfileImage] = useState(() => {
@@ -42,6 +84,36 @@ export default function HomePage({
       return null;
     }
   });
+
+  // Keep state synced across tabs / edits
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      try {
+        const saved = localStorage.getItem('tn_student_profile');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setStudentProfile(parsed);
+          if (parsed.avatar !== undefined) {
+            setProfileImage(parsed.avatar);
+          }
+        }
+      } catch (e) {}
+    };
+
+    const handleAvatarUpdate = () => {
+      try {
+        const av = localStorage.getItem('tn_student_avatar');
+        setProfileImage(av || null);
+      } catch (e) {}
+    };
+
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    window.addEventListener('avatarUpdated', handleAvatarUpdate);
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      window.removeEventListener('avatarUpdated', handleAvatarUpdate);
+    };
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -56,6 +128,16 @@ export default function HomePage({
         setProfileImage(base64Data);
         try {
           localStorage.setItem('tn_student_avatar', base64Data);
+          
+          // Also update studentProfile avatar
+          const savedProfile = localStorage.getItem('tn_student_profile');
+          if (savedProfile) {
+            const p = JSON.parse(savedProfile);
+            p.avatar = base64Data;
+            localStorage.setItem('tn_student_profile', JSON.stringify(p));
+            setStudentProfile(p);
+          }
+          
           window.dispatchEvent(new Event('avatarUpdated'));
           
           const savedUser = localStorage.getItem('tn_scholarship_user');
@@ -77,6 +159,13 @@ export default function HomePage({
     setProfileImage(null);
     try {
       localStorage.removeItem('tn_student_avatar');
+      const savedProfile = localStorage.getItem('tn_student_profile');
+      if (savedProfile) {
+        const p = JSON.parse(savedProfile);
+        p.avatar = null;
+        localStorage.setItem('tn_student_profile', JSON.stringify(p));
+        setStudentProfile(p);
+      }
       window.dispatchEvent(new Event('avatarUpdated'));
       const savedUser = localStorage.getItem('tn_scholarship_user');
       if (savedUser) {
@@ -86,6 +175,47 @@ export default function HomePage({
       }
     } catch (err) {}
   };
+
+  // Dynamic Scheme Calculations based on Profile
+  const isFemale = (studentProfile.gender || '').toLowerCase() === 'female';
+  const isGovtSchool = studentProfile.schoolingType === 'tn_govt_school_6_to_12' || studentProfile.schooling_type === 'tn_govt_school_6_to_12';
+
+  const primaryScheme = isFemale
+    ? {
+        name: 'Pudhumai Penn Thittam',
+        amount: '₹12,000/yr',
+        description: 'Monthly financial assistance of ₹1,000 directly credited via Direct Benefit Transfer (DBT) to student Aadhaar-seeded bank account for girls from TN Govt Schools (6-12).'
+      }
+    : {
+        name: 'Tamil Pudhalvan Thittam',
+        amount: '₹12,000/yr',
+        description: 'Monthly financial stipend of ₹1,000 credited directly to student bank account via DBT for boys who studied in TN Government Schools (6-12).'
+      };
+
+  const secondaryScheme = studentProfile.isFirstGraduate
+    ? {
+        name: 'First Graduate Fee Concession',
+        amount: '₹25,000/yr',
+        description: '100% Tuition Fee Concession automatically credited directly to the college academic cell via Single Window Counseling.'
+      }
+    : (['SC', 'SCA', 'ST'].includes(studentProfile.community)
+        ? {
+            name: 'Post-Matric Scholarship (SC/SCA/ST)',
+            amount: '₹50,000/yr',
+            description: '100% Compulsory Tuition Fee waiver and hostel maintenance allowance under Adi Dravidar & Tribal Welfare.'
+          }
+        : {
+            name: 'BC/MBC Post-Matric Tuition Assistance',
+            amount: '₹15,000/yr',
+            description: 'Special fee & examination grant assistance under Department of Backward Classes & Minorities Welfare.'
+          }
+      );
+
+  const primaryValue = 12000;
+  const secondaryValue = studentProfile.isFirstGraduate 
+    ? 25000 
+    : (['SC', 'SCA', 'ST'].includes(studentProfile.community) ? 50000 : 15000);
+  const recommendedTotal = primaryValue + secondaryValue;
 
   // Floating AI Advisor state
   const [isAiOpen, setIsAiOpen] = useState(true);
@@ -154,9 +284,19 @@ export default function HomePage({
             <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-xs">
               
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  Candidate Snapshot
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    Candidate Snapshot
+                  </span>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="inline-flex items-center space-x-1 text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 px-2 py-0.5 rounded border border-slate-200 hover:border-emerald-300 transition cursor-pointer"
+                    title="Edit candidate profile, income, marks & upload photo"
+                  >
+                    <Pencil size={10} />
+                    <span>Edit Profile</span>
+                  </button>
+                </div>
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                   Verified Profile
                 </span>
@@ -169,14 +309,14 @@ export default function HomePage({
                 <div className="flex flex-col items-center shrink-0">
                   <div className="relative">
                     <div 
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={() => setShowEditModal(true)}
                       className="w-20 h-20 sm:w-22 sm:h-22 rounded-md bg-slate-100 border-2 border-dashed border-slate-300 hover:border-emerald-600 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer transition shadow-2xs"
-                      title="Click to upload your student photo (JPG/PNG)"
+                      title="Click to edit profile or upload photo"
                     >
                       {profileImage ? (
                         <img 
                           src={profileImage} 
-                          alt="Surya Suresh" 
+                          alt={studentProfile.fullName} 
                           className="w-full h-full object-cover" 
                         />
                       ) : (
@@ -223,11 +363,11 @@ export default function HomePage({
 
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => setShowEditModal(true)}
                     className="text-[10px] text-emerald-700 font-semibold cursor-pointer hover:underline flex items-center space-x-1 mt-1.5"
                   >
-                    <Camera size={10} />
-                    <span>{profileImage ? 'Change Photo' : 'Upload Photo'}</span>
+                    <Edit3 size={10} />
+                    <span>Edit Profile</span>
                   </button>
                 </div>
 
@@ -235,31 +375,33 @@ export default function HomePage({
                 <div className="flex-1 min-w-0 space-y-1 text-xs">
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Name</span>
-                    <strong className="text-slate-900 font-semibold truncate ml-2">Surya Suresh</strong>
+                    <strong className="text-slate-900 font-semibold truncate ml-2">{studentProfile.fullName}</strong>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Gender</span>
-                    <span className="text-slate-800 font-medium">Male</span>
+                    <span className="text-slate-800 font-medium capitalize">{studentProfile.gender}</span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Community</span>
-                    <span className="text-slate-800 font-semibold bg-slate-100 px-1.5 py-0.2 rounded font-mono">BC</span>
+                    <span className="text-slate-800 font-semibold bg-slate-100 px-1.5 py-0.2 rounded font-mono uppercase">{studentProfile.community}</span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Income</span>
-                    <span className="text-slate-900 font-semibold font-mono">₹1,40,000</span>
+                    <span className="text-slate-900 font-semibold font-mono">₹{Number(studentProfile.annualIncome || 140000).toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">12th Marks</span>
-                    <span className="text-emerald-700 font-bold font-mono">88.5%</span>
+                    <span className="text-emerald-700 font-bold font-mono">{studentProfile.boardPercentage || 88.5}%</span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Course</span>
-                    <span className="text-slate-800 font-medium truncate ml-2">B.E CSE</span>
+                    <span className="text-slate-800 font-medium truncate ml-2" title={studentProfile.currentCourse}>{studentProfile.currentCourse || 'B.E CSE'}</span>
                   </div>
                   <div className="flex justify-between items-baseline">
                     <span className="text-slate-500 font-medium">FG</span>
-                    <span className="inline-flex items-center text-emerald-700 font-bold">Yes</span>
+                    <span className={`inline-flex items-center font-bold ${studentProfile.isFirstGraduate ? 'text-emerald-700' : 'text-slate-600'}`}>
+                      {studentProfile.isFirstGraduate ? 'Yes' : 'No'}
+                    </span>
                   </div>
                 </div>
 
@@ -361,57 +503,57 @@ export default function HomePage({
             {/* HERO CARD: Solid Forest Green background (bg-emerald-700 / #006a4e) */}
             <div className="bg-[#006a4e] text-white rounded-xl p-5 sm:p-6 shadow-sm">
               
-              {/* Title with star icons: "Optimal Stacking Recommendation (Max Benefit): ₹37,000 /yr" */}
+              {/* Title with star icons: Dynamic Optimal Stacking Recommendation */}
               <div className="flex items-center space-x-2 pb-4 border-b border-emerald-600/60">
                 <Sparkles size={20} className="text-amber-300 fill-amber-300 shrink-0" />
                 <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
-                  Optimal Stacking Recommendation (Max Benefit): <span className="text-amber-200 font-mono">₹37,000 /yr</span>
+                  Optimal Stacking Recommendation (Max Benefit): <span className="text-amber-200 font-mono">₹{recommendedTotal.toLocaleString('en-IN')} /yr</span>
                 </h3>
               </div>
 
               {/* Inside green card, two schemes separated by faint borders */}
               <div className="divide-y divide-emerald-600/50">
                 
-                {/* Scheme 1: Pudhumai Penn Thittam (₹12,000/yr) */}
+                {/* Scheme 1 */}
                 <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
                       <h4 className="font-bold text-sm sm:text-base text-white">
-                        1. Pudhumai Penn Thittam (₹12,000/yr)
+                        1. {primaryScheme.name} ({primaryScheme.amount})
                       </h4>
                     </div>
                     <p className="text-xs text-emerald-100/90 pl-3.5 leading-relaxed">
-                      Monthly financial assistance of ₹1,000 directly credited via Direct Benefit Transfer (DBT) to student Aadhaar-seeded bank account.
+                      {primaryScheme.description}
                     </p>
                   </div>
 
                   {/* White "Apply Now" button with green text */}
                   <button
-                    onClick={() => handleApply('Pudhumai Penn Thittam', '₹12,000/yr')}
+                    onClick={() => handleApply(primaryScheme.name, primaryScheme.amount)}
                     className="bg-white hover:bg-emerald-50 text-[#006a4e] font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm whitespace-nowrap self-start sm:self-auto cursor-pointer"
                   >
                     Apply Now
                   </button>
                 </div>
 
-                {/* Scheme 2: First Graduate Fee Concession (₹25,000/yr) */}
+                {/* Scheme 2 */}
                 <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
                       <h4 className="font-bold text-sm sm:text-base text-white">
-                        2. First Graduate Fee Concession (₹25,000/yr)
+                        2. {secondaryScheme.name} ({secondaryScheme.amount})
                       </h4>
                     </div>
                     <p className="text-xs text-emerald-100/90 pl-3.5 leading-relaxed">
-                      100% Tuition Fee Concession automatically credited directly to the college academic cell via Single Window Counseling.
+                      {secondaryScheme.description}
                     </p>
                   </div>
 
                   {/* White "Apply Now" button with green text */}
                   <button
-                    onClick={() => handleApply('First Graduate Fee Concession', '₹25,000/yr')}
+                    onClick={() => handleApply(secondaryScheme.name, secondaryScheme.amount)}
                     className="bg-white hover:bg-emerald-50 text-[#006a4e] font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm whitespace-nowrap self-start sm:self-auto cursor-pointer"
                   >
                     Apply Now
@@ -689,11 +831,11 @@ export default function HomePage({
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Candidate Name:</span>
-                <span className="text-slate-800 font-semibold">Surya Suresh</span>
+                <span className="text-slate-800 font-semibold">{studentProfile.fullName}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Sanction Category:</span>
-                <span className="text-slate-800">BC Welfare & First Graduate</span>
+                <span className="text-slate-800">{studentProfile.community} Welfare & {studentProfile.isFirstGraduate ? 'First Graduate' : 'Merit'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Disbursement Mode:</span>
@@ -723,6 +865,20 @@ export default function HomePage({
           </div>
         </div>
       )}
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        profile={studentProfile}
+        onSave={(updated) => {
+          setStudentProfile(updated);
+          if (updated.avatar !== undefined) {
+            setProfileImage(updated.avatar);
+          }
+        }}
+        currentLang={currentLang}
+      />
 
     </div>
   );

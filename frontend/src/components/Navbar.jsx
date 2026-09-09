@@ -61,8 +61,17 @@ export default function Navbar({
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [showSearch, setShowSearch] = useState(false);
 
-  // Student name (Surya Suresh as requested by specification)
-  const studentName = currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || "Surya Suresh";
+  // Student name dynamically reactive to localStorage and user edits
+  const [profileName, setProfileName] = useState(() => {
+    try {
+      const saved = localStorage.getItem('tn_student_profile');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.fullName) return parsed.fullName;
+      }
+    } catch (e) {}
+    return currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || "Surya Suresh";
+  });
 
   // Real-time Student Profile Photo State
   const [avatarImage, setAvatarImage] = useState(() => {
@@ -74,13 +83,22 @@ export default function Navbar({
   });
 
   useEffect(() => {
-    const updateAvatar = () => {
+    const updateProfile = () => {
       try {
+        const saved = localStorage.getItem('tn_student_profile');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.fullName) setProfileName(parsed.fullName);
+        }
         setAvatarImage(localStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null);
       } catch (e) {}
     };
-    window.addEventListener('avatarUpdated', updateAvatar);
-    return () => window.removeEventListener('avatarUpdated', updateAvatar);
+    window.addEventListener('profileUpdated', updateProfile);
+    window.addEventListener('avatarUpdated', updateProfile);
+    return () => {
+      window.removeEventListener('profileUpdated', updateProfile);
+      window.removeEventListener('avatarUpdated', updateProfile);
+    };
   }, [currentUser]);
 
   const handleSearchSubmit = (e) => {
@@ -140,13 +158,13 @@ export default function Navbar({
             >
               <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold text-xs flex items-center justify-center border border-emerald-500 shadow-xs group-hover:ring-2 group-hover:ring-emerald-400 transition overflow-hidden shrink-0">
                 {avatarImage ? (
-                  <img src={avatarImage} alt={studentName} className="w-full h-full object-cover" />
+                  <img src={avatarImage} alt={profileName} className="w-full h-full object-cover" />
                 ) : (
-                  studentName.charAt(0).toUpperCase()
+                  profileName.charAt(0).toUpperCase()
                 )}
               </div>
               <span className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-300 transition hidden xs:inline">
-                {studentName}
+                {profileName}
               </span>
             </div>
 
