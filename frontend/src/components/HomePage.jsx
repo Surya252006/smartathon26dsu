@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   CheckCircle, 
   Sparkles, 
@@ -16,7 +16,10 @@ import {
   HelpCircle,
   ArrowRight,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Camera,
+  Upload,
+  Trash2
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 
@@ -29,6 +32,60 @@ export default function HomePage({
   onOpenGrievance = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+
+  // Student Profile Image State (Persisted in localStorage)
+  const fileInputRef = useRef(null);
+  const [profileImage, setProfileImage] = useState(() => {
+    try {
+      return localStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 4 * 1024 * 1024) {
+        alert("Please choose a photo smaller than 4MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Data = reader.result;
+        setProfileImage(base64Data);
+        try {
+          localStorage.setItem('tn_student_avatar', base64Data);
+          window.dispatchEvent(new Event('avatarUpdated'));
+          
+          const savedUser = localStorage.getItem('tn_scholarship_user');
+          if (savedUser) {
+            const userObj = JSON.parse(savedUser);
+            userObj.profile = { ...(userObj.profile || {}), avatar: base64Data };
+            localStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
+          }
+        } catch (err) {
+          console.warn("Storage quota note", err);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = (e) => {
+    e.stopPropagation();
+    setProfileImage(null);
+    try {
+      localStorage.removeItem('tn_student_avatar');
+      window.dispatchEvent(new Event('avatarUpdated'));
+      const savedUser = localStorage.getItem('tn_scholarship_user');
+      if (savedUser) {
+        const userObj = JSON.parse(savedUser);
+        if (userObj.profile) delete userObj.profile.avatar;
+        localStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
+      }
+    } catch (err) {}
+  };
 
   // Floating AI Advisor state
   const [isAiOpen, setIsAiOpen] = useState(true);
@@ -108,13 +165,70 @@ export default function HomePage({
               {/* Profile section: square photo placeholder on left, compact list on right */}
               <div className="flex items-start space-x-4">
                 
-                {/* Square Profile Photo Placeholder */}
-                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-md bg-slate-100 border border-slate-300 flex flex-col items-center justify-center shrink-0 relative overflow-hidden text-slate-400">
-                  <User size={36} className="text-slate-400 mb-0.5" />
-                  <span className="text-[9px] font-bold text-slate-500 font-mono">PHOTO</span>
-                  <div className="absolute bottom-0 inset-x-0 bg-slate-800/80 text-[8px] font-mono text-center text-white py-0.5">
-                    ID: 849204
+                {/* Square Profile Photo with 1-Click Upload */}
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="relative">
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-20 h-20 sm:w-22 sm:h-22 rounded-md bg-slate-100 border-2 border-dashed border-slate-300 hover:border-emerald-600 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer transition shadow-2xs"
+                      title="Click to upload your student photo (JPG/PNG)"
+                    >
+                      {profileImage ? (
+                        <img 
+                          src={profileImage} 
+                          alt="Surya Suresh" 
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : (
+                        <>
+                          <User size={34} className="text-slate-400 group-hover:text-emerald-700 transition mb-0.5" />
+                          <span className="text-[8px] font-bold text-slate-500 font-mono group-hover:text-emerald-800">
+                            ADD PHOTO
+                          </span>
+                        </>
+                      )}
+
+                      {/* Hover Camera Overlay */}
+                      <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white text-[9px] font-semibold">
+                        <Camera size={16} className="mb-0.5 text-emerald-300" />
+                        <span>{profileImage ? 'Change' : 'Upload'}</span>
+                      </div>
+
+                      <div className="absolute bottom-0 inset-x-0 bg-slate-900/85 text-[8px] font-mono text-center text-white py-0.5">
+                        ID: 849204
+                      </div>
+                    </div>
+
+                    {/* Quick Remove Button if image exists */}
+                    {profileImage && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm cursor-pointer z-10"
+                        title="Remove photo"
+                      >
+                        ×
+                      </button>
+                    )}
                   </div>
+
+                  {/* Hidden File Input */}
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleImageChange} 
+                    accept="image/*" 
+                    className="hidden" 
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[10px] text-emerald-700 font-semibold cursor-pointer hover:underline flex items-center space-x-1 mt-1.5"
+                  >
+                    <Camera size={10} />
+                    <span>{profileImage ? 'Change Photo' : 'Upload Photo'}</span>
+                  </button>
                 </div>
 
                 {/* Compact List of Credentials */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Home, 
   User, 
@@ -64,6 +64,25 @@ export default function Navbar({
   // Student name (Surya Suresh as requested by specification)
   const studentName = currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || "Surya Suresh";
 
+  // Real-time Student Profile Photo State
+  const [avatarImage, setAvatarImage] = useState(() => {
+    try {
+      return localStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    const updateAvatar = () => {
+      try {
+        setAvatarImage(localStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null);
+      } catch (e) {}
+    };
+    window.addEventListener('avatarUpdated', updateAvatar);
+    return () => window.removeEventListener('avatarUpdated', updateAvatar);
+  }, [currentUser]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (onSearch) {
@@ -119,8 +138,12 @@ export default function Navbar({
               className="flex items-center space-x-2 cursor-pointer group"
               title="View Student Profile"
             >
-              <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold text-xs flex items-center justify-center border border-emerald-500 shadow-xs group-hover:ring-2 group-hover:ring-emerald-400 transition">
-                {studentName.charAt(0).toUpperCase()}
+              <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold text-xs flex items-center justify-center border border-emerald-500 shadow-xs group-hover:ring-2 group-hover:ring-emerald-400 transition overflow-hidden shrink-0">
+                {avatarImage ? (
+                  <img src={avatarImage} alt={studentName} className="w-full h-full object-cover" />
+                ) : (
+                  studentName.charAt(0).toUpperCase()
+                )}
               </div>
               <span className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-300 transition hidden xs:inline">
                 {studentName}
