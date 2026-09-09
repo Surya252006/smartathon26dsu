@@ -323,9 +323,9 @@ export default function HomePage({
                 <div className="flex flex-col items-center shrink-0">
                   <div className="relative">
                     <div 
-                      onClick={() => setShowEditModal(true)}
+                      onClick={() => fileInputRef.current?.click()}
                       className="w-20 h-20 sm:w-22 sm:h-22 rounded-md bg-slate-100 border-2 border-dashed border-slate-300 hover:border-emerald-600 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer transition shadow-2xs"
-                      title="Click to edit profile or upload photo"
+                      title="Click to choose a photo (JPG / PNG) from your device"
                     >
                       {profileImage ? (
                         <img 
@@ -375,14 +375,27 @@ export default function HomePage({
                     className="hidden" 
                   />
 
-                  <button
-                    type="button"
-                    onClick={() => setShowEditModal(true)}
-                    className="text-[10px] text-emerald-700 font-semibold cursor-pointer hover:underline flex items-center space-x-1 mt-1.5"
-                  >
-                    <Edit3 size={10} />
-                    <span>Edit Profile</span>
-                  </button>
+                  <div className="flex flex-col items-center space-y-0.5 mt-1.5">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-[10px] text-emerald-700 hover:text-emerald-800 font-bold cursor-pointer hover:underline flex items-center space-x-1"
+                      title="Upload photo from your device"
+                    >
+                      <Camera size={11} />
+                      <span>{profileImage ? 'Change Photo' : 'Upload Photo'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowEditModal(true)}
+                      className="text-[9px] text-slate-500 hover:text-slate-700 font-medium cursor-pointer hover:underline flex items-center space-x-0.5"
+                      title="Edit all credentials"
+                    >
+                      <Edit3 size={9} />
+                      <span>Edit Info</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Compact List of Credentials */}
