@@ -12,7 +12,9 @@ import {
   Bell, 
   LogOut,
   LogIn,
-  Bot
+  Bot,
+  Sliders,
+  ShieldCheck
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 
@@ -57,7 +59,8 @@ export default function Navbar({
   onSearch,
   searchQuery,
   onOpenNotices,
-  onOpenGrievance
+  onOpenGrievance,
+  onOpenAdmin
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [showSearch, setShowSearch] = useState(false);
@@ -311,6 +314,20 @@ export default function Navbar({
             >
               <HelpCircle size={15} />
               <span>{t.nav_grievance || 'Helpdesk'}</span>
+            </button>
+
+            {/* 7. Admin & Rule Builder (Sections 14 & 15) */}
+            <button
+              onClick={onOpenAdmin || (() => setCurrentTab('admin'))}
+              className={`px-3 py-1.5 rounded-md flex items-center space-x-1.5 transition cursor-pointer ${
+                currentTab === 'admin'
+                  ? 'bg-emerald-800 text-white font-bold shadow-inner ring-1 ring-emerald-600'
+                  : 'text-amber-200 hover:text-white hover:bg-emerald-600/70'
+              }`}
+              title="Government Administrator Rule Builder & Scheme Configuration"
+            >
+              <Sliders size={15} className="text-amber-300" />
+              <span>Admin Rules</span>
             </button>
 
             {/* If not logged in, also show Sign In in secondary nav */}

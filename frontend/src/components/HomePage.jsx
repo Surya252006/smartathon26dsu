@@ -22,7 +22,10 @@ import {
   Trash2,
   Pencil,
   Edit3,
-  LogIn
+  LogIn,
+  Sliders,
+  Cpu,
+  FileCheck
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 import EditProfileModal from './EditProfileModal';
@@ -272,6 +275,173 @@ export default function HomePage({
   return (
     <div className="bg-slate-50 min-h-screen text-slate-900 pb-20">
       
+      {/* ========================================================================= */}
+      {/* SECTION 19: LANDING PAGE HERO & KEY DIFFERENTIATOR                        */}
+      {/* ========================================================================= */}
+      <section className="bg-[#0f2942] text-white border-b-2 border-emerald-600 relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 relative z-10 space-y-8">
+          
+          {/* Main Hero Header */}
+          <div className="max-w-3xl space-y-4">
+            <div className="inline-flex items-center space-x-2 bg-emerald-950/90 text-emerald-300 text-xs font-bold px-3.5 py-1.5 rounded-full border border-emerald-700/80 shadow-xs">
+              <Sparkles size={14} className="text-emerald-400" />
+              <span>AI-Powered Decision System • Government of Tamil Nadu</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+              Find the Scholarships You Actually Qualify For
+            </h1>
+
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
+              Enter your profile once. Our intelligent scholarship matcher checks eligibility, detects policy conflicts, and identifies the highest-benefit combination for you.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                onClick={onStartMatcher}
+                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition flex items-center space-x-2 cursor-pointer border border-emerald-400"
+              >
+                <span>Find My Scholarships</span>
+                <ArrowRight size={16} />
+              </button>
+
+              <a
+                href="#how-it-works"
+                className="px-5 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-sm rounded-xl border border-slate-700 transition flex items-center space-x-2 cursor-pointer"
+              >
+                <span>How It Works</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Section 23: Key Differentiator Card */}
+          <div className="bg-gradient-to-r from-emerald-950/90 to-slate-900 border-2 border-emerald-600/80 rounded-2xl p-5 sm:p-6 shadow-md">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-black tracking-widest uppercase text-emerald-400 block">
+                  THE KEY INNOVATION
+                </span>
+                <p className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug">
+                  "We don't just tell students what scholarships they are eligible for. We calculate which valid combination gives them the maximum possible benefit and explain why."
+                </p>
+              </div>
+              <div className="shrink-0 flex items-center space-x-2 bg-emerald-900/60 px-4 py-2 rounded-xl border border-emerald-700 text-xs font-semibold text-emerald-200">
+                <ShieldCheck size={16} className="text-emerald-400" />
+                <span>Zero Conflict Collisions</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 19: Visual Decision Flow Diagram */}
+          <div className="space-y-2 pt-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block text-center sm:text-left">
+              Decision Support Flow:
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
+              {[
+                { step: "1", title: "Your Profile", desc: "Single entry" },
+                { step: "2", title: "Smart Eligibility", desc: "Rule engine" },
+                { step: "3", title: "Conflict Detection", desc: "Matrix filter" },
+                { step: "4", title: "Benefit Optimization", desc: "MWIS solver" },
+                { step: "5", title: "Best Combination", desc: "Highest benefit" },
+                { step: "6", title: "Application Roadmap", desc: "Action plan" }
+              ].map((flow, fIdx) => (
+                <div key={fIdx} className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 text-center space-y-1 relative">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase block">Step 0{flow.step}</span>
+                  <div className="font-bold text-white text-xs leading-tight">{flow.title}</div>
+                  <div className="text-[10px] text-slate-400">{flow.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* SECTION 20: HOW IT WORKS SECTION                                          */}
+      {/* ========================================================================= */}
+      <section id="how-it-works" className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-4 gap-2">
+          <div>
+            <span className="text-xs font-bold text-[#006a4e] uppercase tracking-wider block mb-1">
+              Section 20 • Process Blueprint
+            </span>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+              How It Works: Intelligent Decision Support
+            </h2>
+          </div>
+          <p className="text-xs text-slate-500 max-w-md">
+            Deterministic rule-based evaluation ensures complete transparency with zero black-box bias.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {
+              step: "01",
+              title: "Build Your Profile",
+              desc: "Tell us about your education, income, category, and eligibility once in a clean 5-step wizard.",
+              badge: "Single Input"
+            },
+            {
+              step: "02",
+              title: "Match Criteria",
+              desc: "The rule engine checks community quota, family income caps, and academic criteria.",
+              badge: "Smart Filtering"
+            },
+            {
+              step: "03",
+              title: "Optimize Legitimate Benefit",
+              desc: "Conflicting schemes are removed and the highest-benefit valid combination is mathematically calculated.",
+              badge: "Conflict Free"
+            },
+            {
+              step: "04",
+              title: "Apply with Roadmap",
+              desc: "Get a personalized document checklist and 7-step roadmap pointing to official government gateways.",
+              badge: "Ready Checklist"
+            }
+          ].map((card, cIdx) => (
+            <div key={cIdx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:shadow-md transition">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-black text-[#006a4e] font-mono">{card.step}</span>
+                <span className="text-[10px] font-bold bg-emerald-50 text-[#006a4e] px-2 py-0.5 rounded-full border border-emerald-200">
+                  {card.badge}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">{card.title}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">{card.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Section 21: Trust & Transparency Callout */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-[#006a4e] flex items-center justify-center shrink-0 font-bold">
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-900 text-sm">Why This System Is Different</h4>
+              <p className="text-slate-600 text-xs">
+                No false "100% guarantees". All calculations are deterministic, backed by Government Orders (G.O.), and explainable down to the rupee.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onStartMatcher}
+            className="px-4 py-2 bg-[#006a4e] hover:bg-[#00523d] text-white font-bold rounded-lg transition shrink-0 cursor-pointer shadow-xs"
+          >
+            Launch Eligibility Checker →
+          </button>
+        </div>
+      </section>
+
       {/* MAIN GRID LAYOUT: max-w-7xl mx-auto p-6 */}
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         

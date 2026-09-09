@@ -15,7 +15,12 @@ import {
   Sparkles,
   User,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Edit3,
+  MapPin,
+  IndianRupee,
+  Award,
+  ArrowRight
 } from 'lucide-react';
 import VoiceAssistModal from './VoiceAssistModal';
 import { TRANSLATIONS } from '../utils/translations';
@@ -29,16 +34,30 @@ const extractFormData = (user, profile) => {
       if (sp.fullName) {
         return {
           full_name: sp.fullName,
-          schooling_type: sp.schoolingType || 'tn_govt_school_6_to_12',
-          admission_mode: 'govt_counseling_single_window',
-          current_course: (sp.currentCourse && sp.currentCourse.includes('Engineering')) ? 'Engineering' : (sp.currentCourse || 'Engineering'),
-          board_percentage: sp.boardPercentage ? String(sp.boardPercentage) : '88.5',
+          age: sp.age ? String(sp.age) : '18',
           gender: sp.gender || 'male',
           community: sp.community || 'BC',
+          state: 'Tamil Nadu',
+          district: sp.district || 'Pudukkottai',
+          residence_type: sp.residence_type || 'Rural',
+
+          degree: sp.degree || 'Undergraduate (UG)',
+          current_course: (sp.currentCourse && sp.currentCourse.includes('Engineering')) ? 'Engineering' : (sp.currentCourse || 'Engineering'),
+          college_name: sp.college_name || 'Anna University Affiliated Engineering College',
+          college_type: sp.college_type || 'Government Aided',
+          year_of_study: sp.year_of_study || '1st Year (Fresher)',
+          board_percentage: sp.boardPercentage ? String(sp.boardPercentage) : '88.5',
+          admission_mode: 'govt_counseling_single_window',
+
           annual_income: sp.annualIncome ? String(sp.annualIncome) : '140000',
+          has_income_certificate: 'yes',
           is_first_graduate: sp.isFirstGraduate !== undefined ? sp.isFirstGraduate : true,
+          siblings_in_college: 'None',
+
+          schooling_type: sp.schoolingType || 'tn_govt_school_6_to_12',
           is_differently_abled: false,
           disability_percentage: '',
+          special_category: '7.5% Govt School Quota',
           available_docs: [
             'income_certificate', 
             'community_certificate', 
@@ -56,16 +75,30 @@ const extractFormData = (user, profile) => {
   if (profile && (profile.full_name || profile.community)) {
     return {
       full_name: profile.full_name || '',
-      schooling_type: profile.schooling_type || 'tn_govt_school_6_to_12',
-      admission_mode: profile.admission_mode || 'govt_counseling_single_window',
-      current_course: profile.current_course || 'Engineering',
-      board_percentage: profile.board_percentage ? String(profile.board_percentage) : '',
+      age: profile.age ? String(profile.age) : '18',
       gender: profile.gender || 'female',
       community: profile.community || 'BC',
+      state: profile.state || 'Tamil Nadu',
+      district: profile.district || 'Chennai',
+      residence_type: profile.residence_type || 'Urban',
+
+      degree: profile.degree || 'Undergraduate (UG)',
+      current_course: profile.current_course || 'Engineering',
+      college_name: profile.college_name || '',
+      college_type: profile.college_type || 'Government',
+      year_of_study: profile.year_of_study || '1st Year (Fresher)',
+      board_percentage: profile.board_percentage ? String(profile.board_percentage) : '',
+      admission_mode: profile.admission_mode || 'govt_counseling_single_window',
+
       annual_income: profile.annual_income ? String(profile.annual_income) : '',
+      has_income_certificate: 'yes',
       is_first_graduate: profile.is_first_graduate !== undefined ? profile.is_first_graduate : true,
+      siblings_in_college: 'None',
+
+      schooling_type: profile.schooling_type || 'tn_govt_school_6_to_12',
       is_differently_abled: Boolean(profile.is_differently_abled),
       disability_percentage: profile.disability_percentage ? String(profile.disability_percentage) : '',
+      special_category: profile.special_category || 'None',
       available_docs: profile.available_docs || [
         'income_certificate', 
         'community_certificate', 
@@ -77,46 +110,33 @@ const extractFormData = (user, profile) => {
     };
   }
 
-  // 2. If a user is logged in, extract ALL profile credentials
-  if (user) {
-    const p = user.profile || {};
-    const derivedName = p.full_name || user.full_name || (user.email ? user.email.split('@')[0].replace(/[._]/g, ' ').toUpperCase() : '');
-    return {
-      full_name: derivedName,
-      schooling_type: p.schooling_type || 'tn_govt_school_6_to_12',
-      admission_mode: p.admission_mode || 'govt_counseling_single_window',
-      current_course: p.current_course || 'Engineering',
-      board_percentage: p.board_percentage ? String(p.board_percentage) : '85.0',
-      gender: p.gender || 'female',
-      community: p.community || 'BC',
-      annual_income: p.annual_income ? String(p.annual_income) : '120000',
-      is_first_graduate: p.is_first_graduate !== undefined ? p.is_first_graduate : true,
-      is_differently_abled: Boolean(p.is_differently_abled),
-      disability_percentage: p.disability_percentage ? String(p.disability_percentage) : '',
-      available_docs: p.available_docs || [
-        'income_certificate', 
-        'community_certificate', 
-        'first_graduate_certificate', 
-        'bonafide_certificate', 
-        'marksheet', 
-        'aadhaar_bank'
-      ]
-    };
-  }
-
-  // 3. Clean neutral defaults (no hardcoded name)
+  // 2. Default clean student profile
   return {
-    full_name: '',
-    schooling_type: 'tn_govt_school_6_to_12',
-    admission_mode: 'govt_counseling_single_window',
-    current_course: 'Engineering',
-    board_percentage: '',
-    gender: 'female',
+    full_name: 'Surya Suresh',
+    age: '18',
+    gender: 'male',
     community: 'BC',
-    annual_income: '',
+    state: 'Tamil Nadu',
+    district: 'Pudukkottai',
+    residence_type: 'Rural',
+
+    degree: 'Undergraduate (UG)',
+    current_course: 'Engineering',
+    college_name: 'Govt College of Technology / Engineering',
+    college_type: 'Government',
+    year_of_study: '1st Year (Fresher)',
+    board_percentage: '88.5',
+    admission_mode: 'govt_counseling_single_window',
+
+    annual_income: '140000',
+    has_income_certificate: 'yes',
     is_first_graduate: true,
+    siblings_in_college: 'None',
+
+    schooling_type: 'tn_govt_school_6_to_12',
     is_differently_abled: false,
     disability_percentage: '',
+    special_category: '7.5% Govt School Quota',
     available_docs: [
       'income_certificate', 
       'community_certificate', 
@@ -136,18 +156,19 @@ export default function ProfileForm({
   onOpenAuth = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(0); // 0 to 4 (5 Steps)
   const [isVoiceModalOpen, setVoiceModalOpen] = useState(false);
   
   const STEPS = [
-    { title: currentLang === 'ta' ? 'கல்வித் தகுதி' : 'Academic Credentials', sub: 'Course & Schooling' },
-    { title: currentLang === 'ta' ? 'சமூகம் & வருவாய்' : 'Demographics & Income', sub: 'Category & Ceiling' },
-    { title: currentLang === 'ta' ? 'இ-சேவை ஆவணங்கள்' : 'e-Sevai Certificates', sub: 'Document Readiness' }
+    { title: 'Personal Details', title_ta: 'தனிநபர் விவரங்கள்', sub: 'Name, Gender, Community' },
+    { title: 'Academic Details', title_ta: 'கல்வி விவரங்கள்', sub: 'Course, College, Board Marks' },
+    { title: 'Family & Income', title_ta: 'வருவாய் & முதல் பட்டதாரி', sub: 'Income & First Graduate' },
+    { title: 'Special Eligibility', title_ta: 'சிறப்பு தகுதிகள்', sub: 'Govt School & Quotas' },
+    { title: 'Profile Review', title_ta: 'விவரங்கள் சரிபார்த்தல்', sub: 'Review & Verify' }
   ];
 
   const [formData, setFormData] = useState(() => extractFormData(currentUser, currentProfile));
 
-  // Automatically sync and prefill form data when user logs in or switches profile
   useEffect(() => {
     setFormData(extractFormData(currentUser, currentProfile));
   }, [currentUser, currentProfile]);
@@ -173,7 +194,7 @@ export default function ProfileForm({
     setFormData(prev => ({ ...prev, ...parsedData }));
   };
 
-  const nextStep = () => setStep(s => Math.min(s + 1, 2));
+  const nextStep = () => setStep(s => Math.min(s + 1, 4));
   const prevStep = () => setStep(s => Math.max(s - 1, 0));
 
   const handleSubmit = (e) => {
@@ -220,508 +241,753 @@ export default function ProfileForm({
     },
     { 
       id: 'aadhaar_bank', 
-      code: 'NPCI-DBT-06',
-      label: currentLang === 'ta' ? 'ஆதார் இணைக்கப்பட்ட வங்கி கணக்கு பாஸ்புக் (DBT Active)' : 'Aadhaar Seeded Active DBT Bank Passbook',
-      detail: currentLang === 'ta' ? 'NPCI நேரடி மானியப் பரிமாற்றத்திற்கு அவசியமானது.' : 'Required for direct monthly ₹1,000 credit.'
-    },
+      code: 'UIDAI-NPCI',
+      label: currentLang === 'ta' ? 'ஆதார் இணைக்கப்பட்ட வங்கி கணக்கு (DBT Seeding)' : 'Aadhaar NPCI Active Bank Account (DBT)',
+      detail: currentLang === 'ta' ? 'மாதாந்திர உதவித்தொகை நேரடியாக வங்கியில் வரவு வைக்கப்படும்.' : 'Necessary for direct monthly DBT disbursements.'
+    }
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm max-w-4xl mx-auto overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
       
-      {/* 1. Official Government Header Bar */}
-      <div className="bg-[#0f2942] text-white p-5 sm:p-6 border-b border-slate-700">
+      {/* Top Header */}
+      <div className="bg-[#0f2942] text-white p-6 sm:p-7 relative">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2 text-[11px] font-bold text-emerald-400 tracking-wider uppercase">
-              <Landmark size={14} />
-              <span>Government of Tamil Nadu • Higher Education Department</span>
+          <div>
+            <div className="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-1.5">
+              <Sparkles size={14} />
+              <span>Multi-Step Intelligent Onboarding Wizard</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-              {currentLang === 'ta' ? 'மாணவர் நல உரிமை மதிப்பீட்டுப் படிவம்' : 'Student Welfare & Entitlement Assessment Form'}
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+              {currentLang === 'ta' ? 'மாணவர் தகுதி மதிப்பீட்டு படிவம்' : 'Candidate Scholarship Profile Assessment'}
             </h2>
-            <p className="text-slate-300 text-xs font-normal">
-              Official intake for 47 State & Central higher education scholarships (September 2026 Reference).
+            <p className="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed">
+              Enter your student profile once. Our MWIS optimization engine checks 18+ statutory rules, detects collisions, and identifies your maximum benefit.
             </p>
           </div>
 
-          <div className="flex items-center space-x-2.5 shrink-0">
-            <button 
+          <div className="flex items-center space-x-2 shrink-0">
+            <button
               type="button"
               onClick={() => setVoiceModalOpen(true)}
-              className="flex items-center bg-white/10 hover:bg-white/15 active:scale-[0.98] border border-white/20 px-3 py-2 rounded-lg transition text-xs font-medium text-slate-200 cursor-pointer"
-              title="Speak your details in Tamil or English"
+              className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition cursor-pointer shadow-xs border border-emerald-500"
+              title="Speak naturally in Tamil or English to fill this form"
             >
-              <Mic size={14} className="mr-1.5 text-emerald-400" />
-              <span>குரல்வழி பதிவு / Voice Input</span>
+              <Mic size={14} className="animate-pulse text-amber-300" />
+              <span>குரல் வழி உள்ளீடு / Voice Assist</span>
             </button>
-            <div className="hidden md:block text-right border-l border-slate-700 pl-3">
-              <span className="text-[10px] text-slate-400 block">Form Identifier:</span>
-              <span className="font-mono text-xs text-emerald-400 font-semibold">FORM TN-SSP/2026</span>
-            </div>
           </div>
         </div>
-      </div>
 
-      {/* 2. Structured Step-Progress Tracker */}
-      <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
-        <div className="grid grid-cols-3 gap-3 relative">
-          {STEPS.map((stepItem, idx) => {
-            const isActive = step === idx;
-            const isCompleted = step > idx;
-
+        {/* 5-Step Progress Stepper */}
+        <div className="mt-6 pt-5 border-t border-slate-800 grid grid-cols-5 gap-2 text-center text-xs">
+          {STEPS.map((s, idx) => {
+            const isDone = step > idx;
+            const isCurrent = step === idx;
             return (
-              <div 
-                key={idx} 
+              <button
+                key={idx}
+                type="button"
                 onClick={() => setStep(idx)}
-                className={`flex items-center space-x-3 p-2.5 rounded-lg border transition cursor-pointer ${
-                  isActive 
-                    ? 'bg-white border-[#006a4e] shadow-xs' 
-                    : isCompleted 
-                    ? 'bg-white/80 border-slate-200 hover:border-slate-300' 
-                    : 'bg-transparent border-transparent opacity-60'
+                className={`flex flex-col items-center group cursor-pointer transition ${
+                  isCurrent ? 'text-white' : (isDone ? 'text-emerald-300' : 'text-slate-500 hover:text-slate-300')
                 }`}
               >
-                <div className={`w-7 h-7 rounded-md flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
-                  isCompleted 
-                    ? 'bg-[#006a4e] text-white' 
-                    : isActive 
-                    ? 'bg-[#0f2942] text-white' 
-                    : 'bg-slate-200 text-slate-600'
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-1.5 transition ${
+                  isCurrent 
+                    ? 'bg-emerald-500 text-slate-950 ring-4 ring-emerald-400/30' 
+                    : (isDone ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-800 text-slate-400')
                 }`}>
-                  {isCompleted ? <Check size={14} /> : idx + 1}
+                  {isDone ? <Check size={14} className="stroke-[3]" /> : idx + 1}
                 </div>
-                <div className="min-w-0">
-                  <div className={`text-xs font-bold truncate ${isActive ? 'text-[#006a4e]' : 'text-slate-800'}`}>
-                    {stepItem.title}
-                  </div>
-                  <div className="text-[10px] text-slate-500 truncate hidden sm:block">
-                    {stepItem.sub}
-                  </div>
-                </div>
-              </div>
+                <span className="font-semibold text-[11px] truncate w-full hidden sm:block">
+                  {currentLang === 'ta' ? s.title_ta : s.title}
+                </span>
+                <span className="text-[9px] text-slate-400 truncate w-full hidden md:block">
+                  Step {idx + 1}
+                </span>
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* 3. Form Body */}
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
         
-        {/* STEP 1: Academic Credentials & Schooling */}
+        {/* ========================================================= */}
+        {/* STEP 1: Personal Details                                  */}
+        {/* ========================================================= */}
         {step === 0 && (
-          <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="space-y-5 animate-in fade-in duration-200">
             <div className="border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2">
-                <GraduationCap size={18} className="text-[#006a4e]" />
-                <span>Step 1: Academic Profile & School Background</span>
+                <User size={18} className="text-emerald-700" />
+                <span>Step 1: Personal Demographics & Social Category</span>
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Schooling type directly determines statutory benefits like Pudhumai Penn (₹12,000) and the 7.5% reservation quota.
+                Basic candidate details to check gender-based stipends and community reservations.
               </p>
             </div>
 
-            {/* Logged-In User Sync Banner */}
-            {currentUser ? (
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between text-xs">
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#006a4e] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                    {(formData.full_name || currentUser.email || 'S').charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-1.5">
-                      <span className="font-bold text-slate-900">
-                        {formData.full_name || currentUser.profile?.full_name || currentUser.email}
-                      </span>
-                      <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300">
-                        {currentLang === 'ta' ? 'தானாக நிரப்பப்பட்டது' : 'Auto-Prefilled from Login'}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-600 mt-0.5">
-                      {currentLang === 'ta' 
-                        ? 'உங்கள் கணக்கின் விவரங்கள் படிவத்தில் தானாக நிரப்பப்பட்டுள்ளன. தேவைப்பட்டால் மாற்றலாம்.' 
-                        : 'Credentials prefilled from your authenticated student account. You can edit any value below.'}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFormData(extractFormData(currentUser, currentProfile))}
-                  className="flex items-center space-x-1 text-[11px] text-slate-500 hover:text-emerald-700 font-semibold transition px-2 py-1 rounded hover:bg-emerald-100/50 cursor-pointer shrink-0"
-                  title="Reload default credentials"
-                >
-                  <RefreshCw size={11} />
-                  <span className="hidden sm:inline">{currentLang === 'ta' ? 'மீட்டமை' : 'Reset to Profile'}</span>
-                </button>
-              </div>
-            ) : (
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between text-xs text-slate-600">
-                <div className="flex items-center space-x-2">
-                  <User size={15} className="text-slate-400 shrink-0" />
-                  <span>
-                    {currentLang === 'ta' 
-                      ? 'உங்கள் மாணவர் சுயவிவர விவரங்களை தானாக நிரப்ப உள்நுழையவும்.' 
-                      : 'Sign in to automatically populate and sync your student credentials.'}
-                  </span>
-                </div>
-                {onOpenAuth && (
-                  <button 
-                    type="button" 
-                    onClick={onOpenAuth}
-                    className="text-[11px] font-bold text-[#006a4e] hover:underline cursor-pointer shrink-0 ml-2"
-                  >
-                    {currentLang === 'ta' ? 'உள்நுழைய →' : 'Sign In →'}
-                  </button>
-                )}
-              </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              
               {/* Full Name */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Full Name of Student (மாணவர் பெயர் - As per 10th / 12th Certificate) <span className="text-red-500">*</span>
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Full Name (as per 10th / 12th Certificate) <span className="text-red-500">*</span>
                 </label>
-                <input 
-                  type="text" 
-                  name="full_name" 
-                  value={formData.full_name} 
-                  onChange={handleChange} 
-                  placeholder={currentLang === 'ta' ? 'மாணவரின் முழுப் பெயர் (சான்றிதழின்படி)...' : 'Enter student full name as per certificate...'} 
-                  required 
-                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition" 
+                <input
+                  type="text"
+                  name="full_name"
+                  required
+                  value={formData.full_name}
+                  onChange={handleChange}
+                  placeholder="e.g. Surya Suresh"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
-              {/* Schooling Type */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Type of School Studied (Classes 6 to 12) <span className="text-red-500">*</span>
-                </label>
-                <select 
-                  name="schooling_type" 
-                  value={formData.schooling_type} 
-                  onChange={handleChange} 
-                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition"
-                >
-                  <option value="tn_govt_school_6_to_12">Tamil Nadu Government School (Classes 6–12 continuously) • தமிழ்நாடு அரசுப் பள்ளி</option>
-                  <option value="govt_aided">Government Aided School (Tamil Medium) • அரசு உதவிபெறும் பள்ளி</option>
-                  <option value="private_cbse">Private Unaided / Matriculation / CBSE School • தனியார் மெட்ரிக் / சி.பி.எஸ்.இ</option>
-                  <option value="other">Other State Board / Open School • இதர வாரியம்</option>
-                </select>
-                <p className="text-[11px] text-slate-500 mt-1 flex items-center space-x-1">
-                  <HelpCircle size={12} className="text-slate-400 shrink-0" />
-                  <span>Continuous study from Class 6 to 12 in TN Govt schools unlocks Pudhumai Penn, Tamil Pudhalvan, and 7.5% Quota fee exemptions.</span>
-                </p>
-              </div>
-
-              {/* Admission Mode */}
+              {/* Age */}
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Higher Education Admission Mode <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Candidate Age <span className="text-red-500">*</span>
                 </label>
-                <select 
-                  name="admission_mode" 
-                  value={formData.admission_mode} 
-                  onChange={handleChange} 
-                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition"
-                >
-                  <option value="govt_counseling_single_window">TNEA / Single Window Government Counseling (ஒற்றைச் சாளர சேர்க்கை)</option>
-                  <option value="7.5_percent_govt_quota">7.5% Govt School Preferential Quota (7.5% சிறப்பு முன்னுரிமை இடஒதுக்கீடு)</option>
-                  <option value="management_quota">Management / Direct Institutional Quota (நிர்வாக ஒதுக்கீடு)</option>
-                </select>
+                <input
+                  type="number"
+                  name="age"
+                  min="15"
+                  max="35"
+                  required
+                  value={formData.age}
+                  onChange={handleChange}
+                  placeholder="18"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
               </div>
 
-              {/* Current Course */}
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Enrolled Degree / Course Stream <span className="text-red-500">*</span>
-                </label>
-                <select 
-                  name="current_course" 
-                  value={formData.current_course} 
-                  onChange={handleChange} 
-                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition"
-                >
-                  <option value="Engineering">B.E. / B.Tech (Engineering & Technology)</option>
-                  <option value="Arts & Science">B.Sc / B.A. / B.Com / BBA (Arts & Science)</option>
-                  <option value="Medical">MBBS / BDS / Paramedical / Nursing</option>
-                  <option value="Diploma">Polytechnic / 3-Year Engineering Diploma</option>
-                </select>
-              </div>
-
-              {/* 12th Board Marks */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  12th Board Examination Aggregate Percentage (%) <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input 
-                    type="number" 
-                    name="board_percentage" 
-                    value={formData.board_percentage} 
-                    onChange={handleChange} 
-                    placeholder="e.g. 88.5" 
-                    required 
-                    min="0" 
-                    max="100" 
-                    step="0.1" 
-                    className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition font-mono" 
-                  />
-                  <span className="absolute right-3.5 top-2.5 text-xs text-slate-400 font-bold">%</span>
-                </div>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Required for competitive Central Sector merit cutoffs (PM-USP CSSS requires 80th percentile; AICTE Pragati requires 85%+).
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: Demographics, Community & Income */}
-        {step === 1 && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2">
-                <ShieldCheck size={18} className="text-[#006a4e]" />
-                <span>Step 2: Social Category & Family Income</span>
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Statutory quotas and fee waivers operate under strict Government Order (G.O.) income thresholds.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Gender */}
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Gender (பாலினம்) <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Gender <span className="text-red-500">*</span>
                 </label>
-                <select 
-                  name="gender" 
-                  value={formData.gender} 
-                  onChange={handleChange} 
-                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition"
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                  <option value="female">Female (பெண்) — Eligible for Pudhumai Penn & AICTE Pragati</option>
-                  <option value="male">Male (ஆண்) — Eligible for Tamil Pudhalvan</option>
+                  <option value="male">Male (ஆண் - Eligible for Tamil Pudhalvan)</option>
+                  <option value="female">Female (பெண் - Eligible for Pudhumai Penn / Pragati)</option>
                   <option value="transgender">Transgender (திருநங்கை / திருநம்பி)</option>
                 </select>
               </div>
 
               {/* Community Category */}
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Community Category (இடஒதுக்கீட்டுப் பிரிவு) <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Community Category <span className="text-red-500">*</span>
                 </label>
-                <select 
-                  name="community" 
-                  value={formData.community} 
-                  onChange={handleChange} 
-                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition"
+                <select
+                  name="community"
+                  value={formData.community}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                  <option value="BC">BC - Backward Classes (பிற்படுத்தப்பட்டோர்)</option>
-                  <option value="MBC">MBC / DNC - Most Backward Classes / Denotified (மிகவும் பிற்படுத்தப்பட்டோர்)</option>
-                  <option value="SC">SC - Scheduled Caste (ஆதிதிராவிடர்)</option>
-                  <option value="ST">ST - Scheduled Tribe (பழங்குடியினர்)</option>
-                  <option value="SCC">SCC - Converted Christian from SC (கிறிஸ்தவ ஆதிதிராவிடர்)</option>
-                  <option value="OC">OC - Open Category / General (பொதுப் பிரிவு)</option>
+                  <option value="BC">BC — Backward Class (பிற்படுத்தப்பட்டோர்)</option>
+                  <option value="BCM">BCM — Backward Class Muslim</option>
+                  <option value="MBC">MBC / DNC — Most Backward Class / சீர்மரபினர்</option>
+                  <option value="SC">SC — Scheduled Caste (ஆதிதிராவிடர்)</option>
+                  <option value="SCA">SCA — Scheduled Caste Arunthathiyar</option>
+                  <option value="ST">ST — Scheduled Tribe (பழங்குடியினர்)</option>
+                  <option value="OC">OC — Open Competition / General</option>
                 </select>
               </div>
 
-              {/* Annual Income */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Annual Family Income (ஆண்டு குடும்ப வருமானம் - Revenue Certificate) <span className="text-red-500">*</span>
+              {/* Home District */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Home District (Tamil Nadu) <span className="text-red-500">*</span>
                 </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-2.5 text-sm text-slate-500 font-bold">₹</span>
-                  <input 
-                    type="number" 
-                    name="annual_income" 
-                    value={formData.annual_income} 
-                    onChange={handleChange} 
-                    placeholder="120000" 
-                    required 
-                    min="0" 
-                    step="1000" 
-                    className="w-full rounded-lg border border-slate-300 pl-8 pr-4 py-2.5 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none transition font-mono" 
-                  />
-                </div>
-                <div className="flex flex-wrap gap-2 text-[11px] text-slate-500 mt-1.5">
-                  <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">PMS SC/ST Ceiling: ≤ ₹2,50,000</span>
-                  <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">BC/MBC Ceiling: ≤ ₹2,50,000</span>
-                  <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">CSSS Ceiling: ≤ ₹4,50,000</span>
-                </div>
+                <select
+                  name="district"
+                  value={formData.district}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="Chennai">Chennai</option>
+                  <option value="Coimbatore">Coimbatore</option>
+                  <option value="Madurai">Madurai</option>
+                  <option value="Tiruchirappalli">Tiruchirappalli</option>
+                  <option value="Salem">Salem</option>
+                  <option value="Pudukkottai">Pudukkottai</option>
+                  <option value="Thanjavur">Thanjavur</option>
+                  <option value="Tirunelveli">Tirunelveli</option>
+                  <option value="Vellore">Vellore</option>
+                  <option value="Erode">Erode</option>
+                  <option value="Dindigul">Dindigul</option>
+                  <option value="Kanchipuram">Kanchipuram</option>
+                  <option value="Other TN District">Other Tamil Nadu District</option>
+                </select>
               </div>
 
-              {/* First Graduate Toggle Box */}
-              <div className="md:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <label className="flex items-start space-x-3 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    name="is_first_graduate" 
-                    checked={formData.is_first_graduate} 
-                    onChange={handleChange} 
-                    className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#006a4e] focus:ring-[#006a4e]" 
-                  />
-                  <div>
-                    <span className="text-xs font-bold text-slate-900 block">
-                      First Graduate in Family (குடும்பத்தில் முதல் தலைமுறை பட்டதாரி)
-                    </span>
-                    <span className="text-[11px] text-slate-600 block mt-0.5 leading-relaxed">
-                      Check this if neither of your parents nor any elder sibling has obtained a university degree. Unlocks 100% tuition concession (up to ₹25,000/yr) with <strong>no parental income ceiling</strong>.
-                    </span>
-                  </div>
+              {/* Residence Information */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Residence Area
                 </label>
+                <select
+                  name="residence_type"
+                  value={formData.residence_type}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="Rural">Rural Village Panchayat (கிராமப்புறம்)</option>
+                  <option value="Urban">Urban City / Municipal Corporation (நகர்ப்புறம்)</option>
+                  <option value="Semi-Urban">Semi-Urban / Town Panchayat</option>
+                </select>
               </div>
 
-              {/* Differently Abled Status Box */}
-              <div className="md:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                <label className="flex items-start space-x-3 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    name="is_differently_abled" 
-                    checked={formData.is_differently_abled} 
-                    onChange={handleChange} 
-                    className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#006a4e] focus:ring-[#006a4e]" 
-                  />
-                  <div>
-                    <span className="text-xs font-bold text-slate-900 block">
-                      Person with Benchmark Disability (PwD / மாற்றுத்திறனாளி)
-                    </span>
-                    <span className="text-[11px] text-slate-600 block mt-0.5">
-                      Possesses a disability certificate or Unique Disability ID (UDID) issued by the Medical Board.
-                    </span>
-                  </div>
-                </label>
-
-                {formData.is_differently_abled && (
-                  <div className="pl-7 pt-2 border-t border-slate-200/80">
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Disability Percentage (% - as stated in UDID / Medical Certificate)
-                    </label>
-                    <input 
-                      type="number" 
-                      name="disability_percentage" 
-                      value={formData.disability_percentage} 
-                      onChange={handleChange} 
-                      placeholder="e.g. 45" 
-                      min="40" 
-                      max="100" 
-                      className="w-48 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e] outline-none font-mono" 
-                    />
-                    <span className="text-[11px] text-slate-500 block mt-1">Minimum 40% benchmark disability required for AICTE Saksham and State PwD welfare.</span>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         )}
 
-        {/* STEP 3: Document Readiness & Verification */}
-        {step === 2 && (
-          <div className="space-y-6 animate-in fade-in duration-200">
+        {/* ========================================================= */}
+        {/* STEP 2: Academic Details                                  */}
+        {/* ========================================================= */}
+        {step === 1 && (
+          <div className="space-y-5 animate-in fade-in duration-200">
             <div className="border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2">
-                <FileCheck2 size={18} className="text-[#006a4e]" />
-                <span>Step 3: Tahsildar & e-Sevai Document Checklist</span>
+                <GraduationCap size={18} className="text-emerald-700" />
+                <span>Step 2: Academic Program & Board Performance</span>
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Our engine uses your document readiness score to determine whether your payout is 100% statutory or requires pending certificates.
+                Degree course, institution type, and 12th board marks for merit-cum-means thresholds.
               </p>
             </div>
 
-            <div className="space-y-2.5">
-              {documentOptions.map((doc) => {
-                const isSelected = formData.available_docs.includes(doc.id);
-
-                return (
-                  <div 
-                    key={doc.id}
-                    onClick={() => handleDocToggle(doc.id)}
-                    className={`p-3.5 rounded-lg border transition cursor-pointer flex items-start justify-between gap-3 ${
-                      isSelected 
-                        ? 'bg-emerald-50/50 border-[#006a4e]' 
-                        : 'bg-white border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className={`w-5 h-5 rounded flex items-center justify-center mt-0.5 border shrink-0 transition ${
-                        isSelected 
-                          ? 'bg-[#006a4e] border-[#006a4e] text-white' 
-                          : 'bg-white border-slate-300'
-                      }`}>
-                        {isSelected && <Check size={12} strokeWidth={3} />}
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">
-                          {doc.label}
-                        </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">
-                          {doc.detail}
-                        </div>
-                      </div>
-                    </div>
-
-                    <span className="font-mono text-[10px] text-slate-400 font-semibold px-2 py-0.5 bg-slate-100 rounded shrink-0 hidden sm:inline-block">
-                      {doc.code}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Document Readiness Summary */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-xs text-slate-700 font-medium">
-                <ShieldCheck size={16} className="text-[#006a4e]" />
-                <span>Document Readiness Score:</span>
-                <strong className="text-slate-900">{formData.available_docs.length} of {documentOptions.length} Certificates Verified</strong>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              
+              {/* Degree Level */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Degree Level <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="degree"
+                  value={formData.degree}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="Undergraduate (UG)">Undergraduate (UG / B.E / B.Tech / B.Sc / B.A / MBBS)</option>
+                  <option value="Postgraduate (PG)">Postgraduate (PG / M.E / M.Sc / MBA / MCA)</option>
+                  <option value="Diploma / Polytechnic">Diploma / Polytechnic (3 Years)</option>
+                </select>
               </div>
-              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
-                formData.available_docs.length >= 4 
-                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
-                  : 'bg-amber-100 text-amber-800 border border-amber-200'
-              }`}>
-                {formData.available_docs.length >= 4 ? 'e-Sevai Ready' : 'Pending Certificates'}
-              </span>
+
+              {/* Course Discipline */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Course Discipline <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="current_course"
+                  value={formData.current_course}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="Engineering">Engineering & Technology (B.E / B.Tech)</option>
+                  <option value="Arts & Science">Arts & Science (B.Sc, B.Com, B.A)</option>
+                  <option value="Medical">Medical / Dental / Paramedical (MBBS, BDS, B.Pharm)</option>
+                  <option value="Law">Law (LLB / BA LLB)</option>
+                  <option value="Diploma">Polytechnic / Technical Diploma</option>
+                </select>
+              </div>
+
+              {/* Institution / College Name */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  College / Institution Name
+                </label>
+                <input
+                  type="text"
+                  name="college_name"
+                  value={formData.college_name}
+                  onChange={handleChange}
+                  placeholder="e.g. Government College of Technology, Coimbatore"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* College Type */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  College Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="college_type"
+                  value={formData.college_type}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="Government">Government Autonomous College</option>
+                  <option value="Government Aided">Government Aided Institution</option>
+                  <option value="Private Self-Financing">Private Self-Financing (Anna Univ / State Univ Affiliated)</option>
+                  <option value="Central Institution">Central Institution (IIT, NIT, Central Univ)</option>
+                </select>
+              </div>
+
+              {/* Year of Study */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Year of Study <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="year_of_study"
+                  value={formData.year_of_study}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="1st Year (Fresher)">1st Year (Fresher / Fresh Sanction)</option>
+                  <option value="2nd Year">2nd Year (Renewal)</option>
+                  <option value="3rd Year">3rd Year (Renewal)</option>
+                  <option value="4th Year">4th Year (Final Year Renewal)</option>
+                </select>
+              </div>
+
+              {/* 12th Board Score */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Class 12th Board Marks (%) <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="35"
+                    max="100"
+                    required
+                    name="board_percentage"
+                    value={formData.board_percentage}
+                    onChange={handleChange}
+                    placeholder="88.5"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-3.5 pr-8 py-2.5 text-xs font-mono font-bold text-emerald-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                  <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-bold">%</span>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 block">NSP CSSS requires &gt;80%; AICTE Pragati requires &gt;85%.</span>
+              </div>
+
             </div>
           </div>
         )}
 
-        {/* 4. Action Buttons Footer */}
-        <div className="pt-5 border-t border-slate-200 flex items-center justify-between">
+        {/* ========================================================= */}
+        {/* STEP 3: Family & Income Details                           */}
+        {/* ========================================================= */}
+        {step === 2 && (
+          <div className="space-y-5 animate-in fade-in duration-200">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2">
+                <IndianRupee size={18} className="text-emerald-700" />
+                <span>Step 3: Family Annual Income & First Graduate Status</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Statutory economic criteria determined from Revenue Department e-District income certificate.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              
+              {/* Annual Family Income */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Annual Family Income (in ₹) <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-2.5 text-xs text-slate-500 font-bold">₹</span>
+                  <input
+                    type="number"
+                    name="annual_income"
+                    required
+                    min="0"
+                    max="2000000"
+                    step="5000"
+                    value={formData.annual_income}
+                    onChange={handleChange}
+                    placeholder="140000"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-8 pr-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+                <div className="flex items-center space-x-2 mt-1.5">
+                  <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">
+                    ₹{Number(formData.annual_income || 0).toLocaleString('en-IN')} / Year
+                  </span>
+                  <span className="text-[10px] text-slate-500">
+                    (BC/MBC limit: ₹2.5L; SC/ST limit: ₹2.5L; Central CSSS: ₹4.5L)
+                  </span>
+                </div>
+              </div>
+
+              {/* Income Certificate Status */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  e-District Income Certificate Availability
+                </label>
+                <select
+                  name="has_income_certificate"
+                  value={formData.has_income_certificate}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="yes">Yes, active Tahsildar e-Certificate with barcode</option>
+                  <option value="in_progress">Applied at e-Sevai / Pending Tahsildar approval</option>
+                  <option value="no">Not yet applied</option>
+                </select>
+              </div>
+
+              {/* First Graduate Toggle */}
+              <div className="md:col-span-2 p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                      <Award size={14} className="text-emerald-700" />
+                      <span>First Graduate in Immediate Family (முதல் பட்டதாரி)?</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-600 leading-relaxed max-w-xl">
+                      Under G.O. (Ms) No. 85, candidates whose parents or siblings have not completed any degree program are eligible for a 100% Tuition Fee Concession (₹25,000/yr) through Single Window Counseling.
+                    </p>
+                  </div>
+
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      name="is_first_graduate"
+                      checked={formData.is_first_graduate}
+                      onChange={handleChange}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* STEP 4: Special Eligibility & Documents                   */}
+        {/* ========================================================= */}
+        {step === 3 && (
+          <div className="space-y-5 animate-in fade-in duration-200">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2">
+                <ShieldCheck size={18} className="text-emerald-700" />
+                <span>Step 4: Schooling Background, Quotas & Document Readiness</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Schooling type from Class 6 to 12 unlocks statutory DBT allowances (Pudhumai Penn / Tamil Pudhalvan).
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              
+              {/* Schooling Background */}
+              <div className="md:col-span-2">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                  Classes 6th to 12th Schooling Background <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <label className={`p-3.5 rounded-xl border flex items-start space-x-3 cursor-pointer transition ${
+                    formData.schooling_type === 'tn_govt_school_6_to_12'
+                      ? 'bg-emerald-50 border-emerald-500 text-emerald-950 font-bold ring-2 ring-emerald-500/20'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="schooling_type"
+                      value="tn_govt_school_6_to_12"
+                      checked={formData.schooling_type === 'tn_govt_school_6_to_12'}
+                      onChange={handleChange}
+                      className="mt-0.5 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <div>
+                      <span className="block font-bold">TN Government School (6th to 12th)</span>
+                      <span className="text-[11px] text-slate-500 font-normal">Qualifies for ₹1,000/mo DBT (Pudhumai Penn / Tamil Pudhalvan) + 7.5% Govt Quota.</span>
+                    </div>
+                  </label>
+
+                  <label className={`p-3.5 rounded-xl border flex items-start space-x-3 cursor-pointer transition ${
+                    formData.schooling_type === 'govt_aided'
+                      ? 'bg-emerald-50 border-emerald-500 text-emerald-950 font-bold ring-2 ring-emerald-500/20'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="schooling_type"
+                      value="govt_aided"
+                      checked={formData.schooling_type === 'govt_aided'}
+                      onChange={handleChange}
+                      className="mt-0.5 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <div>
+                      <span className="block font-bold">Government Aided / Matriculation / CBSE</span>
+                      <span className="text-[11px] text-slate-500 font-normal">Eligible for Post-Matric, First Graduate, and NSP CSSS merit scholarships.</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Differently Abled Toggle */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800">Differently Abled Benchmark Candidate?</span>
+                  <input
+                    type="checkbox"
+                    name="is_differently_abled"
+                    checked={formData.is_differently_abled}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                  />
+                </div>
+                {formData.is_differently_abled && (
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Disability Percentage (%)</label>
+                    <input
+                      type="number"
+                      name="disability_percentage"
+                      min="40"
+                      max="100"
+                      value={formData.disability_percentage}
+                      onChange={handleChange}
+                      placeholder="40"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-mono"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Special Category */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <label className="block text-xs font-bold text-slate-800">Special Reservation Category</label>
+                <select
+                  name="special_category"
+                  value={formData.special_category}
+                  onChange={handleChange}
+                  className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs"
+                >
+                  <option value="None">General Student Category</option>
+                  <option value="7.5% Govt School Quota">7.5% Tamil Nadu Govt School Preferential Allotment</option>
+                  <option value="Single Parent / Orphan">Children of Single Parent / Orphan</option>
+                  <option value="Sports Quota">State / National Level Sports Quota</option>
+                </select>
+              </div>
+
+              {/* Document Readiness Checklist */}
+              <div className="md:col-span-2 pt-2">
+                <h4 className="font-bold text-slate-900 text-xs mb-2 flex items-center space-x-1.5">
+                  <FileCheck2 size={15} className="text-emerald-700" />
+                  <span>Available e-Sevai & Academic Documents (Select all you possess):</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {documentOptions.map(doc => {
+                    const isChecked = formData.available_docs.includes(doc.id);
+                    return (
+                      <div 
+                        key={doc.id}
+                        onClick={() => handleDocToggle(doc.id)}
+                        className={`p-3 rounded-xl border text-xs cursor-pointer transition flex items-start space-x-2.5 ${
+                          isChecked 
+                            ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950 font-semibold' 
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {}}
+                          className="mt-0.5 text-emerald-600 rounded focus:ring-emerald-500 pointer-events-none"
+                        />
+                        <div className="min-w-0">
+                          <span className="block text-[11px] font-bold text-slate-900">{doc.label}</span>
+                          <span className="text-[10px] text-slate-500 leading-tight block">{doc.detail}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* STEP 5: Profile Review & Confirmation                     */}
+        {/* ========================================================= */}
+        {step === 4 && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2">
+                <CheckCircle2 size={18} className="text-emerald-700" />
+                <span>Step 5: Review Profile & Run Optimization Engine</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Verify your credentials. Clicking "Find My Scholarships" will execute the MWIS algorithm to calculate your optimal legitimate financial benefit.
+              </p>
+            </div>
+
+            {/* Structured Summary Breakdown */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              
+              {/* Box 1: Personal */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 relative group">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="font-bold text-slate-800 flex items-center space-x-1.5">
+                    <User size={13} className="text-emerald-700" />
+                    <span>Personal Details</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setStep(0)}
+                    className="text-[10px] font-bold text-emerald-700 hover:underline flex items-center space-x-0.5 cursor-pointer"
+                  >
+                    <Edit3 size={10} />
+                    <span>Edit</span>
+                  </button>
+                </div>
+                <div className="space-y-1 text-slate-600">
+                  <div className="flex justify-between"><span className="text-slate-500">Name:</span> <strong className="text-slate-900">{formData.full_name}</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Gender / Age:</span> <span className="text-slate-800 capitalize">{formData.gender} • {formData.age} yrs</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Community:</span> <span className="font-mono font-bold text-emerald-800 bg-emerald-100 px-1.5 rounded">{formData.community}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">District:</span> <span className="text-slate-800">{formData.district}, TN</span></div>
+                </div>
+              </div>
+
+              {/* Box 2: Academic */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 relative group">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="font-bold text-slate-800 flex items-center space-x-1.5">
+                    <GraduationCap size={13} className="text-emerald-700" />
+                    <span>Academic Details</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="text-[10px] font-bold text-emerald-700 hover:underline flex items-center space-x-0.5 cursor-pointer"
+                  >
+                    <Edit3 size={10} />
+                    <span>Edit</span>
+                  </button>
+                </div>
+                <div className="space-y-1 text-slate-600">
+                  <div className="flex justify-between"><span className="text-slate-500">Degree & Course:</span> <strong className="text-slate-900 truncate ml-2">{formData.current_course}</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Institution:</span> <span className="text-slate-800 truncate ml-2">{formData.college_type}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Year of Study:</span> <span className="text-slate-800">{formData.year_of_study}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">12th Board Score:</span> <strong className="text-emerald-700 font-mono">{formData.board_percentage}%</strong></div>
+                </div>
+              </div>
+
+              {/* Box 3: Income & Family */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 relative group">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="font-bold text-slate-800 flex items-center space-x-1.5">
+                    <IndianRupee size={13} className="text-emerald-700" />
+                    <span>Family & Income</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="text-[10px] font-bold text-emerald-700 hover:underline flex items-center space-x-0.5 cursor-pointer"
+                  >
+                    <Edit3 size={10} />
+                    <span>Edit</span>
+                  </button>
+                </div>
+                <div className="space-y-1 text-slate-600">
+                  <div className="flex justify-between"><span className="text-slate-500">Family Annual Income:</span> <strong className="text-slate-900 font-mono">₹{Number(formData.annual_income).toLocaleString('en-IN')}</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-500">First Graduate Status:</span> <span className={`font-bold ${formData.is_first_graduate ? 'text-emerald-700' : 'text-slate-600'}`}>{formData.is_first_graduate ? 'Yes (Verified)' : 'No'}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Income Certificate:</span> <span className="text-emerald-800 capitalize">{formData.has_income_certificate}</span></div>
+                </div>
+              </div>
+
+              {/* Box 4: Special Eligibility */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 relative group">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="font-bold text-slate-800 flex items-center space-x-1.5">
+                    <ShieldCheck size={13} className="text-emerald-700" />
+                    <span>Special Eligibility</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setStep(3)}
+                    className="text-[10px] font-bold text-emerald-700 hover:underline flex items-center space-x-0.5 cursor-pointer"
+                  >
+                    <Edit3 size={10} />
+                    <span>Edit</span>
+                  </button>
+                </div>
+                <div className="space-y-1 text-slate-600">
+                  <div className="flex justify-between"><span className="text-slate-500">6-12 Schooling:</span> <strong className="text-slate-900">{formData.schooling_type === 'tn_govt_school_6_to_12' ? 'TN Govt School' : 'Aided / Private'}</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Special Quota:</span> <span className="text-slate-800">{formData.special_category}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">e-Sevai Docs Ready:</span> <span className="font-bold text-emerald-700">{formData.available_docs.length} of {documentOptions.length} Documents</span></div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Core Principle Assurance Banner */}
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start space-x-3 text-xs text-emerald-950">
+              <ShieldCheck size={20} className="text-emerald-700 shrink-0 mt-0.5" />
+              <div>
+                <strong className="block font-bold">Strict Conflict-Free Optimization Guarantee:</strong>
+                <p className="text-emerald-800 text-[11px] leading-relaxed mt-0.5">
+                  Our system evaluates all 18+ state and central scholarship schemes, eliminates mutual policy collisions (such as dual state/central tuition claims), and calculates the legitimate combination that provides your maximum financial benefit.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* Wizard Navigation Footer                                  */}
+        {/* ========================================================= */}
+        <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-4">
+          
           {step > 0 ? (
             <button
               type="button"
               onClick={prevStep}
-              className="flex items-center px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 active:scale-[0.98] transition cursor-pointer"
+              className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs transition flex items-center space-x-1 cursor-pointer"
             >
-              <ChevronLeft size={16} className="mr-1" />
-              <span>Back</span>
+              <ChevronLeft size={16} />
+              <span>Back / பின்செல்</span>
             </button>
           ) : (
-            <div></div>
+            <div />
           )}
 
-          {step < 2 ? (
+          {step < 4 ? (
             <button
               type="button"
               onClick={nextStep}
-              className="flex items-center px-5 py-2.5 rounded-lg bg-[#0f2942] hover:bg-[#1a3d5f] active:scale-[0.98] text-white font-bold text-xs shadow-xs transition cursor-pointer"
+              className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center space-x-1.5 cursor-pointer shadow-sm"
             >
-              <span>Continue</span>
-              <ChevronRight size={16} className="ml-1" />
+              <span>Next: {STEPS[step + 1]?.title}</span>
+              <ChevronRight size={16} />
             </button>
           ) : (
             <button
               type="submit"
-              className="flex items-center px-6 py-2.5 rounded-lg bg-[#006a4e] hover:bg-[#00523d] active:scale-[0.98] text-white font-bold text-xs shadow-xs transition cursor-pointer"
+              className="px-7 py-3 rounded-xl bg-[#006a4e] hover:bg-emerald-800 text-white font-bold text-sm transition flex items-center space-x-2 cursor-pointer shadow-md transform active:scale-98"
             >
-              <span>மதிப்பீட்டைத் தொடங்குக • Run MWIS Policy Solver →</span>
+              <Sparkles size={16} className="text-amber-300 fill-amber-300" />
+              <span>Find My Scholarships / தகுதியான திட்டங்களைக் கண்டறிக</span>
+              <ArrowRight size={16} />
             </button>
           )}
+
         </div>
 
       </form>
@@ -730,7 +996,7 @@ export default function ProfileForm({
       <VoiceAssistModal
         isOpen={isVoiceModalOpen}
         onClose={() => setVoiceModalOpen(false)}
-        onDataExtracted={applyVoiceData}
+        onFillForm={applyVoiceData}
       />
 
     </div>

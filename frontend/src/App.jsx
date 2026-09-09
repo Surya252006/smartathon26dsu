@@ -12,6 +12,8 @@ import DbConfigModal from './components/DbConfigModal';
 import ApplicationTracker from './components/ApplicationTracker';
 import NoticeBoardModal from './components/NoticeBoardModal';
 import GrievanceModal from './components/GrievanceModal';
+import AdminDashboard from './components/AdminDashboard';
+import { evaluateProfileIntelligently } from './utils/decisionEngine';
 import { DEMO_PERSONAS } from './data/demoPersonas';
 import { TRANSLATIONS } from './utils/translations';
 
@@ -126,11 +128,14 @@ function App() {
       
       if (!response.ok) throw new Error('API Error');
       const data = await response.json();
-      setResult(data);
+      const localEnriched = evaluateProfileIntelligently(formData);
+      setResult({ ...localEnriched, ...data });
       setCurrentTab('results');
     } catch (err) {
-      console.error(err);
-      alert("Failed to evaluate profile. Please check if the backend is running at http://localhost:8000.");
+      console.warn("Backend API not reachable (running in client-mode / Firebase Hosting). Using intelligent decision engine.", err);
+      const data = evaluateProfileIntelligently(formData);
+      setResult(data);
+      setCurrentTab('results');
     } finally {
       setIsEvaluating(false);
     }
@@ -174,6 +179,7 @@ function App() {
         onOpenDbConfig={() => setShowDbModal(true)}
         onOpenNotices={() => setShowNoticeModal(true)}
         onOpenGrievance={() => setShowGrievanceModal(true)}
+        onOpenAdmin={() => setCurrentTab('admin')}
       />
 
       {/* 2. Main Content Container */}
@@ -292,6 +298,14 @@ function App() {
                 currentLang={currentLang}
                 onBackToHome={() => setCurrentTab('home')}
                 onOpenGrievance={() => setShowGrievanceModal(true)}
+              />
+            )}
+
+            {/* VIEW G: Future-Ready Admin & Scholarship Rule Builder */}
+            {currentTab === 'admin' && (
+              <AdminDashboard
+                onBackToHome={() => setCurrentTab('home')}
+                currentLang={currentLang}
               />
             )}
 
