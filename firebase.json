@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "tnscheme-ai-dsu-oneyes",
     "public": "frontend/dist",
     "ignore": [
       "firebase.json",
