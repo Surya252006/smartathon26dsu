@@ -34,8 +34,17 @@ def is_scheme_eligible(profile: UserProfile, scheme: dict) -> Tuple[bool, List[s
         
     # 5. Government school only
     govt_school_only = criteria.get("govt_school_only", False)
-    if govt_school_only and profile.schooling_type != "tn_govt_school_6_to_12":
-        reasons.append("Requires 6th-12th study in TN Government School")
+    st = str(getattr(profile, 'schooling_type', '') or "").lower()
+    ct = str(getattr(profile, 'college_type', '') or "").lower()
+    is_govt = (
+        st == "tn_govt_school_6_to_12" or 
+        "govt" in st or 
+        ct == "government" or 
+        "government" in ct or
+        getattr(profile, 'is_govt_school', False)
+    )
+    if govt_school_only and not is_govt:
+        reasons.append("Requires continuous study in Tamil Nadu Government Schools")
         
     # 6. First graduate only
     if criteria.get("first_graduate_only", False) and not profile.is_first_graduate:
@@ -45,10 +54,109 @@ def is_scheme_eligible(profile: UserProfile, scheme: dict) -> Tuple[bool, List[s
     if criteria.get("differently_abled_only", False) and not profile.is_differently_abled:
         reasons.append("Requires differently abled status")
         
-    # 8. Course check
+    # 8. Course & Grade Level check (Collegiate vs School Class 1 to 12 vs Ph.D.)
+    c_lower = str(profile.current_course or "").lower()
+    d_lower = str(getattr(profile, 'degree', '') or "").lower()
+    
+    is_school = any(k in c_lower or k in d_lower for k in [
+        "class", "school", "primary", "middle", "sslc", "hsc", "grade",
+        "வகுப்பு", "பள்ளி", "std"
+    ]) or any(d_lower.startswith(p) for p in ["primary", "middle", "high school", "higher secondary"])
+    
+    is_phd = "phd" in c_lower or "ph.d" in c_lower or "research" in c_lower or "doctorate" in c_lower or "phd" in d_lower
+    
+    scheme_id = scheme.get("id", "")
     allowed_courses = criteria.get("allowed_courses", ["All"])
-    if "All" not in allowed_courses:
-        c_lower = str(profile.current_course or "").lower()
+    
+    # A. Check PhD exclusivity
+    if scheme_id == "cm-research-fellowship" or "fellowship" in scheme.get("category", ""):
+        if not is_phd:
+            reasons.append("Exclusively for Ph.D. doctoral research scholars")
+            return False, reasons
+            
+    # B. Collegiate-only schemes: must NOT be awarded to current school students
+    COLLEGIATE_ONLY_IDS = {
+        "tn-first-graduate", "first-graduate", "tn-pudhumai-penn", "pudhumai-penn",
+        "tn-tamil-pudhalvan", "tamil-pudhalvan", "cm-research-fellowship", "aicte-pragati",
+        "pm-usp-csss", "post-matric-sc", "post-matric-st", "pm-yasasvi-post-matric",
+        "minority-post-matric", "free-education-bc-mbc", "mcm-minorities", "pwd-post-matric",
+        "naan-mudhalvan", "vetri-laptop", "cm-breakfast-scheme-college",
+        "stipend-tamil-medium", "deceased-govt-servants-scholarship", "free-education-bc-mbc-dnc",
+        "minority-mcm", "pm-yasasvi-top-class"
+    }
+    target_lower = scheme.get("target_beneficiaries", "").lower()
+    if is_school:
+        if scheme_id in COLLEGIATE_ONLY_IDS or ("post-matric" in scheme_id and "pre-matric" not in scheme_id):
+            reasons.append("Requires completed 12th standard and active enrollment in higher education (UG/PG/Diploma)")
+            return False, reasons
+        if ("college" in target_lower or "undergraduate" in target_lower or "postgraduate" in target_lower) and "school" not in target_lower and "class" not in target_lower:
+            reasons.append("Designated for college and university students only")
+            return False, reasons
+
+    # C. School-only schemes: must NOT be awarded to college/university students
+    SCHOOL_ONLY_IDS = {
+        "cm-breakfast-scheme", "pm-poshan", "free-bicycle-scheme", "free-textbooks-notebooks",
+        "free-guides-question-banks", "nmms-scholarship", "samagra-shiksha", "pre-matric-sc",
+        "pre-matric-st", "pm-yasasvi-pre-matric", "minority-pre-matric", "pwd-pre-matric",
+        "rural-girls-scholarship", "thiran-next", "rte-25-reimbursement"
+    }
+    if not is_school and (scheme_id in SCHOOL_ONLY_IDS or "pre-matric" in scheme_id):
+        reasons.append("Exclusively for currently enrolled school students (Classes 1 to 12)")
+        return False, reasons
+
+    # D. School Grade-Level Precision Matching
+    if is_school:
+        import re
+        grade_match = re.search(r'(?:class|std|grade|வகுப்பு)\s*(\d+)', f"{c_lower} {d_lower}")
+        grade_num = int(grade_match.group(1)) if grade_match else None
+        if grade_num is None:
+            if "primary" in c_lower or "primary" in d_lower or "தொடக்க" in d_lower: grade_num = 3
+            elif "middle" in c_lower or "middle" in d_lower or "நடுநிலை" in d_lower: grade_num = 7
+            elif "high school" in c_lower or "sslc" in c_lower or "10" in c_lower or "உயர்நிலை" in d_lower: grade_num = 10
+            elif "higher secondary" in c_lower or "hsc" in c_lower or "11" in c_lower or "12" in c_lower or "மேல்நிலை" in d_lower: grade_num = 11
+
+        # Breakfast scheme: Class 1 to 5
+        if scheme_id == "cm-breakfast-scheme" and grade_num is not None and grade_num > 5:
+            reasons.append(f"Chief Minister's Breakfast Scheme is allocated for Primary Schools (Classes 1 to 5); current grade is Class {grade_num}.")
+            return False, reasons
+            
+        # Free Bicycle scheme: Class 11 and 12 only
+        if scheme_id == "free-bicycle-scheme" and grade_num is not None and grade_num < 11:
+            reasons.append(f"Free Bicycle Scheme is exclusively distributed to Higher Secondary students (Classes 11 & 12); current grade is Class {grade_num}.")
+            return False, reasons
+            
+        # Pre-Matric SC/ST/OBC/Minority: Class 9 and 10 only (Class 1-8 for PwD)
+        if ("pre-matric" in scheme_id and scheme_id != "pwd-pre-matric") and grade_num is not None and (grade_num < 9 or grade_num > 10):
+            reasons.append(f"Pre-Matric scholarship covers secondary examination classes (Class 9 & 10); current grade is Class {grade_num}.")
+            return False, reasons
+
+        # NMMS: Class 9 to 12
+        if scheme_id == "nmms-scholarship" and grade_num is not None and grade_num < 9:
+            reasons.append("NMMS scholarship disbursal commences in Class 9 following the Class 8 qualifying examination.")
+            return False, reasons
+
+        # Question Banks & Guides: Class 10 & 12 Board Exam students
+        if scheme_id == "free-guides-question-banks" and grade_num is not None and grade_num not in [10, 12]:
+            reasons.append("Board Exam study materials and question banks are designated for Class 10 (SSLC) and Class 12 (HSC) board students.")
+            return False, reasons
+            
+        # Free textbooks & notebooks: Class 1 to 8
+        if scheme_id == "free-textbooks-notebooks" and grade_num is not None and grade_num > 8:
+            reasons.append(f"Free textbook distribution scheme applies to Elementary and Middle schools (Classes 1 to 8); current grade is Class {grade_num}.")
+            return False, reasons
+
+        # RTE 25% reimbursement: only for private school quota admissions
+        if scheme_id == "rte-25-reimbursement" and profile.schooling_type == "tn_govt_school_6_to_12":
+            reasons.append("RTE 25% fee reimbursement applies to private unaided schools; candidate is currently in a Government school.")
+            return False, reasons
+
+        # Minority Pre-Matric: for BCM / notified religious minorities
+        if scheme_id == "minority-pre-matric" and (profile.community or "").upper() not in ["BCM", "MINORITY"]:
+            reasons.append("Minority Pre-Matric is strictly for notified religious/linguistic minorities (BCM/Minority).")
+            return False, reasons
+
+    # E. General Course Check for Collegiate
+    if not is_school and "All" not in allowed_courses:
         matched = False
         for ac in allowed_courses:
             ac_lower = ac.lower()
@@ -63,17 +171,17 @@ def is_scheme_eligible(profile: UserProfile, scheme: dict) -> Tuple[bool, List[s
                 break
         if not matched:
             reasons.append(f"Course {profile.current_course} not in allowed courses {allowed_courses}")
-        
+
     return len(reasons) == 0, reasons
 
 def calculate_selection_probability(profile: UserProfile, scheme: dict) -> SelectionProbability:
     category = scheme.get("category", "entitlement")
     
-    if category == "entitlement":
+    if category in ["entitlement", "welfare_inkind"]:
         return SelectionProbability(
             score=98.0,
             level="Guaranteed",
-            explanation="Statutory welfare entitlement backed by state budget. Requires valid e-Sevai verification documents."
+            explanation="Statutory welfare entitlement backed by Tamil Nadu state budget. 100% guaranteed on active school/college enrollment."
         )
         
     # merit_cum_means calculation
@@ -125,6 +233,17 @@ def is_bundle_valid(bundle: List[dict]) -> bool:
         for exc in exclusions:
             if exc in scheme_ids:
                 return False
+
+    # At most one Pre-Matric maintenance scholarship (excluding PwD)
+    pre_matric_count = sum(1 for s in bundle if "pre-matric" in s.get("id", "") and s.get("id", "") != "pwd-pre-matric")
+    if pre_matric_count > 1:
+        return False
+
+    # At most one Post-Matric maintenance scholarship (excluding PwD)
+    post_matric_count = sum(1 for s in bundle if "post-matric" in s.get("id", "") and s.get("id", "") != "pwd-post-matric")
+    if post_matric_count > 1:
+        return False
+
     return True
 
 def solve_optimal_bundle(profile: UserProfile, all_schemes: List[dict]) -> EvaluationResponse:
@@ -136,31 +255,46 @@ def solve_optimal_bundle(profile: UserProfile, all_schemes: List[dict]) -> Evalu
         if is_el:
             eligible_schemes.append(scheme)
             
-    # 2. Find Maximum Weight Independent Set (MWIS) via bitmask
-    n = len(eligible_schemes)
-    best_bundle = []
-    max_value = 0
-    
     # If no schemes are eligible, return empty early
-    if n == 0:
+    if not eligible_schemes:
         return EvaluationResponse(
             recommended_bundle=[],
             total_financial_value=0,
             excluded_schemes=[],
             selection_probabilities={}
         )
+
+    # 2. Partition into conflict-free schemes vs conflicting clusters for ultra-fast MWIS
+    eligible_ids = {s["id"] for s in eligible_schemes}
+    conflicting_schemes = []
+    free_schemes = []
+
+    for s in eligible_schemes:
+        excs = set(s.get("mutually_exclusive_with", []))
+        if excs.intersection(eligible_ids):
+            conflicting_schemes.append(s)
+        else:
+            free_schemes.append(s)
+
+    free_total = sum(s.get("financial_value", 0) for s in free_schemes)
+
+    # MWIS on conflicting subset (typically 2-4 items max)
+    m = len(conflicting_schemes)
+    best_conflict_bundle = []
+    max_conflict_val = 0
+
+    if m > 0:
+        # If m is small, evaluate all subsets
+        limit = min(m, 12)
+        for i in range(1 << limit):
+            cand = [conflicting_schemes[j] for j in range(limit) if (i & (1 << j))]
+            c_val = sum(s.get("financial_value", 0) for s in cand)
+            if c_val > max_conflict_val and is_bundle_valid(cand):
+                max_conflict_val = c_val
+                best_conflict_bundle = cand
     
-    for i in range(1, (1 << n)):
-        current_bundle = []
-        current_val = 0
-        for j in range(n):
-            if (i & (1 << j)):
-                current_bundle.append(eligible_schemes[j])
-                current_val += eligible_schemes[j].get("financial_value", 0)
-                
-        if current_val > max_value and is_bundle_valid(current_bundle):
-            max_value = current_val
-            best_bundle = current_bundle
+    best_bundle = free_schemes + best_conflict_bundle
+    max_value = free_total + max_conflict_val
             
     best_bundle_ids = {s["id"] for s in best_bundle}
     

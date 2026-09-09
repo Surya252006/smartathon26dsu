@@ -141,10 +141,29 @@ export default function SchemesDirectory({
       // Education Level filter
       let matchesLevel = true;
       const courses = scheme.criteria?.allowed_courses || [];
+      const d_lower = String(scheme.department || "").toLowerCase();
+      const t_lower = String(scheme.target_beneficiaries || "").toLowerCase();
+      const name_lower = String(scheme.name || "").toLowerCase();
+      const id_lower = String(scheme.id || "").toLowerCase();
+
+      const isSchoolScheme = courses.some(c => /class|school|primary|middle|secondary|sslc|hsc/i.test(c)) ||
+        d_lower.includes("school") ||
+        t_lower.includes("school") ||
+        t_lower.includes("class") ||
+        id_lower.includes("school") ||
+        id_lower.includes("bicycle") ||
+        id_lower.includes("breakfast") ||
+        id_lower.includes("poshan") ||
+        id_lower.includes("textbook") ||
+        id_lower.includes("pre-matric") ||
+        id_lower.includes("nmms") ||
+        name_lower.includes("school") ||
+        name_lower.includes("bicycle");
+
       if (selectedLevel === 'college') {
-        matchesLevel = courses.includes('Engineering') || courses.includes('Arts & Science') || courses.includes('Diploma') || courses.includes('Medical') || courses.includes('All');
+        matchesLevel = !isSchoolScheme && (courses.includes('Engineering') || courses.includes('Arts & Science') || courses.includes('Diploma') || courses.includes('Medical') || courses.includes('All') || courses.some(c => /undergraduate|postgraduate|degree|college/i.test(c)));
       } else if (selectedLevel === 'school') {
-        matchesLevel = courses.includes('Class 1-8') || courses.includes('Class 9-10') || courses.includes('Higher Secondary') || courses.includes('School Education');
+        matchesLevel = isSchoolScheme;
       } else if (selectedLevel === 'differently_abled') {
         matchesLevel = scheme.criteria?.differently_abled_only === true;
       }
@@ -400,10 +419,22 @@ export default function SchemesDirectory({
               💻 Vetri Laptop
             </button>
             <button
+              onClick={() => handleSearchInput('Bicycle')}
+              className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded text-[11px] transition cursor-pointer"
+            >
+              🚲 Free Bicycle
+            </button>
+            <button
               onClick={() => handleSearchInput('Breakfast')}
+              className="px-2 py-0.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded text-[11px] transition cursor-pointer"
+            >
+              🥣 CM Breakfast
+            </button>
+            <button
+              onClick={() => handleSearchInput('Pre-Matric')}
               className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[11px] transition cursor-pointer"
             >
-              🥣 Breakfast
+              🎒 Pre-Matric
             </button>
             <button
               onClick={() => handleSearchInput('Overseas')}

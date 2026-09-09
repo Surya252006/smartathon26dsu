@@ -2,6 +2,7 @@
 // AI Scholarship Matcher — Intelligent Decision & Optimization Engine
 // Deterministic Multi-Weight Independent Set (MWIS) Solver + Explainable AI
 // ==============================================================================
+import defaultSchemesCatalog from '../data/allSchemesCatalog.json';
 
 export const DEFAULT_SCHEMES = [
   {
@@ -312,7 +313,7 @@ export function getActiveSchemes() {
       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
   } catch (e) {}
-  return DEFAULT_SCHEMES;
+  return (defaultSchemesCatalog && defaultSchemesCatalog.length > 0) ? defaultSchemesCatalog : DEFAULT_SCHEMES;
 }
 
 // ------------------------------------------------------------------------------
@@ -387,13 +388,133 @@ export function checkSchemeEligibility(profile, scheme) {
     matchedCriteria.push(`Disability benchmark certified for welfare endowment.`);
   }
 
-  // 8. Course & discipline criteria
+  // 8. Course & Grade Level check (Collegiate vs School Class 1 to 12 vs Ph.D.)
+  const c_lower = String(profile.current_course || "").toLowerCase();
+  const d_lower = String(profile.degree || "").toLowerCase();
+
+  const is_school = /class|school|primary|middle|sslc|hsc|grade|வகுப்பு|பள்ளி|std/i.test(c_lower) ||
+    /class|school|primary|middle|sslc|hsc|grade|வகுப்பு|பள்ளி|std/i.test(d_lower) ||
+    ['primary', 'middle', 'high school', 'higher secondary'].some(p => d_lower.startsWith(p));
+
+  const is_phd = c_lower.includes("phd") || c_lower.includes("ph.d") || c_lower.includes("research") || c_lower.includes("doctorate") || d_lower.includes("phd");
+
+  const schemeId = scheme.id || "";
   const allowedCourses = criteria.allowed_courses || ["All"];
-  const studentCourse = profile.current_course || "Engineering";
-  if (!allowedCourses.includes("All") && !allowedCourses.some(c => studentCourse.toLowerCase().includes(c.toLowerCase()))) {
-    reasons.push(`Course (${studentCourse}) is not covered. Applicable only for: ${allowedCourses.join(", ")}.`);
+  const targetBeneficiaries = String(scheme.target_beneficiaries || "").toLowerCase();
+
+  // A. Check PhD exclusivity
+  if (schemeId === "cm-research-fellowship" || (scheme.category || "").includes("fellowship")) {
+    if (!is_phd) {
+      reasons.push("Exclusively for Ph.D. doctoral research scholars.");
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+  }
+
+  // B. Collegiate-only schemes: must NOT be awarded to school students
+  const COLLEGIATE_ONLY_IDS = new Set([
+    "tn-first-graduate", "first-graduate", "tn-pudhumai-penn", "pudhumai-penn",
+    "tn-tamil-pudhalvan", "tamil-pudhalvan", "cm-research-fellowship", "aicte-pragati",
+    "pm-usp-csss", "post-matric-sc", "post-matric-st", "pm-yasasvi-post-matric",
+    "minority-post-matric", "free-education-bc-mbc", "mcm-minorities", "pwd-post-matric",
+    "naan-mudhalvan", "vetri-laptop", "cm-breakfast-scheme-college",
+    "stipend-tamil-medium", "deceased-govt-servants-scholarship", "free-education-bc-mbc-dnc",
+    "minority-mcm", "pm-yasasvi-top-class"
+  ]);
+
+  if (is_school) {
+    if (COLLEGIATE_ONLY_IDS.has(schemeId) || (schemeId.includes("post-matric") && !schemeId.includes("pre-matric"))) {
+      reasons.push("Requires completed 12th standard and active enrollment in higher education (UG/PG/Diploma).");
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+    if ((targetBeneficiaries.includes("college") || targetBeneficiaries.includes("undergraduate") || targetBeneficiaries.includes("postgraduate")) &&
+        !targetBeneficiaries.includes("school") && !targetBeneficiaries.includes("class")) {
+      reasons.push("Designated for college and university students only.");
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+  }
+
+  // C. School-only schemes: must NOT be awarded to college/university students
+  const SCHOOL_ONLY_IDS = new Set([
+    "cm-breakfast-scheme", "pm-poshan", "free-bicycle-scheme", "free-textbooks-notebooks",
+    "free-guides-question-banks", "nmms-scholarship", "samagra-shiksha", "pre-matric-sc",
+    "pre-matric-st", "pm-yasasvi-pre-matric", "minority-pre-matric", "pwd-pre-matric",
+    "rural-girls-scholarship", "thiran-next", "rte-25-reimbursement"
+  ]);
+
+  if (!is_school && (SCHOOL_ONLY_IDS.has(schemeId) || schemeId.includes("pre-matric"))) {
+    reasons.push("Exclusively for currently enrolled school students (Classes 1 to 12).");
+    return { isEligible: false, reasons, matchedCriteria };
+  }
+
+  // D. School Grade-Level Precision Matching
+  if (is_school) {
+    const combinedStr = `${c_lower} ${d_lower}`;
+    const gradeMatch = combinedStr.match(/(?:class|std|grade|வகுப்பு)\s*(\d+)/i);
+    let gradeNum = gradeMatch ? parseInt(gradeMatch[1], 10) : null;
+    if (gradeNum === null) {
+      if (c_lower.includes("primary") || d_lower.includes("primary") || d_lower.includes("தொடக்க")) gradeNum = 3;
+      else if (c_lower.includes("middle") || d_lower.includes("middle") || d_lower.includes("நடுநிலை")) gradeNum = 7;
+      else if (c_lower.includes("high school") || c_lower.includes("sslc") || c_lower.includes("10") || d_lower.includes("உயர்நிலை")) gradeNum = 10;
+      else if (c_lower.includes("higher secondary") || c_lower.includes("hsc") || c_lower.includes("11") || c_lower.includes("12") || d_lower.includes("மேல்நிலை")) gradeNum = 11;
+    }
+
+    // Breakfast scheme: Class 1 to 5
+    if (schemeId === "cm-breakfast-scheme" && gradeNum !== null && gradeNum > 5) {
+      reasons.push(`Chief Minister's Breakfast Scheme is allocated for Primary Schools (Classes 1 to 5); current grade is Class ${gradeNum}.`);
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    // Free Bicycle scheme: Class 11 and 12 only
+    if (schemeId === "free-bicycle-scheme" && gradeNum !== null && gradeNum < 11) {
+      reasons.push(`Free Bicycle Scheme is exclusively distributed to Higher Secondary students (Classes 11 & 12); current grade is Class ${gradeNum}.`);
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    // Pre-Matric SC/ST/OBC/Minority: Class 9 and 10 only (Class 1-10 for PwD)
+    if (schemeId.includes("pre-matric") && schemeId !== "pwd-pre-matric" && gradeNum !== null && (gradeNum < 9 || gradeNum > 10)) {
+      reasons.push(`Pre-Matric scholarship covers secondary examination classes (Class 9 & 10); current grade is Class ${gradeNum}.`);
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    // NMMS: Class 9 to 12
+    if (schemeId === "nmms-scholarship" && gradeNum !== null && gradeNum < 9) {
+      reasons.push("NMMS scholarship disbursal commences in Class 9 following the Class 8 qualifying examination.");
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    // Question Banks & Guides: Class 10 & 12 Board Exam students
+    if (schemeId === "free-guides-question-banks" && gradeNum !== null && gradeNum !== 10 && gradeNum !== 12) {
+      reasons.push("Board Exam study materials and question banks are designated for Class 10 (SSLC) and Class 12 (HSC) board students.");
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    // Free textbooks & notebooks: Class 1 to 8
+    if (schemeId === "free-textbooks-notebooks" && gradeNum !== null && gradeNum > 8) {
+      reasons.push(`Free textbook distribution scheme applies to Elementary and Middle schools (Classes 1 to 8); current grade is Class ${gradeNum}.`);
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    // RTE 25% reimbursement: only for private school quota admissions
+    if (schemeId === "rte-25-reimbursement" && profile.schooling_type === "tn_govt_school_6_to_12") {
+      reasons.push("RTE 25% fee reimbursement applies to private unaided schools; candidate is currently in a Government school.");
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    // Minority Pre-Matric: for BCM / notified religious minorities
+    if (schemeId === "minority-pre-matric" && String(profile.community || "").toUpperCase() !== "BCM" && String(profile.community || "").toUpperCase() !== "MINORITY") {
+      reasons.push("Minority Pre-Matric is strictly for notified religious/linguistic minorities (BCM/Minority).");
+      return { isEligible: false, reasons, matchedCriteria };
+    }
+
+    matchedCriteria.push(`School grade/level criteria satisfied.`);
   } else {
-    matchedCriteria.push(`Degree program (${studentCourse}) is an approved academic discipline.`);
+    // E. General Course Check for Collegiate
+    const studentCourse = profile.current_course || "Engineering";
+    if (!allowedCourses.includes("All") && !allowedCourses.some(c => studentCourse.toLowerCase().includes(c.toLowerCase()))) {
+      reasons.push(`Course (${studentCourse}) is not covered. Applicable only for: ${allowedCourses.join(", ")}.`);
+    } else {
+      matchedCriteria.push(`Degree program (${studentCourse}) is an approved academic discipline.`);
+    }
   }
 
   return {
@@ -414,6 +535,15 @@ export function isBundleValid(bundle) {
       if (ids.has(exc)) return false;
     }
   }
+
+  // At most one Pre-Matric maintenance scholarship (excluding PwD)
+  const preMatricCount = bundle.filter(s => (s.id || '').includes('pre-matric') && s.id !== 'pwd-pre-matric').length;
+  if (preMatricCount > 1) return false;
+
+  // At most one Post-Matric maintenance scholarship (excluding PwD)
+  const postMatricCount = bundle.filter(s => (s.id || '').includes('post-matric') && s.id !== 'pwd-post-matric').length;
+  if (postMatricCount > 1) return false;
+
   return true;
 }
 
@@ -473,40 +603,56 @@ export function evaluateProfileIntelligently(profile) {
     }
   }
 
-  // Stage 2 & 3: Conflict Detection & MWIS Maximum Financial Optimization
-  const n = eligibleSchemes.length;
-  let bestBundle = [];
-  let maxValue = 0;
-  const allValidBundles = [];
+  // Stage 2 & 3: Partitioned Conflict Detection & MWIS Maximum Financial Optimization
+  const eligibleIds = new Set(eligibleSchemes.map(s => s.id));
+  const conflictingSchemes = [];
+  const freeSchemes = [];
 
-  if (n > 0) {
-    for (let i = 1; i < (1 << n); i++) {
-      const candidate = [];
-      let currentVal = 0;
-
-      for (let j = 0; j < n; j++) {
-        if (i & (1 << j)) {
-          candidate.push(eligibleSchemes[j]);
-          currentVal += eligibleSchemes[j].financial_value || 0;
-        }
-      }
-
-      if (isBundleValid(candidate)) {
-        allValidBundles.push({
-          bundle: candidate,
-          total_value: currentVal
-        });
-
-        if (currentVal > maxValue) {
-          maxValue = currentVal;
-          bestBundle = candidate;
-        }
-      }
+  for (const s of eligibleSchemes) {
+    const excs = s.mutually_exclusive_with || [];
+    const hasConflictInEligible = excs.some(id => eligibleIds.has(id));
+    if (hasConflictInEligible) {
+      conflictingSchemes.push(s);
+    } else {
+      freeSchemes.push(s);
     }
   }
 
-  // Sort alternative valid bundles descending by financial benefit
-  allValidBundles.sort((a, b) => b.total_value - a.total_value);
+  const freeTotal = freeSchemes.reduce((sum, s) => sum + (s.financial_value || 0), 0);
+
+  let bestConflictBundle = [];
+  let maxConflictVal = 0;
+  const validConflictCombinations = [];
+
+  const m = conflictingSchemes.length;
+  if (m > 0) {
+    const limit = Math.min(m, 12);
+    for (let i = 0; i < (1 << limit); i++) {
+      const candidate = [];
+      let cVal = 0;
+      for (let j = 0; j < limit; j++) {
+        if (i & (1 << j)) {
+          candidate.push(conflictingSchemes[j]);
+          cVal += conflictingSchemes[j].financial_value || 0;
+        }
+      }
+      if (isBundleValid(candidate)) {
+        validConflictCombinations.push({ bundle: candidate, total_value: cVal });
+        if (cVal > maxConflictVal) {
+          maxConflictVal = cVal;
+          bestConflictBundle = candidate;
+        }
+      }
+    }
+  } else {
+    validConflictCombinations.push({ bundle: [], total_value: 0 });
+  }
+
+  // Combine free schemes with conflicting combinations
+  const allValidBundles = validConflictCombinations.map(item => ({
+    bundle: [...freeSchemes, ...item.bundle],
+    total_value: freeTotal + item.total_value
+  })).sort((a, b) => b.total_value - a.total_value);
 
   // De-duplicate bundles with identical sets
   const uniqueBundles = [];
@@ -519,6 +665,8 @@ export function evaluateProfileIntelligently(profile) {
     }
   }
 
+  const bestBundle = uniqueBundles.length > 0 ? uniqueBundles[0].bundle : [...freeSchemes, ...bestConflictBundle];
+  const maxValue = uniqueBundles.length > 0 ? uniqueBundles[0].total_value : (freeTotal + maxConflictVal);
   const bestBundleIds = new Set(bestBundle.map(s => s.id));
 
   // Build Alternative Options (Top 3 Distinct Valid Combinations)

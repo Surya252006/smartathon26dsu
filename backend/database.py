@@ -524,12 +524,18 @@ _CATALOG_CACHE = None
 
 def load_schemes() -> list:
     """
-    Loads core schemes for MWIS optimization graph engine (from schemes.json).
+    Loads comprehensive schemes for MWIS optimization graph engine (from all_schemes_catalog.json or schemes.json).
     """
     global _SCHEMES_CACHE
     if _SCHEMES_CACHE is not None:
         return _SCHEMES_CACHE
         
+    catalog_path = os.path.join(os.path.dirname(__file__), "data", "all_schemes_catalog.json")
+    if os.path.exists(catalog_path):
+        with open(catalog_path, "r", encoding="utf-8") as f:
+            _SCHEMES_CACHE = json.load(f)
+            return _SCHEMES_CACHE
+
     filepath = os.path.join(os.path.dirname(__file__), "data", "schemes.json")
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Schemes dataset not found at {filepath}")

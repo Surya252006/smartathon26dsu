@@ -250,6 +250,56 @@ export default function ProfilePage({
       setIsDifferentlyAbled(false);
       setSaveToast("Auto-filled Karthikeyan R (OC • Chennai • Anna University)");
       setTimeout(() => setSaveToast(null), 3000);
+    } else if (personaType === 'kavitha') {
+      setFullName('Kavitha S');
+      setFatherName('Senthil Kumar K');
+      setEmail('kavitha.s10@tnschools.gov.in');
+      setPhone('9842109876');
+      setGender('female');
+      setDob('2010-06-12');
+      setCommunity('BC');
+      setDistrict('Thanjavur');
+      setTaluk('Kumbakonam');
+      setCity('Kumbakonam');
+      setResidenceType('Rural');
+      setDegree('High School (Class 9 - 10 / SSLC)');
+      setCurrentCourse('Class 10 (SSLC High School)');
+      setCollegeName('Government Girls Higher Secondary School, Kumbakonam');
+      setCollegeType('Government');
+      setYearOfStudy('1st Year (Fresher)');
+      setBoardPercentage('88.0');
+      setAdmissionMode('govt_counseling_single_window');
+      setAnnualIncome('85000');
+      setIsFirstGraduate(false);
+      setSchoolingType('tn_govt_school_6_to_12');
+      setIsDifferentlyAbled(false);
+      setSaveToast("Auto-filled Kavitha S (🎒 Class 10 Govt High School • Thanjavur)");
+      setTimeout(() => setSaveToast(null), 3000);
+    } else if (personaType === 'anbarasan') {
+      setFullName('Anbarasan K');
+      setFatherName('Karuppiah M');
+      setEmail('anbarasan.k11@tnschools.gov.in');
+      setPhone('9751234567');
+      setGender('male');
+      setDob('2009-03-21');
+      setCommunity('SC');
+      setDistrict('Salem');
+      setTaluk('Attur');
+      setCity('Attur');
+      setResidenceType('Rural');
+      setDegree('Higher Secondary (Class 11 - 12 / HSC)');
+      setCurrentCourse('Class 11 (Higher Secondary - Bio-Maths)');
+      setCollegeName('Government Model Higher Secondary School, Attur');
+      setCollegeType('Government');
+      setYearOfStudy('1st Year (Fresher)');
+      setBoardPercentage('84.5');
+      setAdmissionMode('govt_counseling_single_window');
+      setAnnualIncome('95000');
+      setIsFirstGraduate(false);
+      setSchoolingType('tn_govt_school_6_to_12');
+      setIsDifferentlyAbled(false);
+      setSaveToast("Auto-filled Anbarasan K (🚲 Class 11 HSC Govt School • Salem)");
+      setTimeout(() => setSaveToast(null), 3000);
     }
   };
 
@@ -419,8 +469,22 @@ export default function ProfilePage({
             <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
+                onClick={() => handlePersonaFill('kavitha')}
+                className="px-2.5 py-1 bg-amber-950 hover:bg-amber-900 text-amber-200 text-[11px] font-bold rounded-lg border border-amber-700 transition cursor-pointer"
+              >
+                🎒 Kavitha ({isTa ? '10-ஆம் வகுப்பு • அரசு பள்ளி' : 'Class 10 SSLC • Govt'})
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePersonaFill('anbarasan')}
+                className="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 text-[11px] font-bold rounded-lg border border-emerald-600 transition cursor-pointer"
+              >
+                🚲 Anbarasan ({isTa ? '11-ஆம் வகுப்பு • மிதிவண்டி + SC' : 'Class 11 HSC • Bicycle + SC'})
+              </button>
+              <button
+                type="button"
                 onClick={() => handlePersonaFill('surya')}
-                className="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-200 text-[11px] font-bold rounded-lg border border-emerald-700 transition cursor-pointer"
+                className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-slate-200 text-[11px] font-bold rounded-lg border border-slate-700 transition cursor-pointer"
               >
                 Surya ({currentLang === 'ta' ? 'BC • பொறியியல் • முதல் பட்டதாரி' : 'BC • Engg • FG'})
               </button>
@@ -816,9 +880,14 @@ export default function ProfilePage({
                 onChange={(e) => setDegree(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-semibold"
               >
-                <option value="Undergraduate (UG)">{isTa ? 'இளங்கலை (UG - B.E/B.Tech/B.Sc/B.Com)' : 'Undergraduate (இளங்கலை UG - B.E/B.Tech/B.Sc/B.Com)'}</option>
-                <option value="Postgraduate (PG)">{isTa ? 'முதுகலை (PG - M.E/M.Tech/M.Sc/MBA)' : 'Postgraduate (முதுகலை PG - M.E/M.Tech/M.Sc/MBA)'}</option>
+                <option value="Undergraduate (UG)">{isTa ? 'இளங்கலை கல்லூரி (UG - B.E/B.Tech/B.Sc/B.Com)' : 'Undergraduate (UG - B.E/B.Tech/B.Sc/B.Com)'}</option>
+                <option value="Postgraduate (PG)">{isTa ? 'முதுகலை கல்லூரி (PG - M.E/M.Tech/M.Sc/MBA)' : 'Postgraduate (PG - M.E/M.Tech/M.Sc/MBA)'}</option>
                 <option value="Polytechnic Diploma">{isTa ? 'பாலிடெக்னிக் டிப்ளமோ' : 'Polytechnic Diploma (டிப்ளமோ)'}</option>
+                <option value="Higher Secondary (Class 11 - 12 / HSC)">{isTa ? '🎒 மேல்நிலைப் பள்ளி (11, 12-ஆம் வகுப்பு - HSC)' : '🎒 Higher Secondary (Class 11 - 12 / HSC)'}</option>
+                <option value="High School (Class 9 - 10 / SSLC)">{isTa ? '🎒 உயர்நிலைப் பள்ளி (9, 10-ஆம் வகுப்பு - SSLC)' : '🎒 High School (Class 9 - 10 / SSLC)'}</option>
+                <option value="Middle School (Class 6 - 8)">{isTa ? '🎒 நடுநிலைப் பள்ளி (6 முதல் 8-ஆம் வகுப்பு)' : '🎒 Middle School (Class 6 - 8)'}</option>
+                <option value="Primary School (Class 1 - 5)">{isTa ? '🎒 தொடக்கப் பள்ளி (1 முதல் 5-ஆம் வகுப்பு)' : '🎒 Primary School (Class 1 - 5)'}</option>
+                <option value="Ph.D. / Doctoral Research">{isTa ? 'முனைவர் பட்ட ஆய்வு (Ph.D. Research)' : 'Ph.D. / Doctoral Research Scholar'}</option>
               </select>
             </div>
 

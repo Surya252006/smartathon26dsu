@@ -29,7 +29,12 @@ import {
   Database,
   Server,
   Cloud,
-  HardDrive
+  HardDrive,
+  HeartHandshake,
+  BookOpen,
+  GraduationCap,
+  Bike,
+  School
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 import EditProfileModal from './EditProfileModal';
@@ -241,57 +246,155 @@ export default function HomePage({
     } catch (err) {}
   };
 
-  // Dynamic Scheme Calculations based on Profile
-  // Dynamic Scheme Calculations based on Profile and Regional Language
+  // Toggleable Welfare View (School vs College) with smart auto-detection from profile
+  const [homeWelfareView, setHomeWelfareView] = useState('auto'); // 'auto' | 'school' | 'college'
+
+  const courseLower = String(studentProfile.currentCourse || '').toLowerCase();
+  const isSchoolProfile = /class|school|primary|middle|sslc|hsc|grade|வகுப்பு|பள்ளி|std/i.test(courseLower);
+  const effectiveView = homeWelfareView === 'auto'
+    ? (isSchoolProfile ? 'school' : 'college')
+    : homeWelfareView;
+
   const isTa = currentLang === 'ta';
   const isFemale = (studentProfile.gender || '').toLowerCase() === 'female';
   const isGovtSchool = studentProfile.schoolingType === 'tn_govt_school_6_to_12' || studentProfile.schooling_type === 'tn_govt_school_6_to_12';
 
-  const primaryScheme = isFemale
-    ? {
-        name: isTa ? 'புதுமைப் பெண் திட்டம்' : 'Pudhumai Penn Thittam',
-        amount: isTa ? '₹12,000/ஆண்டு' : '₹12,000/yr',
+  let primaryScheme = {};
+  let secondaryScheme = {};
+  let primaryValue = 0;
+  let secondaryValue = 0;
+
+  if (effectiveView === 'school') {
+    const gradeMatch = courseLower.match(/(?:class|std|grade|வகுப்பு)\s*(\d+)/i);
+    let schoolGrade = gradeMatch ? parseInt(gradeMatch[1], 10) : (courseLower.includes('primary') ? 3 : (courseLower.includes('middle') ? 7 : (courseLower.includes('11') || courseLower.includes('12') || courseLower.includes('higher secondary') ? 11 : 10)));
+
+    if (schoolGrade >= 11) {
+      primaryScheme = {
+        name: isTa ? 'இலவச மிதிவண்டி திட்டம் (11 & 12-ஆம் வகுப்பு)' : 'Free Bicycle Scheme (Classes 11 & 12)',
+        amount: isTa ? '₹4,800 மதிப்பு (நேரடி பொருள்)' : '₹4,800 Value (In-Kind Asset)',
+        deliveryBadge: isTa ? '🚲 பள்ளியில் நேரடி விநியோகம்' : '🚲 Delivered at School',
         description: isTa
-          ? 'அரசுப் பள்ளிகளில் (6-12) பயின்ற மாணவிகளுக்கு மாதம் ₹1,000 ஆதார் இணைக்கப்பட்ட வங்கிக் கணக்கில் நேரடியாக (DBT) செலுத்தப்படுகிறது.'
-          : 'Monthly financial assistance of ₹1,000 directly credited via Direct Benefit Transfer (DBT) to student Aadhaar-seeded bank account for girls from TN Govt Schools (6-12).'
-      }
-    : {
-        name: isTa ? 'தமிழ் புதல்வன் திட்டம்' : 'Tamil Pudhalvan Thittam',
-        amount: isTa ? '₹12,000/ஆண்டு' : '₹12,000/yr',
-        description: isTa
-          ? 'அரசுப் பள்ளிகளில் (6-12) பயின்ற மாணவர்களுக்கு மாதம் ₹1,000 வங்கிக் கணக்கில் நேரடியாக DBT மூலம் செலுத்தப்படுகிறது.'
-          : 'Monthly financial stipend of ₹1,000 credited directly to student bank account via DBT for boys who studied in TN Government Schools (6-12).'
+          ? '11 மற்றும் 12-ஆம் வகுப்பு பயிலும் அரசு மற்றும் அரசு உதவிபெறும் பள்ளி மாணவ-மாணவியருக்கு போக்குவரத்து வசதிக்காக புதிய மிதிவண்டி பள்ளியிலேயே வழங்கப்படுகிறது.'
+          : 'Brand new roadster bicycle handed over directly at school premises to Class 11 & 12 students in Govt/Govt-aided schools for safe daily commute.'
       };
+      primaryValue = 4800;
 
-  const secondaryScheme = studentProfile.isFirstGraduate
-    ? {
-        name: isTa ? 'முதல் பட்டதாரி கல்விக் கட்டணச் சலுகை' : 'First Graduate Fee Concession',
-        amount: isTa ? '₹25,000/ஆண்டு' : '₹25,000/yr',
-        description: isTa
-          ? 'ஒற்றைச் சாளர கலந்தாய்வு மூலம் சேர்க்கை பெறும் முதல் தலைமுறை பட்டதாரிகளுக்கு 100% கல்விக் கட்டண விலக்கு.'
-          : '100% Tuition Fee Concession automatically credited directly to the college academic cell via Single Window Counseling.'
+      if (['SC', 'SCA', 'ST'].includes(studentProfile.community)) {
+        secondaryScheme = {
+          name: isTa ? 'முன்-மெட்ரிக் கல்வி உதவித்தொகை (SC/ST)' : 'Pre-Matric Scholarship (SC/ST Welfare)',
+          amount: isTa ? '₹4,000/ஆண்டு' : '₹4,000/yr',
+          deliveryBadge: isTa ? '💸 நேரடி வங்கி DBT' : '💸 Direct Bank DBT',
+          description: isTa
+            ? 'ஆதிதிராவிடர் & பழங்குடியினர் நலத்துறையின் கீழ் இடைநிற்றலைத் தடுக்க மாணவர் வங்கிக் கணக்கில் நேரடியாக செலுத்தப்படும் உதவித்தொகை.'
+            : 'Pre-Matric state welfare scholarship directly credited via DBT to prevent dropouts and cover secondary school expenses.'
+        };
+        secondaryValue = 4000;
+      } else {
+        secondaryScheme = {
+          name: isTa ? 'இலவச பாடநூல்கள், நோட்டுகள் & சீருடைத் தொகுப்பு' : 'Free Textbooks, Notebooks & Samagra Shiksha Uniforms',
+          amount: isTa ? '₹3,500 மதிப்பு (நேரடி உபகரணங்கள்)' : '₹3,500 Value (In-Kind Asset)',
+          deliveryBadge: isTa ? '📚 பள்ளி துவக்க நாளிலேயே விநியோகம்' : '📚 Issued on Opening Day',
+          description: isTa
+            ? 'தமிழ்நாடு பள்ளிக் கல்வித் துறையின் கீழ் அனைத்து அரசுப் பள்ளி மாணவர்களுக்கும் பாடநூல்கள், 4 ஜோடி சீருடைகள் மற்றும் எழுதுபொருட்கள் இலவசம்.'
+            : 'Complete set of textbooks, notebooks, 4 sets of uniforms, school bag, and footwear distributed free with zero fees.'
+        };
+        secondaryValue = 3500;
       }
-    : (['SC', 'SCA', 'ST'].includes(studentProfile.community)
-        ? {
-            name: isTa ? 'போஸ்ட்-மெட்ரிக் கல்வி உதவித்தொகை (SC/SCA/ST)' : 'Post-Matric Scholarship (SC/SCA/ST)',
-            amount: isTa ? '₹50,000/ஆண்டு' : '₹50,000/yr',
-            description: isTa
-              ? 'ஆதிதிராவிடர் & பழங்குடியினர் நலத்துறையின் கீழ் 100% கட்டண தள்ளுபடி மற்றும் பராமரிப்புப் படி.'
-              : '100% Compulsory Tuition Fee waiver and hostel maintenance allowance under Adi Dravidar & Tribal Welfare.'
-          }
-        : {
-            name: isTa ? 'BC/MBC போஸ்ட்-மெட்ரிக் கல்விக் கட்டண உதவி' : 'BC/MBC Post-Matric Tuition Assistance',
-            amount: isTa ? '₹15,000/ஆண்டு' : '₹15,000/yr',
-            description: isTa
-              ? 'பிற்படுத்தப்பட்டோர் மற்றும் சிறுபான்மையினர் நலத்துறையின் கீழ் சிறப்பு தேர்வு & கல்விக் கட்டண உதவி.'
-              : 'Special fee & examination grant assistance under Department of Backward Classes & Minorities Welfare.'
-          }
-      );
+    } else if (schoolGrade <= 5) {
+      primaryScheme = {
+        name: isTa ? 'முதலமைச்சரின் காலை உணவுத் திட்டம்' : "Chief Minister's Breakfast Scheme",
+        amount: isTa ? '₹6,000/ஆண்டு ஊட்டச்சத்து மதிப்பு' : '₹6,000/yr Nutrition Value',
+        deliveryBadge: isTa ? '🥣 சூடான சத்தான காலை உணவு' : '🥣 Morning Hot Breakfast',
+        description: isTa
+          ? '1 முதல் 5-ஆம் வகுப்பு வரை பயிலும் தொடக்கப் பள்ளி குழந்தைகளுக்கு காலையில் சூடான, சத்தான சிற்றுண்டி (உப்புமா, பொங்கல், கிச்சடி & சாம்பார்) இலவசம்.'
+          : 'Fresh hot cooked morning breakfast served daily before school hours across all Tamil Nadu Government primary schools.'
+      };
+      primaryValue = 6000;
 
-  const primaryValue = 12000;
-  const secondaryValue = studentProfile.isFirstGraduate 
-    ? 25000 
-    : (['SC', 'SCA', 'ST'].includes(studentProfile.community) ? 50000 : 15000);
+      secondaryScheme = {
+        name: isTa ? 'இலவச பாடநூல்கள், நோட்டுகள் & சீருடைத் தொகுப்பு' : 'Free Textbooks, Notebooks & 4 Uniform Sets',
+        amount: isTa ? '₹3,500 மதிப்பு (கல்வி தொகுப்பு)' : '₹3,500 Value (School Kit)',
+        deliveryBadge: isTa ? '🎒 பள்ளிப் பை & காலணிகள்' : '🎒 Uniforms, Bag & Footwear',
+        description: isTa
+          ? 'தொடக்கப் பள்ளி மாணவர்களுக்கு புத்தகப் பை, காலணிகள், பாடநூல்கள் மற்றும் நான்கு ஜோடி சீருடைகள் 100% இலவசமாக வழங்கப்படுகின்றன.'
+          : 'Free school kit including textbooks, notebooks, 4 pairs of stitched uniforms, footwear, and school bag issued directly.'
+      };
+      secondaryValue = 3500;
+    } else {
+      // Class 6 to 10 (Middle / SSLC)
+      primaryScheme = {
+        name: isTa ? 'அரசு பொதுத்தேர்வு வினா வங்கி & மாதிரி கையேடுகள்' : 'SSLC Board Exam Question Banks & Model Guides',
+        amount: isTa ? '₹2,500 மதிப்பு (கல்வி தொகுப்பு)' : '₹2,500 Value (Study Kit)',
+        deliveryBadge: isTa ? '📖 மாதிரி வினாத்தாள் புத்தகம்' : '📖 Printed Question Banks & Keys',
+        description: isTa
+          ? '10-ஆம் வகுப்பு பொதுத்தேர்வு எழுதும் மாணவர்களுக்கு அரசு வெளியிடும் மாதிரி வினா வங்கிகள் மற்றும் தீர்வு கையேடுகள் இலவசமாக வழங்கப்படுகின்றன.'
+          : 'Official state-curated SSLC Board question banks, model papers, and solved guides distributed free to every registered high school student.'
+      };
+      primaryValue = 2500;
+
+      secondaryScheme = {
+        name: isTa ? 'முதலமைச்சரின் சத்துணவுத் திட்டம் (PM POSHAN)' : 'PM POSHAN / Nutritious Meal Programme',
+        amount: isTa ? '₹7,200/ஆண்டு சத்துணவு மதிப்பு' : '₹7,200/yr Nutrition Value',
+        deliveryBadge: isTa ? '🍲 சூடான மதிய உணவு & முட்டை' : '🍲 Daily Hot Lunch & Boiled Eggs',
+        description: isTa
+          ? 'பள்ளி நாட்களில் மதிய வேளையில் சூடான சுவையான சத்துணவு, வேகவைத்த முட்டை அல்லது வாழைப்பழம் மற்றும் சுண்டல் இலவசமாக வழங்கப்படுகின்றன.'
+          : 'Wholesome hot cooked noon meal with boiled eggs/bananas and pulses served daily on all school working days.'
+      };
+      secondaryValue = 7200;
+    }
+  } else {
+    // Collegiate view
+    primaryScheme = isFemale
+      ? {
+          name: isTa ? 'புதுமைப் பெண் திட்டம்' : 'Pudhumai Penn Thittam',
+          amount: isTa ? '₹12,000/ஆண்டு' : '₹12,000/yr',
+          deliveryBadge: isTa ? '💸 மாதம் ₹1,000 வங்கி DBT' : '💸 ₹1,000/mo Direct Bank DBT',
+          description: isTa
+            ? 'அரசுப் பள்ளிகளில் (6-12) பயின்ற மாணவிகளுக்கு மாதம் ₹1,000 ஆதார் இணைக்கப்பட்ட வங்கிக் கணக்கில் நேரடியாக (DBT) செலுத்தப்படுகிறது.'
+            : 'Monthly financial assistance of ₹1,000 directly credited via Direct Benefit Transfer (DBT) to student Aadhaar-seeded bank account for girls from TN Govt Schools (6-12).'
+        }
+      : {
+          name: isTa ? 'தமிழ் புதல்வன் திட்டம்' : 'Tamil Pudhalvan Thittam',
+          amount: isTa ? '₹12,000/ஆண்டு' : '₹12,000/yr',
+          deliveryBadge: isTa ? '💸 மாதம் ₹1,000 வங்கி DBT' : '💸 ₹1,000/mo Direct Bank DBT',
+          description: isTa
+            ? 'அரசுப் பள்ளிகளில் (6-12) பயின்ற மாணவர்களுக்கு மாதம் ₹1,000 வங்கிக் கணக்கில் நேரடியாக DBT மூலம் செலுத்தப்படுகிறது.'
+            : 'Monthly financial stipend of ₹1,000 credited directly to student bank account via DBT for boys who studied in TN Government Schools (6-12).'
+        };
+    primaryValue = 12000;
+
+    secondaryScheme = studentProfile.isFirstGraduate
+      ? {
+          name: isTa ? 'முதல் பட்டதாரி கல்விக் கட்டணச் சலுகை' : 'First Graduate Fee Concession',
+          amount: isTa ? '₹25,000/ஆண்டு' : '₹25,000/yr',
+          deliveryBadge: isTa ? '🎓 கல்லூரிக் கட்டணம் 100% தள்ளுபடி' : '🎓 100% College Tuition Waived',
+          description: isTa
+            ? 'ஒற்றைச் சாளர கலந்தாய்வு மூலம் சேர்க்கை பெறும் முதல் தலைமுறை பட்டதாரிகளுக்கு 100% கல்விக் கட்டண விலக்கு.'
+            : '100% Tuition Fee Concession automatically credited directly to the college academic cell via Single Window Counseling.'
+        }
+      : (['SC', 'SCA', 'ST'].includes(studentProfile.community)
+          ? {
+              name: isTa ? 'போஸ்ட்-மெட்ரிக் கல்வி உதவித்தொகை (SC/SCA/ST)' : 'Post-Matric Scholarship (SC/SCA/ST)',
+              amount: isTa ? '₹50,000/ஆண்டு' : '₹50,000/yr',
+              deliveryBadge: isTa ? '🏛️ கட்டண விலக்கு + விடுதிப் படி' : '🏛️ Full Fee Waiver + Hostel Grant',
+              description: isTa
+                ? 'ஆதிதிராவிடர் & பழங்குடியினர் நலத்துறையின் கீழ் 100% கட்டண தள்ளுபடி மற்றும் பராமரிப்புப் படி.'
+                : '100% Compulsory Tuition Fee waiver and hostel maintenance allowance under Adi Dravidar & Tribal Welfare.'
+            }
+          : {
+              name: isTa ? 'BC/MBC போஸ்ட்-மெட்ரிக் கல்விக் கட்டண உதவி' : 'BC/MBC Post-Matric Tuition Assistance',
+              amount: isTa ? '₹15,000/ஆண்டு' : '₹15,000/yr',
+              deliveryBadge: isTa ? '📜 தேர்வு & கட்டண மானியம்' : '📜 Tuition & Exam Grant',
+              description: isTa
+                ? 'பிற்படுத்தப்பட்டோர் மற்றும் சிறுபான்மையினர் நலத்துறையின் கீழ் சிறப்பு தேர்வு & கல்விக் கட்டண உதவி.'
+                : 'Special fee & examination grant assistance under Department of Backward Classes & Minorities Welfare.'
+            }
+        );
+    secondaryValue = studentProfile.isFirstGraduate 
+      ? 25000 
+      : (['SC', 'SCA', 'ST'].includes(studentProfile.community) ? 50000 : 15000);
+  }
+
   const recommendedTotal = primaryValue + secondaryValue;
 
   // Floating AI Advisor state
@@ -1055,10 +1158,116 @@ export default function HomePage({
           {/* ========================================================= */}
           <div className="lg:col-span-8 space-y-6">
             
+            {/* Lifecourse Segment Switcher: School Education vs Higher Education */}
+            <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center space-x-2 text-xs font-bold text-slate-800">
+                <span className="text-slate-400 uppercase tracking-wider text-[10px]">{isTa ? 'கல்வி நிலை தேர்வு:' : 'Welfare Stream:'}</span>
+                <span className="bg-slate-100 px-2 py-0.5 rounded text-emerald-800 text-[11px]">
+                  {effectiveView === 'school' ? (isTa ? '🎒 பள்ளி கல்வி நலத்திட்டங்கள்' : '🎒 School Education') : (isTa ? '🎓 கல்லூரி & உயர்கல்வி' : '🎓 Higher Education')}
+                </span>
+              </div>
+
+              <div className="flex items-center space-x-1.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setHomeWelfareView('school')}
+                  className={`flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer ${
+                    effectiveView === 'school'
+                      ? 'bg-amber-600 text-white shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  <School size={14} />
+                  <span>{isTa ? 'பள்ளி மாணவர்கள் (1-12)' : 'School Students (Class 1-12)'}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${effectiveView === 'school' ? 'bg-amber-800 text-white' : 'bg-slate-200 text-slate-700'}`}>21</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setHomeWelfareView('college')}
+                  className={`flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer ${
+                    effectiveView === 'college'
+                      ? 'bg-[#006a4e] text-white shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  <GraduationCap size={14} />
+                  <span>{isTa ? 'கல்லூரி & உயர்கல்வி' : 'College & Higher Ed'}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${effectiveView === 'college' ? 'bg-emerald-900 text-white' : 'bg-slate-200 text-slate-700'}`}>26</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Human Civic Counselor Advisory Card */}
+            <div className="bg-gradient-to-br from-amber-50/90 via-orange-50/40 to-emerald-50/80 border-2 border-amber-200/80 rounded-2xl p-5 shadow-xs relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3.5 border-b border-amber-200/60">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+                    <HeartHandshake size={20} />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-200/70 px-2 py-0.5 rounded-md">
+                        {isTa ? 'மக்கள் நல அலுவலர் வழிகாட்டுதல்' : 'Human Welfare Counselor Desk'}
+                      </span>
+                      <span className="text-xs text-slate-500">• {isTa ? 'மாவட்ட சமூக நலப் பிரிவு' : 'District Welfare Cell'}</span>
+                    </div>
+                    <h4 className="text-sm sm:text-base font-bold text-slate-900 mt-0.5">
+                      {effectiveView === 'school'
+                        ? (isTa ? 'பெற்றோர்கள் & பள்ளி ஆசிரியர்களுக்கான மனிதநேய வழிகாட்டல்' : 'Empathetic Guidance for Parents & School Teachers')
+                        : (isTa ? 'முதல் தலைமுறை கல்லூரி மாணவர்களுக்கான மக்கள் நல வழிகாட்டல்' : 'Civic Guidance for First-Generation College Students')}
+                    </h4>
+                  </div>
+                </div>
+                <span className="inline-flex items-center space-x-1 text-[11px] font-bold text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-300 shadow-2xs shrink-0">
+                  <CheckCircle size={13} className="text-emerald-600" />
+                  <span>{isTa ? 'இடைத்தரகர்கள் இன்றி 100% இலவசம்' : 'Zero Middlemen • 100% Free'}</span>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3.5 text-xs">
+                <div className="bg-white/95 p-3 rounded-xl border border-amber-200/60 space-y-1">
+                  <div className="font-bold text-slate-900 flex items-center space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                    <span>{effectiveView === 'school' ? (isTa ? 'பள்ளியிலேயே நேரடி வழங்கல்' : 'Direct School Handover') : (isTa ? 'ஒற்றைச் சாளர கலந்தாய்வு' : 'Single Window Counseling')}</span>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed text-[11px]">
+                    {effectiveView === 'school'
+                      ? (isTa ? 'இலவச மிதிவண்டி, பாடநூல்கள், நோட்டுகள் மற்றும் காலை/மதிய உணவு அரசுப் பள்ளியில் தலைமையாசிரியரால் நேரடியாக வழங்கப்படுகிறது.' : 'School bicycles, uniforms, textbooks, and hot noon meals are distributed directly at school without any fee or external paperwork.')
+                      : (isTa ? 'முதல் பட்டதாரி சான்றிதழை TNEA சேர்க்கையின் போதே சமர்ப்பிக்க வேண்டும். கல்லூரி கட்டணத்தை அரசே நேரடியாக செலுத்தும்.' : 'Submit your First Graduate Certificate during TNEA engineering/arts counseling to get tuition fees waived 100% upfront.')}
+                  </p>
+                </div>
+
+                <div className="bg-white/95 p-3 rounded-xl border border-amber-200/60 space-y-1">
+                  <div className="font-bold text-slate-900 flex items-center space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                    <span>{isTa ? 'ஆதார் வங்கி கணக்கு (DBT)' : 'Aadhaar NPCI Bank Link'}</span>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed text-[11px]">
+                    {isTa
+                      ? 'புதுமைப் பெண், தமிழ்ப் புதல்வன் மற்றும் உதவித்தொகை தொகைகள் ஆதார் இணைக்கப்பட்ட வங்கிக் கணக்கிற்கு மட்டுமே (DBT) நேரடியாக அனுப்பப்படும்.'
+                      : 'Ensure student bank account is NPCI-seeded to Aadhaar. Monthly ₹1,000 stipends and pre-matric funds are deposited straight to the student.'}
+                  </p>
+                </div>
+
+                <div className="bg-white/95 p-3 rounded-xl border border-amber-200/60 space-y-1">
+                  <div className="font-bold text-slate-900 flex items-center space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>{isTa ? 'இலவச உதவி எண் 14417' : 'Toll-Free Helpline 14417'}</span>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed text-[11px]">
+                    {isTa
+                      ? 'ஏதேனும் சந்தேகம் அல்லது சான்றிதழ் உதவி தேவைப்பட்டால் தமிழக அரசின் இலவச உதவி எண் 14417-க்கு எந்நேரமும் அழைக்கலாம்.'
+                      : 'Reach the Tamil Nadu School & Higher Education grievance desk anytime at 14417 with zero charges or consultation fees.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Column Title */}
             <div className="flex items-center justify-between">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-                {t.my_matching_schemes || "My Matching Schemes"}
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center space-x-2">
+                <span>{effectiveView === 'school' ? (isTa ? '🎒 பள்ளி மாணவர் உகந்த தொகுப்பு' : '🎒 School Student Matching Package') : (t.my_matching_schemes || "My Matching Schemes")}</span>
               </h2>
               <span className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200">
                 {t.mwis_solver_tag || "MWIS Solver Verified • Zero Collision"}
@@ -1066,14 +1275,19 @@ export default function HomePage({
             </div>
 
             {/* HERO CARD: Solid Forest Green background (bg-emerald-700 / #006a4e) */}
-            <div className="bg-[#006a4e] text-white rounded-xl p-5 sm:p-6 shadow-sm">
+            <div className="bg-[#006a4e] text-white rounded-2xl p-5 sm:p-6 shadow-sm border border-emerald-500/50">
               
               {/* Title with star icons: Dynamic Optimal Stacking Recommendation */}
-              <div className="flex items-center space-x-2 pb-4 border-b border-emerald-600/60">
-                <Sparkles size={20} className="text-amber-300 fill-amber-300 shrink-0" />
-                <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
-                  {t.optimal_stacking_prefix || "Optimal Stacking Recommendation (Max Benefit):"} <span className="text-amber-200 font-mono">₹{recommendedTotal.toLocaleString('en-IN')} {isTa ? '/ஆண்டு' : '/yr'}</span>
-                </h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-emerald-600/60">
+                <div className="flex items-center space-x-2">
+                  <Sparkles size={20} className="text-amber-300 fill-amber-300 shrink-0" />
+                  <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
+                    {t.optimal_stacking_prefix || "Optimal Stacking Recommendation (Max Benefit):"} <span className="text-amber-200 font-mono">₹{recommendedTotal.toLocaleString('en-IN')} {isTa ? '/ஆண்டு' : '/yr'}</span>
+                  </h3>
+                </div>
+                <span className="text-[11px] font-bold text-emerald-200 bg-emerald-900/80 px-2.5 py-0.5 rounded-full border border-emerald-700 w-fit">
+                  {effectiveView === 'school' ? (isTa ? 'பள்ளியில் வழங்கப்படும் நலன்' : 'School Delivered Welfare') : (isTa ? 'உயர்கல்வி நலன்' : 'Higher Education Aid')}
+                </span>
               </div>
 
               {/* Inside green card, two schemes separated by faint borders */}
@@ -1082,11 +1296,16 @@ export default function HomePage({
                 {/* Scheme 1 */}
                 <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
                       <h4 className="font-bold text-sm sm:text-base text-white">
                         1. {primaryScheme.name} ({primaryScheme.amount})
                       </h4>
+                      {primaryScheme.deliveryBadge && (
+                        <span className="bg-emerald-950/90 text-amber-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-300/40">
+                          {primaryScheme.deliveryBadge}
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-emerald-100/90 pl-3.5 leading-relaxed">
                       {primaryScheme.description}
@@ -1105,11 +1324,16 @@ export default function HomePage({
                 {/* Scheme 2 */}
                 <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
                       <h4 className="font-bold text-sm sm:text-base text-white">
                         2. {secondaryScheme.name} ({secondaryScheme.amount})
                       </h4>
+                      {secondaryScheme.deliveryBadge && (
+                        <span className="bg-emerald-950/90 text-amber-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-300/40">
+                          {secondaryScheme.deliveryBadge}
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-emerald-100/90 pl-3.5 leading-relaxed">
                       {secondaryScheme.description}
@@ -1133,13 +1357,15 @@ export default function HomePage({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm sm:text-base font-bold text-slate-800">
-                  {t.other_potential_schemes || "Other Potential Schemes"}
+                  {effectiveView === 'school' 
+                    ? (isTa ? 'பள்ளி மாணவர்களுக்கான பிற சிறப்பு நலத்திட்டங்கள்' : 'Other School Welfare Initiatives')
+                    : (t.other_potential_schemes || "Other Potential Schemes")}
                 </h3>
                 <button
                   onClick={onViewSchemes}
                   className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition flex items-center space-x-1 cursor-pointer"
                 >
-                  <span>{t.browse_all_catalog_btn || "Browse All 18+ Catalog"}</span>
+                  <span>{effectiveView === 'school' ? (isTa ? 'அனைத்து 21 பள்ளி திட்டங்களையும் காண்க' : 'Browse All 21 School Schemes') : (t.browse_all_catalog_btn || "Browse All 47+ Catalog")}</span>
                   <ArrowRight size={13} />
                 </button>
               </div>
@@ -1147,83 +1373,165 @@ export default function HomePage({
               {/* Grid with two white outline cards side-by-side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                {/* Outline Card 1: Central Sector Scheme (NSP) */}
-                <div className="bg-white rounded-lg border border-slate-200 p-4.5 hover:border-slate-300 transition shadow-xs flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-bold text-xs sm:text-sm text-slate-900">
-                        {isTa ? 'மத்திய துறை உதவித்தொகை (NSP)' : 'Central Sector Scheme (NSP)'}
-                      </h4>
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
-                        ₹12,000 / {isTa ? 'ஆண்டு' : 'yr'}
-                      </span>
+                {effectiveView === 'school' ? (
+                  <>
+                    {/* School Card 1: NMMS Scholarship */}
+                    <div className="bg-white rounded-xl border border-slate-200 p-4.5 hover:border-amber-300 transition shadow-xs flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                            {isTa ? 'தேசிய வருவாய்வழி திறன் உதவித்தொகை (NMMS)' : 'National Means-cum-Merit Scholarship (NMMS)'}
+                          </h4>
+                          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded whitespace-nowrap font-mono border border-emerald-200">
+                            ₹12,000 / {isTa ? 'ஆண்டு' : 'yr'}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {isTa 
+                            ? '8-ஆம் வகுப்பு NMMS தேர்வு எழுதி தேர்ச்சி பெறும் அரசு & அரசு உதவிபெறும் பள்ளி மாணவர்களுக்கு 9 முதல் 12-ஆம் வகுப்பு வரை மாதம் ₹1,000 வங்கி DBT மூலம் வழங்கப்படுகிறது.'
+                            : 'Students qualifying the Class 8 NMMS state exam receive ₹1,000/month (₹12,000/yr) from Class 9 to 12 directly via National Scholarship Portal DBT.'}
+                        </p>
+
+                        <div className="bg-emerald-50 border border-emerald-200 rounded p-2 text-[11px] text-emerald-900 font-medium">
+                          {isTa 
+                            ? '✓ தகுதி: அரசு/உதவிபெறும் பள்ளி மாணவர்கள், குடும்ப ஆண்டு வருமானம் ₹3.50 லட்சத்திற்குள்.' 
+                            : '✓ Eligibility: Govt/Govt-aided school candidates with family income under ₹3.50 Lakh.'}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-bold text-slate-400">{isTa ? 'வகுப்பு 9 - 12' : 'Classes 9 to 12'}</span>
+                        <a
+                          href="https://scholarships.gov.in"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-emerald-700 hover:text-emerald-900 font-medium flex items-center space-x-1 text-[11px]"
+                        >
+                          <span>{isTa ? 'NSP இணையதளம்' : 'NSP Portal'}</span>
+                          <ExternalLink size={11} />
+                        </a>
+                      </div>
                     </div>
 
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      {isTa 
-                        ? '12-ஆம் வகுப்பு பொதுத்தேர்வில் முதல் 20% சதவீதத்திற்குள் இருக்க வேண்டும் (>80%). குடும்ப ஆண்டு வருமானம் ₹4.50 லட்சத்திற்குள் இருக்க வேண்டும்.'
-                        : 'Requires 80th percentile in Class 12 Board exams (>80%). Family annual income must be under ₹4.50 Lakh. Subject to Central Ministry quota allocation.'}
-                    </p>
+                    {/* School Card 2: Vetri Paadhai Coaching */}
+                    <div className="bg-white rounded-xl border border-slate-200 p-4.5 hover:border-amber-300 transition shadow-xs flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                            {isTa ? 'வெற்றிப் பாதை (NEET / JEE சிறப்பு பயிற்சி)' : 'Vetri Paadhai (NEET / JEE Entrance Coaching)'}
+                          </h4>
+                          <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded whitespace-nowrap font-mono border border-amber-200">
+                            {isTa ? '100% இலவச பயிற்சி' : '100% Free Coaching'}
+                          </span>
+                        </div>
 
-                    <div className="bg-amber-50 border border-amber-200 rounded p-2 text-[11px] text-amber-800 font-medium">
-                      {isTa 
-                        ? '⚠️ ஒன்றுக்கொன்று முரண்பாடானது: மாநில முதல் பட்டதாரி கட்டண சலுகையுடன் சேர்த்து பெற முடியாது.' 
-                        : '⚠️ Mutually Exclusive: Cannot co-claim with state First Graduate tuition concession.'}
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {isTa
+                            ? 'அரசு மேல்நிலைப் பள்ளி மாணவர்களுக்கு மருத்துவ (NEET) மற்றும் பொறியியல் (JEE) நுழைவுத் தேர்வுகளுக்கான மாதிரி வகுப்புகள் மற்றும் டிஜிட்டல் பயிற்சி தொகுப்புகள் இலவசம்.'
+                            : 'Comprehensive entrance coaching, model test series, and residential crash courses conducted for Govt school students aiming for premier professional institutes.'}
+                        </p>
+
+                        <div className="bg-amber-50 border border-amber-200 rounded p-2 text-[11px] text-amber-800 font-medium">
+                          {isTa
+                            ? 'ℹ️ 7.5% அரசுப் பள்ளி இடஒதுக்கீட்டின் கீழ் மருத்துவ & பொறியியல் சேர்க்கைக்கு கூடுதல் பலன்.'
+                            : 'ℹ️ Equips students to benefit from 7.5% preferential reservation in professional admissions.'}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-bold text-slate-400">{isTa ? 'வகுப்பு 11 & 12' : 'Classes 11 & 12'}</span>
+                        <button
+                          onClick={onViewSchemes}
+                          className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
+                        >
+                          <span>{isTa ? 'திட்ட விவரம்' : 'Scheme Details'}</span>
+                          <ExternalLink size={11} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Outline Card 1: Central Sector Scheme (NSP) */}
+                    <div className="bg-white rounded-lg border border-slate-200 p-4.5 hover:border-slate-300 transition shadow-xs flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                            {isTa ? 'மத்திய துறை உதவித்தொகை (NSP)' : 'Central Sector Scheme (NSP)'}
+                          </h4>
+                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
+                            ₹12,000 / {isTa ? 'ஆண்டு' : 'yr'}
+                          </span>
+                        </div>
 
-                  <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-bold text-slate-400">{isTa ? 'ஒற்றை நல விதி' : 'Single Welfare Rule'}</span>
-                    <a
-                      href="https://scholarships.gov.in"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
-                    >
-                      <span>{isTa ? 'NSP வழிகாட்டி' : 'NSP Guidelines'}</span>
-                      <ExternalLink size={11} />
-                    </a>
-                  </div>
-                </div>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {isTa 
+                            ? '12-ஆம் வகுப்பு பொதுத்தேர்வில் முதல் 20% சதவீதத்திற்குள் இருக்க வேண்டும் (>80%). குடும்ப ஆண்டு வருமானம் ₹4.50 லட்சத்திற்குள் இருக்க வேண்டும்.'
+                            : 'Requires 80th percentile in Class 12 Board exams (>80%). Family annual income must be under ₹4.50 Lakh. Subject to Central Ministry quota allocation.'}
+                        </p>
 
-                {/* Outline Card 2: AICTE Pragati */}
-                <div className="bg-white rounded-lg border border-slate-200 p-4.5 hover:border-slate-300 transition shadow-xs flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-bold text-xs sm:text-sm text-slate-900">
-                        {isTa ? 'AICTE பிரகதி உதவித்தொகை' : 'AICTE Pragati'}
-                      </h4>
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
-                        ₹50,000 / {isTa ? 'ஆண்டு' : 'yr'}
-                      </span>
+                        <div className="bg-amber-50 border border-amber-200 rounded p-2 text-[11px] text-amber-800 font-medium">
+                          {isTa 
+                            ? '⚠️ ஒன்றுக்கொன்று முரண்பாடானது: மாநில முதல் பட்டதாரி கட்டண சலுகையுடன் சேர்த்து பெற முடியாது.' 
+                            : '⚠️ Mutually Exclusive: Cannot co-claim with state First Graduate tuition concession.'}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-bold text-slate-400">{isTa ? 'ஒற்றை நல விதி' : 'Single Welfare Rule'}</span>
+                        <a
+                          href="https://scholarships.gov.in"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
+                        >
+                          <span>{isTa ? 'NSP வழிகாட்டி' : 'NSP Guidelines'}</span>
+                          <ExternalLink size={11} />
+                        </a>
+                      </div>
                     </div>
 
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      {isTa
-                        ? 'AICTE அங்கீகாரம் பெற்ற பொறியியல் கல்லூரிகளில் படிக்கும் மாணவிகளுக்கான தொழில்நுட்ப பட்டப்படிப்பு உதவித்தொகை (வருமானம் ₹8.00 லட்சத்திற்குள்).'
-                        : 'Technical degree scholarship for eligible female candidates in AICTE approved engineering institutes with family income under ₹8.00 Lakh.'}
-                    </p>
+                    {/* Outline Card 2: AICTE Pragati */}
+                    <div className="bg-white rounded-lg border border-slate-200 p-4.5 hover:border-slate-300 transition shadow-xs flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                            {isTa ? 'AICTE பிரகதி உதவித்தொகை' : 'AICTE Pragati'}
+                          </h4>
+                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
+                            ₹50,000 / {isTa ? 'ஆண்டு' : 'yr'}
+                          </span>
+                        </div>
 
-                    <div className="bg-slate-100 border border-slate-200 rounded p-2 text-[11px] text-slate-600 font-medium">
-                      {isTa
-                        ? 'ℹ️ ஒதுக்கீடு வரம்பு: ஒரு குடும்பத்திற்கு 2 மாணவிகள் வரை மட்டுமே. மாநில ஒதுக்கீட்டுடன் முரண்படும்.'
-                        : 'ℹ️ Category Quota: Limited to 2 girl students per family. Excludes state quota waivers.'}
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {isTa
+                            ? 'AICTE அங்கீகாரம் பெற்ற பொறியியல் கல்லூரிகளில் படிக்கும் மாணவிகளுக்கான தொழில்நுட்ப பட்டப்படிப்பு உதவித்தொகை (வருமானம் ₹8.00 லட்சத்திற்குள்).'
+                            : 'Technical degree scholarship for eligible female candidates in AICTE approved engineering institutes with family income under ₹8.00 Lakh.'}
+                        </p>
+
+                        <div className="bg-slate-100 border border-slate-200 rounded p-2 text-[11px] text-slate-600 font-medium">
+                          {isTa
+                            ? 'ℹ️ ஒதுக்கீடு வரம்பு: ஒரு குடும்பத்திற்கு 2 மாணவிகள் வரை மட்டுமே. மாநில ஒதுக்கீட்டுடன் முரண்படும்.'
+                            : 'ℹ️ Category Quota: Limited to 2 girl students per family. Excludes state quota waivers.'}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-bold text-slate-400">{isTa ? 'ஒதுக்கீடு கட்டுப்பாடு' : 'Quota Restricted'}</span>
+                        <a
+                          href="https://www.aicte-india.org"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
+                        >
+                          <span>{isTa ? 'AICTE தளம்' : 'AICTE Portal'}</span>
+                          <ExternalLink size={11} />
+                        </a>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-bold text-slate-400">{isTa ? 'ஒதுக்கீடு கட்டுப்பாடு' : 'Quota Restricted'}</span>
-                    <a
-                      href="https://www.aicte-india.org"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
-                    >
-                      <span>{isTa ? 'AICTE தளம்' : 'AICTE Portal'}</span>
-                      <ExternalLink size={11} />
-                    </a>
-                  </div>
-                </div>
+                  </>
+                )}
 
               </div>
             </div>

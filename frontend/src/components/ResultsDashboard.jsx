@@ -618,11 +618,32 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                             <strong className="text-slate-900 font-mono font-bold">₹{breakdown.maintenance_stipend.toLocaleString('en-IN')}</strong>
                           </div>
                         )}
+                        {breakdown.book_allowance > 0 && (
+                          <div>
+                            <span className="text-[10px] text-slate-400 block uppercase font-semibold">
+                              {isTa ? 'புத்தகம் & உபகரணங்கள்:' : 'Books & Study Allowance:'}
+                            </span>
+                            <strong className="text-slate-900 font-mono font-bold">₹{breakdown.book_allowance.toLocaleString('en-IN')}</strong>
+                          </div>
+                        )}
+                        {(scheme.category === 'welfare_inkind' || scheme.id?.includes('bicycle') || scheme.id?.includes('breakfast') || scheme.id?.includes('poshan') || scheme.id?.includes('textbook')) && (
+                          <div>
+                            <span className="text-[10px] text-amber-700 block uppercase font-semibold">
+                              {isTa ? 'நேரடி பொருள் / உணவு வழங்கல்:' : 'In-Kind Delivery Asset:'}
+                            </span>
+                            <strong className="text-slate-900 font-bold">
+                              {scheme.id?.includes('bicycle') ? (isTa ? '🚲 புதிய மிதிவண்டி' : '🚲 New Bicycle') :
+                               scheme.id?.includes('breakfast') ? (isTa ? '🥣 சூடான காலை உணவு' : '🥣 Hot Breakfast') :
+                               scheme.id?.includes('poshan') ? (isTa ? '🍲 சத்துணவு & முட்டை' : '🍲 Hot Meal & Egg') :
+                               (isTa ? '📚 சீருடை & புத்தகங்கள்' : '📚 Uniforms & Books')}
+                            </strong>
+                          </div>
+                        )}
                         <div>
                           <span className="text-[10px] text-slate-400 block uppercase font-semibold">
-                            {isTa ? 'கடைசி தேதி:' : 'Application Deadline:'}
+                            {isTa ? 'கடைசி தேதி / வழங்கல்:' : 'Application / Delivery:'}
                           </span>
-                          <strong className="text-slate-900 font-bold">{scheme.deadline || (isTa ? '31 அக்டோபர் 2026' : '31st October 2026')}</strong>
+                          <strong className="text-slate-900 font-bold">{scheme.deadline || (isTa ? 'பள்ளியில் நேரடி வழங்கல்' : 'Direct School Delivery')}</strong>
                         </div>
                       </div>
 

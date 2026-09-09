@@ -459,6 +459,46 @@ export default function ProfileForm({
                   type="button"
                   onClick={() => setFormData(prev => ({
                     ...prev,
+                    full_name: 'Kavitha S.',
+                    age: '15',
+                    gender: 'female',
+                    community: 'BC',
+                    district: 'Thanjavur',
+                    degree: 'High School (Class 9 - 10 / SSLC)',
+                    current_course: 'Class 10 (SSLC Secondary)',
+                    board_percentage: '88.0',
+                    annual_income: '85000',
+                    is_first_graduate: false,
+                    schooling_type: 'tn_govt_school_6_to_12'
+                  }))}
+                  className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-lg border border-amber-300 text-[10px] font-bold transition cursor-pointer"
+                >
+                  🎒 Kavitha (Class 10 SSLC)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    full_name: 'Anbarasan K.',
+                    age: '16',
+                    gender: 'male',
+                    community: 'SC',
+                    district: 'Salem',
+                    degree: 'Higher Secondary (Class 11 - 12 / HSC)',
+                    current_course: 'Class 11 (Higher Secondary - Bio-Maths)',
+                    board_percentage: '84.5',
+                    annual_income: '95000',
+                    is_first_graduate: false,
+                    schooling_type: 'tn_govt_school_6_to_12'
+                  }))}
+                  className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 rounded-lg border border-emerald-300 text-[10px] font-bold transition cursor-pointer"
+                >
+                  🚲 Anbarasan (Class 11 HSC)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
                     full_name: 'Priya M.',
                     age: '19',
                     gender: 'female',
@@ -675,13 +715,18 @@ export default function ProfileForm({
                   <option value="Undergraduate (UG)">Undergraduate (UG / B.E / B.Tech / B.Sc / B.A / MBBS)</option>
                   <option value="Postgraduate (PG)">Postgraduate (PG / M.E / M.Sc / MBA / MCA)</option>
                   <option value="Diploma / Polytechnic">Diploma / Polytechnic (3 Years)</option>
+                  <option value="Higher Secondary (Class 11 - 12 / HSC)">🎒 Higher Secondary (Class 11 - 12 / HSC - மேல்நிலை)</option>
+                  <option value="High School (Class 9 - 10 / SSLC)">🎒 High School (Class 9 - 10 / SSLC - உயர்நிலை)</option>
+                  <option value="Middle School (Class 6 - 8)">🎒 Middle School (Class 6 - 8 - நடுநிலை)</option>
+                  <option value="Primary School (Class 1 - 5)">🎒 Primary School (Class 1 - 5 - தொடக்கப் பள்ளி)</option>
+                  <option value="Ph.D. / Doctoral Research">Ph.D. / Doctoral Research (முனைவர் ஆய்வு)</option>
                 </select>
               </div>
 
               {/* Course Discipline */}
               <div>
                 <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
-                  Course Discipline <span className="text-red-500">*</span>
+                  Course Discipline / Class <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="current_course"
@@ -694,6 +739,12 @@ export default function ProfileForm({
                   <option value="Medical">Medical / Dental / Paramedical (MBBS, BDS, B.Pharm)</option>
                   <option value="Law">Law (LLB / BA LLB)</option>
                   <option value="Diploma">Polytechnic / Technical Diploma</option>
+                  <option value="Class 11 (Higher Secondary - Bio-Maths)">🎒 Class 11 (Higher Secondary / HSC)</option>
+                  <option value="Class 12 (Higher Secondary - Computer Science)">🎒 Class 12 (Higher Secondary / HSC)</option>
+                  <option value="Class 10 (SSLC Secondary)">🎒 Class 10 (High School / SSLC Board)</option>
+                  <option value="Class 9 (High School)">🎒 Class 9 (High School / 9-ஆம் வகுப்பு)</option>
+                  <option value="Class 1-8 (Elementary / Middle School)">🎒 Class 1 to 8 (Elementary / Middle School)</option>
+                  <option value="Doctoral Research Fellowship">Ph.D. Doctoral Research Fellowship</option>
                 </select>
               </div>
 
