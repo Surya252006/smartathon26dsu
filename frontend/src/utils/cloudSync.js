@@ -9,18 +9,26 @@ import {
   doc, 
   setDoc, 
   getDoc,
-  addDoc, 
   getDocs, 
   query, 
   where, 
-  orderBy, 
-  limit, 
-  serverTimestamp 
+  limit
 } from 'firebase/firestore';
 
 /**
+ * Wraps any promise with a strict timeout so network or Firestore delays NEVER hang the application.
+ */
+function safeTimeout(promise, ms = 500, fallback = null) {
+  let timer;
+  const timeoutPromise = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(fallback), ms);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timer));
+}
+
+/**
  * Persists a candidate's profile and photo to the cloud cluster database.
- * Syncs to Cloud Firestore and mirrors to backend/MongoDB when online.
+ * Syncs to LocalStorage (instant 0ms), Cloud Firestore, and MongoDB Atlas when online.
  */
 export async function saveProfileToCluster(profileData, user = null) {
   if (!profileData) return null;
@@ -54,104 +62,136 @@ export async function saveProfileToCluster(profileData, user = null) {
     cluster: "tnscheme-ai-dsu-oneyes.firestore.google"
   };
 
-  // 1. Write to Cloud Firestore Cluster
+  // 1. Instant local persistence (ensures photo & data survive signout -> signin immediately!)
   try {
-    const docRef = doc(db, 'student_profiles', sanitizedId);
-    await setDoc(docRef, cloudPayload, { merge: true });
-    
-    // Also index under user_id if different from sanitizedId
-    if (user?.user_id && user.user_id !== sanitizedId) {
-      const userRef = doc(db, 'student_profiles', user.user_id.toLowerCase().replace(/[^a-z0-9]/g, '_'));
-      await setDoc(userRef, cloudPayload, { merge: true });
+    localStorage.setItem(`tn_profile_${sanitizedId}`, JSON.stringify(cloudPayload));
+    if (avatarData) {
+      localStorage.setItem(`tn_avatar_${sanitizedId}`, avatarData);
     }
-    console.log(`[Cloud Cluster] Profile synced to Firestore collection 'student_profiles' for: ${sanitizedId}`);
-  } catch (firestoreErr) {
-    console.warn("[Cloud Cluster] Firestore direct write notice:", firestoreErr.message);
-  }
+    if (user?.user_id) {
+      const userKey = user.user_id.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      localStorage.setItem(`tn_profile_${userKey}`, JSON.stringify(cloudPayload));
+      if (avatarData) localStorage.setItem(`tn_avatar_${userKey}`, avatarData);
+    }
+  } catch (e) {}
 
-  // 2. Also mirror to MongoDB Atlas & SQLite if backend is available
+  // 2. Background sync to MongoDB Atlas & SQLite (non-blocking)
   try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 1200);
     fetch('http://localhost:8000/api/auth/profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         user_id: sanitizedId,
         profile_data: cloudPayload
-      })
-    }).catch(() => {});
+      }),
+      signal: controller.signal
+    }).finally(() => clearTimeout(tid)).catch(() => {});
+  } catch (e) {}
+
+  // 3. Background sync to Cloud Firestore Cluster (strictly timed out, non-blocking)
+  try {
+    const docRef = doc(db, 'student_profiles', sanitizedId);
+    safeTimeout(setDoc(docRef, cloudPayload, { merge: true }), 1000).catch(() => {});
   } catch (e) {}
 
   return cloudPayload;
 }
 
 /**
- * Retrieves a saved profile and avatar from Cloud Firestore or MongoDB Atlas.
- * Essential for restoring student profile photo after sign out / sign in.
+ * Retrieves a saved profile and avatar from Local Cache, Cloud Firestore, or MongoDB Atlas.
+ * Resolves instantly without ever blocking UI or hanging login!
  */
 export async function getProfileFromCluster(identifier) {
   if (!identifier) return null;
   const cleanId = String(identifier).toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
 
-  // 1. Check Cloud Firestore by direct ID
+  // 1. Check instant local persistent storage (0ms - always succeeds offline or online)
+  try {
+    const cachedAvatar = localStorage.getItem(`tn_avatar_${cleanId}`);
+    const cachedProf = localStorage.getItem(`tn_profile_${cleanId}`);
+    if (cachedProf || cachedAvatar) {
+      const parsed = cachedProf ? JSON.parse(cachedProf) : {};
+      if (cachedAvatar && !parsed.avatar) parsed.avatar = cachedAvatar;
+      if (parsed.avatar || parsed.full_name) {
+        return parsed;
+      }
+    }
+  } catch (e) {}
+
+  // 2. Query MongoDB Atlas via backend API (timed out to 400ms)
+  try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 400);
+    const res = await fetch(`http://localhost:8000/api/auth/profile/${encodeURIComponent(cleanId)}`, {
+      signal: controller.signal
+    }).catch(() => null);
+    clearTimeout(tid);
+    
+    if (res && res.ok) {
+      const data = await res.json();
+      if (data?.profile) {
+        if (data.profile.avatar) {
+          try { localStorage.setItem(`tn_avatar_${cleanId}`, data.profile.avatar); } catch (e) {}
+        }
+        return data.profile;
+      }
+    }
+  } catch (e) {}
+
+  // 3. Check Cloud Firestore with strict 400ms timeout
   try {
     const docRef = doc(db, 'student_profiles', cleanId);
-    const snap = await getDoc(docRef);
-    if (snap.exists()) {
-      return snap.data();
+    const snap = await safeTimeout(getDoc(docRef), 400, null);
+    if (snap && snap.exists && snap.exists()) {
+      const data = snap.data();
+      if (data?.avatar) {
+        try { localStorage.setItem(`tn_avatar_${cleanId}`, data.avatar); } catch (e) {}
+      }
+      return data;
     }
-  } catch (err) {
-    console.warn("[Cloud Cluster] Firestore get notice:", err.message);
-  }
-
-  // 2. Query Firestore collection where email == identifier or user_id == identifier
-  try {
-    const colRef = collection(db, 'student_profiles');
-    const q = query(colRef, where('email', '==', identifier), limit(1));
-    const querySnap = await getDocs(q);
-    if (!querySnap.empty) {
-      return querySnap.docs[0].data();
-    }
-  } catch (e) {}
-
-  // 3. Fallback to MongoDB Atlas via backend API
-  try {
-    const res = await fetch(`http://localhost:8000/api/auth/profile/${encodeURIComponent(cleanId)}`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data?.profile) return data.profile;
-    }
-  } catch (e) {}
+  } catch (err) {}
 
   return null;
 }
 
 /**
- * Specifically updates and saves only the student avatar photo in Cloud Firestore & MongoDB.
+ * Specifically updates and saves student avatar photo to local storage, MongoDB Atlas, and Firestore.
  */
 export async function saveAvatarToCluster(identifier, base64Avatar) {
-  if (!identifier || !base64Avatar) return null;
+  if (!identifier) return null;
   const cleanId = String(identifier).toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
 
-  // 1. Save to Cloud Firestore
+  // 1. Instant local persistence (survives tab close and signout -> signin)
   try {
-    const docRef = doc(db, 'student_profiles', cleanId);
-    await setDoc(docRef, { avatar: base64Avatar, updated_at: new Date().toISOString() }, { merge: true });
-    console.log(`[Cloud Cluster] Avatar saved to Firestore for: ${cleanId}`);
-  } catch (err) {
-    console.warn("[Cloud Cluster] Firestore avatar write notice:", err.message);
-  }
+    if (base64Avatar) {
+      localStorage.setItem(`tn_avatar_${cleanId}`, base64Avatar);
+    } else {
+      localStorage.removeItem(`tn_avatar_${cleanId}`);
+    }
+  } catch (e) {}
 
-  // 2. Mirror to MongoDB Atlas via backend
+  // 2. Background mirror to MongoDB Atlas via backend
   try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 1200);
     fetch('http://localhost:8000/api/auth/profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         user_id: cleanId,
         profile_data: { avatar: base64Avatar }
-      })
-    }).catch(() => {});
+      }),
+      signal: controller.signal
+    }).finally(() => clearTimeout(tid)).catch(() => {});
   } catch (e) {}
+
+  // 3. Background mirror to Cloud Firestore
+  try {
+    const docRef = doc(db, 'student_profiles', cleanId);
+    safeTimeout(setDoc(docRef, { avatar: base64Avatar, updated_at: new Date().toISOString() }, { merge: true }), 1000).catch(() => {});
+  } catch (err) {}
 
   return true;
 }

@@ -85,33 +85,38 @@ function App() {
     } catch (e) {}
   };
 
-  const handleAuthSuccess = async (user) => {
+  const handleAuthSuccess = (user) => {
     let resolvedUser = { ...user };
+    const lookupId = user.email || user.user_id;
+    const cleanId = String(lookupId).toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
+
+    // Immediate local cache check for avatar (0ms)
     try {
-      const lookupId = user.email || user.user_id;
-      const remoteData = await getProfileFromCluster(lookupId);
-      if (remoteData?.avatar) {
+      const cachedAvatar = localStorage.getItem(`tn_avatar_${cleanId}`);
+      if (cachedAvatar) {
+        resolvedUser.profile = { ...(resolvedUser.profile || {}), avatar: cachedAvatar };
+        sessionStorage.setItem('tn_student_avatar', cachedAvatar);
+      }
+    } catch (e) {}
+
+    setCurrentUser(resolvedUser);
+    try {
+      sessionStorage.setItem('tn_scholarship_user', JSON.stringify(resolvedUser));
+      if (resolvedUser.profile) {
+        saveProfileToCluster(resolvedUser.profile, resolvedUser).catch(() => {});
+      }
+      window.dispatchEvent(new Event('profileUpdated'));
+      window.dispatchEvent(new Event('avatarUpdated'));
+    } catch (e) {}
+
+    // Background cloud check
+    getProfileFromCluster(lookupId).then((remoteData) => {
+      if (remoteData?.avatar && remoteData.avatar !== resolvedUser.profile?.avatar) {
         resolvedUser.profile = { ...(resolvedUser.profile || {}), avatar: remoteData.avatar };
         sessionStorage.setItem('tn_student_avatar', remoteData.avatar);
         window.dispatchEvent(new Event('avatarUpdated'));
       }
-    } catch (e) {
-      console.warn("Cluster lookup notice on login:", e);
-    }
-
-    setCurrentUser(resolvedUser);
-    try {
-      // Session Storage: Automatically clears when browser/tab is closed
-      sessionStorage.setItem('tn_scholarship_user', JSON.stringify(resolvedUser));
-      
-      // Sync user profile to Firestore Cloud Cluster
-      if (resolvedUser.profile) {
-        saveProfileToCluster(resolvedUser.profile, resolvedUser).catch(err => 
-          console.warn("[App] Cloud sync notice on login:", err)
-        );
-      }
-      window.dispatchEvent(new Event('profileUpdated'));
-    } catch (e) {}
+    }).catch(() => {});
   };
 
   const handleLogout = () => {

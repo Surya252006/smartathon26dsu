@@ -177,32 +177,27 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
   if (!isOpen) return null;
 
-  const completeAuth = async (userData) => {
-    // 1. Fetch previously saved profile & avatar from Cloud Cluster & MongoDB Atlas!
+  const completeAuth = (userData) => {
     const lookupId = userData.email || userData.user_id;
-    try {
-      const remoteData = await getProfileFromCluster(lookupId);
-      if (remoteData) {
-        userData.profile = userData.profile || {};
-        if (remoteData.avatar) {
-          userData.profile.avatar = remoteData.avatar;
-        }
-        if (remoteData.full_name) userData.profile.full_name = remoteData.full_name;
-        if (remoteData.annual_income) userData.profile.annual_income = remoteData.annual_income;
-        if (remoteData.board_percentage) userData.profile.board_percentage = remoteData.board_percentage;
-        if (remoteData.current_course) userData.profile.current_course = remoteData.current_course;
-        if (remoteData.is_first_graduate !== undefined) userData.profile.is_first_graduate = remoteData.is_first_graduate;
-        if (remoteData.district) userData.profile.district = remoteData.district;
-      }
-    } catch (e) {
-      console.warn("Cluster lookup notice:", e);
-    }
+    const cleanId = String(lookupId).toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
 
-    // Save to user storage (sessionStorage ensures fresh link for new visitors and auto-signout on tab close)
+    // 1. Instant local cache lookup for saved student avatar & profile (0ms latency!)
+    try {
+      const cachedAvatar = localStorage.getItem(`tn_avatar_${cleanId}`);
+      const cachedProf = localStorage.getItem(`tn_profile_${cleanId}`);
+      userData.profile = userData.profile || {};
+      if (cachedAvatar) {
+        userData.profile.avatar = cachedAvatar;
+      } else if (cachedProf) {
+        const parsed = JSON.parse(cachedProf);
+        if (parsed?.avatar) userData.profile.avatar = parsed.avatar;
+      }
+    } catch (e) {}
+
+    // 2. Save active user to sessionStorage (fresh per visitor, auto-signout on tab close)
     try {
       sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userData));
 
-      // Synchronize tn_student_profile so Candidate Snapshot & Form immediately match the profile
       const prof = userData.profile || {};
       const profileToSave = {
         fullName: prof.full_name || userData.full_name || 'Tamil Nadu Student',
@@ -222,22 +217,29 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         sessionStorage.setItem('tn_student_avatar', profileToSave.avatar);
       }
 
-      // Persist profile into Cloud Firestore Cluster and MongoDB
-      saveProfileToCluster(profileToSave, userData).catch(err =>
-        console.warn("[AuthModal] Cluster profile write notice:", err)
-      );
+      // Background cluster sync (never blocks login!)
+      saveProfileToCluster(profileToSave, userData).catch(() => {});
 
       window.dispatchEvent(new Event('profileUpdated'));
       window.dispatchEvent(new Event('avatarUpdated'));
+
+      // Background cloud check in case remote MongoDB Atlas has a newer photo
+      getProfileFromCluster(lookupId).then((remoteData) => {
+        if (remoteData?.avatar && remoteData.avatar !== profileToSave.avatar) {
+          sessionStorage.setItem('tn_student_avatar', remoteData.avatar);
+          window.dispatchEvent(new Event('avatarUpdated'));
+        }
+      }).catch(() => {});
     } catch (err) {
       console.warn("Storage sync note", err);
     }
 
+    setIsLoading(false);
     setSuccessMsg(`Welcome, ${userData.full_name || 'Student'}! Logged in successfully.`);
     setTimeout(() => {
       onAuthSuccess(userData);
       onClose();
-    }, 450);
+    }, 250);
   };
 
   const handleSubmit = async (e) => {
@@ -251,14 +253,14 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
     let authenticatedUser = null;
 
-    // 1. Attempt FastAPI backend if available
+    // 1. Attempt FastAPI backend if available (fast 400ms abort timeout)
     try {
       const url = mode === 'login' 
         ? 'http://localhost:8000/api/auth/login' 
         : 'http://localhost:8000/api/auth/register';
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const timeoutId = setTimeout(() => controller.abort(), 400);
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -272,23 +274,22 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         if (data?.user) authenticatedUser = data.user;
       }
     } catch (netErr) {
-      // Backend offline or mixed-content blocked in production (Firebase HTTPS)
+      // Backend offline or mixed-content blocked in production
     }
 
-    // 2. Client-side authentication fallback (instant, zero failure)
+    // 2. Client-side authentication fallback (instant, zero delay)
     try {
       if (!authenticatedUser) {
         authenticatedUser = authenticateLocally(mode, payload);
       }
-      await completeAuth(authenticatedUser);
+      completeAuth(authenticatedUser);
     } catch (err) {
       setErrorMsg(err.message || "Authentication failed. Please verify credentials.");
-    } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInstantDemoLogin = async (type) => {
+  const handleInstantDemoLogin = (type) => {
     setIsLoading(true);
     setErrorMsg(null);
 
@@ -305,10 +306,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
     try {
       const userObj = authenticateLocally('login', payload);
-      await completeAuth(userObj);
+      completeAuth(userObj);
     } catch (err) {
       setErrorMsg(err.message);
-    } finally {
       setIsLoading(false);
     }
   };
