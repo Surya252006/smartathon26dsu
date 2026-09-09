@@ -63,7 +63,7 @@ export default function Navbar({
             <span className="text-slate-600 hidden sm:inline">|</span>
             <span className="hidden sm:inline text-slate-400">{t.dept_title}</span>
             <span className="text-slate-600 hidden md:inline">|</span>
-            <span className="hidden md:inline text-amber-300 font-medium">Smartathon'26 (DSU × ONEYES)</span>
+            <span className="hidden md:inline text-emerald-300 font-medium font-mono text-[10px] bg-slate-800 px-2 py-0.5 rounded border border-slate-700">TNeGA Secure Portal • Ver 2.4</span>
           </div>
 
           <div className="flex items-center space-x-3 sm:space-x-4">

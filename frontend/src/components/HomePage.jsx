@@ -18,7 +18,6 @@ import {
   TrendingUp,
   Laptop
 } from 'lucide-react';
-import { DEMO_PERSONAS } from '../data/demoPersonas';
 import { TRANSLATIONS } from '../utils/translations';
 
 export default function HomePage({ 
@@ -188,54 +187,6 @@ export default function HomePage({
         </div>
       </section>
 
-      {/* 2. JURY & DEMO FAST LAUNCHER */}
-      <section className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <div>
-            <div className="flex items-center space-x-2 text-xs font-bold text-slate-900 uppercase tracking-wider">
-              <Sparkles size={15} className="text-amber-500" />
-              <span>{t.jury_title}</span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {t.jury_subtitle}
-            </p>
-          </div>
-          <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
-            Ready to Evaluate
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          {DEMO_PERSONAS.map(p => (
-            <div
-              key={p.id}
-              onClick={() => onInjectPersona(p.id)}
-              className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded border ${p.badgeColor}`}>
-                    {p.id.toUpperCase()}
-                  </span>
-                  <span className="text-[11px] text-slate-400 group-hover:text-emerald-700 font-semibold transition">
-                    Run Demo →
-                  </span>
-                </div>
-                <h4 className="font-bold text-slate-900 text-sm group-hover:text-emerald-900 transition mb-1">
-                  {p.name}
-                </h4>
-                <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                  {p.expectedOutcome}
-                </p>
-              </div>
-              <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-                <span>{p.payload.community} • {p.payload.gender === 'female' ? 'Female' : 'Male'}</span>
-                <strong>₹{p.payload.annual_income.toLocaleString('en-IN')}/yr</strong>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* 3. INSTANT AI PREDICTION FORECAST (Handwritten Note Item #7) */}
       <section className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-lg">

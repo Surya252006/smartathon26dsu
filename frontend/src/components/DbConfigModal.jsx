@@ -125,7 +125,7 @@ export default function DbConfigModal({ isOpen, onClose, dbStatus, onUpdateStatu
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username (e.g. smartathon_admin)..."
+                  placeholder="Enter username (e.g. tnega_admin)..."
                   className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>

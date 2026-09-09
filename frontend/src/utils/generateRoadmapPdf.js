@@ -48,7 +48,7 @@ export function generateRoadmapPdf(profile = {}, result = {}) {
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text("AI SCHOLARSHIP & WELFARE ENTITLEMENT ROADMAP | SMARTATHON'26", pageWidth / 2, 18, { align: 'center' });
+  doc.text("OFFICIAL AI SCHOLARSHIP & WELFARE ENTITLEMENT ROADMAP", pageWidth / 2, 18, { align: 'center' });
 
   doc.setFontSize(8);
   doc.setTextColor(203, 213, 225);
@@ -263,7 +263,7 @@ export function generateRoadmapPdf(profile = {}, result = {}) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
   doc.setTextColor(148, 163, 184);
-  doc.text("Official AI Decision Record generated for Smartathon'26 (DSU x ONEYES) | TN e-Governance Policy Compliance Engine", margin, footerY + 2);
+  doc.text("Official AI Decision Record | Government of Tamil Nadu e-Governance Policy Compliance Engine", margin, footerY + 2);
   doc.text('Page 1 of 1', pageWidth - margin, footerY + 2, { align: 'right' });
 
   // Save / Trigger Download

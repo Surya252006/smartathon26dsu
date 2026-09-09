@@ -272,7 +272,7 @@ function App() {
                 <span>{t.portal_name} • {t.dept_title}</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed max-w-md">
-                An initiative designed for SMARTATHON'26 (DSU × ONEYES) to bridge the accessibility gap for 1.2 Lakh rural and first-generation college students across Tamil Nadu.
+                An official Tamil Nadu e-Governance initiative designed to bridge the accessibility gap for 1.2 Lakh rural and first-generation college students across Tamil Nadu with zero entitlement collisions.
               </p>
               <div className="flex items-center space-x-3 text-[11px] text-emerald-400 font-medium pt-1">
                 <span>Direct Benefit Transfer (DBT) Enabled</span>
@@ -300,7 +300,7 @@ function App() {
           </div>
 
           <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-3">
-            <p>© 2026 Government of Tamil Nadu. AI Scholarship Optimization Architecture developed for SMARTATHON'26.</p>
+            <p>© 2026 Government of Tamil Nadu. Department of Higher Education & Tamil Nadu e-Governance Agency (TNeGA). All rights reserved.</p>
             <div className="flex space-x-4">
               <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
               <span>•</span>

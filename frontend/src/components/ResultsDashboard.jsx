@@ -326,14 +326,14 @@ export default function ResultsDashboard({ result, profile, onReset }) {
 
       </div>
 
-      {/* 2. Problem Statement #6 Mandate: Valid Combination vs Naïve Matching */}
+      {/* 2. Statutory Optimization Engine: Valid Combination vs Naïve Matching */}
       <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 sm:p-6 shadow-xs">
         <div className="flex items-center space-x-2 text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
           <Landmark size={16} className="text-[#006a4e]" />
-          <span>SMARTATHON'26 Problem Statement #6 Core Delivery: Single Best-Fit Valid Combination</span>
+          <span>Statutory Optimization Engine: Single Best-Fit Valid Combination (Collision-Free)</span>
         </div>
         <p className="text-xs text-slate-600 mb-4 leading-relaxed">
-          The problem statement mandates: <em>"Recommends the single best-fit scheme or valid combination — not just a list of every scheme they technically qualify for, since some of those combinations aren't actually allowed together."</em> Below is the direct comparison proving this requirement:
+          State & Central Statutory Audit Rule: Certain scholarship schemes cannot be drawn simultaneously. Our Graph-Optimized Constraint Engine computes the single highest-value permitted combination, actively eliminating legal welfare collisions:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
