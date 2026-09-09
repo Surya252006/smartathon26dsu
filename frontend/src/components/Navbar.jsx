@@ -18,30 +18,15 @@ import {
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 
-// Official Tamil Nadu Government Emblem Component
+// Official Tamil Nadu Government Emblem Component (Generated Srivilliputhur Gopuram Symbol)
 function TNEmblem({ className = "w-10 h-10" }) {
   return (
-    <div className={`rounded-full bg-emerald-950 border-2 border-amber-400/90 flex items-center justify-center p-1 shadow-xs shrink-0 ${className}`}>
-      <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Outer Ring */}
-        <circle cx="50" cy="50" r="46" stroke="#fbbf24" strokeWidth="3" fill="#004d38" />
-        <circle cx="50" cy="50" r="42" stroke="#fbbf24" strokeWidth="1" strokeDasharray="2 2" />
-        
-        {/* Gopuram (Temple Tower) tiers */}
-        <rect x="30" y="70" width="40" height="12" rx="1" fill="#fbbf24" />
-        <rect x="34" y="60" width="32" height="10" rx="1" fill="#fef3c7" />
-        <rect x="38" y="50" width="24" height="10" rx="1" fill="#fbbf24" />
-        <rect x="42" y="40" width="16" height="10" rx="1" fill="#fef3c7" />
-        <polygon points="50,22 45,40 55,40" fill="#fbbf24" />
-        <circle cx="50" cy="20" r="3" fill="#fbbf24" />
-
-        {/* Gopuram Gateway Door */}
-        <path d="M46 82 V 72 Q 50 68 54 72 V 82 Z" fill="#004d38" />
-
-        {/* Flanking Laurel Wreath */}
-        <path d="M22 48 Q 28 36 40 32" stroke="#fbbf24" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M78 48 Q 72 36 60 32" stroke="#fbbf24" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
+    <div className={`rounded-full overflow-hidden border-2 border-amber-400 shadow-sm shrink-0 bg-emerald-950 flex items-center justify-center ${className}`}>
+      <img 
+        src="/tn_temple_emblem.jpg" 
+        alt="Government of Tamil Nadu Temple Emblem" 
+        className="w-full h-full object-cover scale-105"
+      />
     </div>
   );
 }

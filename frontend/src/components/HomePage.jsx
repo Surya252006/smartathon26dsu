@@ -284,38 +284,76 @@ export default function HomePage({
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 relative z-10 space-y-8">
           
-          {/* Main Hero Header */}
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center space-x-2 bg-emerald-950/90 text-emerald-300 text-xs font-bold px-3.5 py-1.5 rounded-full border border-emerald-700/80 shadow-xs">
-              <Sparkles size={14} className="text-emerald-400" />
-              <span>AI-Powered Decision System • Government of Tamil Nadu</span>
+          {/* Main Hero Header & Visual Reference Card */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Column (7 cols): Text, Subtitle, CTAs */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="inline-flex items-center space-x-2 bg-emerald-950/90 text-emerald-300 text-xs font-bold px-3.5 py-1.5 rounded-full border border-emerald-700/80 shadow-xs">
+                <Sparkles size={14} className="text-emerald-400" />
+                <span>AI-Powered Decision System • Government of Tamil Nadu</span>
+              </div>
+
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+                Find the Scholarships You Actually Qualify For
+              </h1>
+
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
+                Enter your profile once. Our intelligent scholarship matcher checks eligibility, detects policy conflicts, and identifies the highest-benefit combination for you.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={onStartMatcher}
+                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition flex items-center space-x-2 cursor-pointer border border-emerald-400"
+                >
+                  <span>Find My Scholarships</span>
+                  <ArrowRight size={16} />
+                </button>
+
+                <a
+                  href="#how-it-works"
+                  className="px-5 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-sm rounded-xl border border-slate-700 transition flex items-center space-x-2 cursor-pointer"
+                >
+                  <span>How It Works</span>
+                </a>
+              </div>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-              Find the Scholarships You Actually Qualify For
-            </h1>
+            {/* Right Column (5 cols): Visual Showcase Card with Temple Emblem & Campus Image */}
+            <div className="lg:col-span-5 relative">
+              <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500/80 shadow-2xl bg-slate-900 group">
+                <img 
+                  src="/tn_students_campus.jpg" 
+                  alt="Tamil Nadu University Students on Campus" 
+                  className="w-full h-64 sm:h-72 object-cover transition duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
 
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
-              Enter your profile once. Our intelligent scholarship matcher checks eligibility, detects policy conflicts, and identifies the highest-benefit combination for you.
-            </p>
+                {/* Floating Official Temple Emblem Logo Badge */}
+                <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md rounded-full pl-1.5 pr-3.5 py-1 border border-amber-400/80 shadow-lg flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400 bg-emerald-950 shrink-0">
+                    <img src="/tn_temple_emblem.jpg" alt="TN Temple Seal" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-[11px] font-bold text-amber-300 tracking-wide">
+                    தமிழ்நாடு அரசு Official Seal
+                  </span>
+                </div>
 
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                onClick={onStartMatcher}
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition flex items-center space-x-2 cursor-pointer border border-emerald-400"
-              >
-                <span>Find My Scholarships</span>
-                <ArrowRight size={16} />
-              </button>
-
-              <a
-                href="#how-it-works"
-                className="px-5 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-sm rounded-xl border border-slate-700 transition flex items-center space-x-2 cursor-pointer"
-              >
-                <span>How It Works</span>
-              </a>
+                {/* Bottom Overlay Info */}
+                <div className="absolute bottom-3 left-3 right-3 bg-slate-900/85 backdrop-blur-md rounded-xl p-3 border border-slate-700/80 text-xs text-white space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-emerald-400 text-[11px]">Direct Benefit Transfer (DBT)</span>
+                    <span className="bg-emerald-800/90 text-emerald-200 text-[9px] font-bold px-2 py-0.5 rounded">G.O. Ms 47/2026</span>
+                  </div>
+                  <p className="text-[11px] text-slate-300 leading-tight">
+                    Higher Education Welfare covering 1.2 Lakh rural & first-generation college students statewide.
+                  </p>
+                </div>
+              </div>
             </div>
+
           </div>
 
           {/* Section 23: Key Differentiator Card */}
@@ -439,6 +477,102 @@ export default function HomePage({
           >
             Launch Eligibility Checker →
           </button>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* VISUAL REFERENCES SHOWCASE GALLERY (Temple Emblem, Campuses, Awards)      */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-3 gap-2">
+          <div>
+            <span className="text-xs font-bold text-[#006a4e] uppercase tracking-wider block mb-1">
+              Visual References & Official Insignia
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Official State Scheme & Beneficiary References
+            </h2>
+          </div>
+          <p className="text-xs text-slate-500 max-w-md">
+            Visual references for Tamil Nadu state government emblems, college institutions, and sanction documentation.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Reference Card 1: Official Temple Emblem */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden hover:shadow-md transition group">
+            <div className="h-48 bg-[#004d38] flex items-center justify-center p-4 relative overflow-hidden">
+              <img 
+                src="/tn_temple_emblem.jpg" 
+                alt="Government of Tamil Nadu Srivilliputhur Andal Temple Gopuram Seal" 
+                className="h-40 w-40 object-contain rounded-full shadow-lg border-2 border-amber-400 transition duration-300 group-hover:scale-105"
+              />
+              <span className="absolute top-2.5 right-2.5 bg-emerald-950/80 text-amber-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-400/40">
+                Official Web Logo
+              </span>
+            </div>
+            <div className="p-4 space-y-1.5 text-xs">
+              <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wide">
+                State Government Emblem
+              </span>
+              <h3 className="font-bold text-slate-900 text-sm">
+                Srivilliputhur Andal Temple Gopuram Seal
+              </h3>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                The statutory seal of the Government of Tamil Nadu (தமிழ்நாடு அரசு), guaranteeing authentic departmental sanction and legal welfare coverage.
+              </p>
+            </div>
+          </div>
+
+          {/* Reference Card 2: Campus Collegiate Hubs */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden hover:shadow-md transition group">
+            <div className="h-48 overflow-hidden relative">
+              <img 
+                src="/tn_students_campus.jpg" 
+                alt="Collegiate Students on Campus in Tamil Nadu" 
+                className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
+              />
+              <span className="absolute top-2.5 right-2.5 bg-slate-900/80 text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/40">
+                Campus Beneficiaries
+              </span>
+            </div>
+            <div className="p-4 space-y-1.5 text-xs">
+              <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wide">
+                Higher Education Campuses
+              </span>
+              <h3 className="font-bold text-slate-900 text-sm">
+                Engineering, Arts & Science, and Polytechnics
+              </h3>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                Empowering first-generation and rural scholars across Anna University, Government Colleges, and approved institutions statewide.
+              </p>
+            </div>
+          </div>
+
+          {/* Reference Card 3: Scholarship Award Sanction */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden hover:shadow-md transition group">
+            <div className="h-48 overflow-hidden relative">
+              <img 
+                src="/tn_scholarship_award.jpg" 
+                alt="Students holding Government Scholarship Sanction Letter" 
+                className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
+              />
+              <span className="absolute top-2.5 right-2.5 bg-slate-900/80 text-amber-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-500/40">
+                Sanction Reference
+              </span>
+            </div>
+            <div className="p-4 space-y-1.5 text-xs">
+              <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wide">
+                DBT & Welfare Sanctions
+              </span>
+              <h3 className="font-bold text-slate-900 text-sm">
+                Pudhumai Penn & First Graduate Sanctions
+              </h3>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                Verifiable sanction letters cross-referenced against e-Sevai revenue databases, delivering up to ₹50,000/yr with zero collision risk.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
