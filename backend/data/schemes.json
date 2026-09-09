@@ -1,0 +1,351 @@
+[
+  {
+    "id": "tn-first-graduate",
+    "name": "Tamil Nadu First Graduate Tuition Fee Concession",
+    "category": "entitlement",
+    "financial_value": 25000,
+    "benefit_breakdown": {
+      "tuition_waiver": 25000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": true,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "aicte-pragati",
+      "tn-post-matric-bc-mbc",
+      "pm-usp-csss"
+    ],
+    "portal_name": "TNEA Online",
+    "portal_url": "https://www.tneaonline.org",
+    "required_docs": [
+      "First Graduate Certificate",
+      "Family Card",
+      "10th/12th Marksheet"
+    ]
+  },
+  {
+    "id": "tn-pudhumai-penn",
+    "name": "Pudhumai Penn Thittam (Moovalur Ramamirtham Ammaiyar Scheme)",
+    "category": "entitlement",
+    "financial_value": 12000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "female",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Penkalvi",
+    "portal_url": "https://www.pudhumaipenn.tn.gov.in",
+    "required_docs": [
+      "Bonafide Certificate (6th-12th Govt School)",
+      "Aadhar Card",
+      "Bank Passbook"
+    ]
+  },
+  {
+    "id": "tn-tamil-pudhalvan",
+    "name": "Tamil Pudhalvan Thittam",
+    "category": "entitlement",
+    "financial_value": 12000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "male",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Tamil Pudhalvan",
+    "portal_url": "https://www.tamilpudhalvan.tn.gov.in",
+    "required_docs": [
+      "Bonafide Certificate (6th-12th Govt School)",
+      "Aadhar Card",
+      "Bank Passbook"
+    ]
+  },
+  {
+    "id": "tn-post-matric-sc-st",
+    "name": "Post-Matric Scholarship for SC/ST/SCC (ADW Dept)",
+    "category": "entitlement",
+    "financial_value": 50000,
+    "benefit_breakdown": {
+      "tuition_waiver": 38000,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "pm-usp-csss",
+      "aicte-pragati"
+    ],
+    "portal_name": "TN e-District / SSP",
+    "portal_url": "https://ssp.tn.gov.in",
+    "required_docs": [
+      "Community Certificate",
+      "Income Certificate (Revenue Dept)",
+      "Aadhar Card",
+      "10th/12th Marksheet"
+    ]
+  },
+  {
+    "id": "tn-post-matric-bc-mbc",
+    "name": "Post-Matric Scholarship for BC/MBC/DNC",
+    "category": "entitlement",
+    "financial_value": 15000,
+    "benefit_breakdown": {
+      "tuition_waiver": 12000,
+      "maintenance_stipend": 3000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "pm-usp-csss",
+      "aicte-pragati",
+      "tn-first-graduate"
+    ],
+    "portal_name": "TN e-District / SSP",
+    "portal_url": "https://ssp.tn.gov.in",
+    "required_docs": [
+      "Community Certificate",
+      "Income Certificate (Revenue Dept)",
+      "Aadhar Card"
+    ]
+  },
+  {
+    "id": "pm-usp-csss",
+    "name": "Central Sector Scheme of Scholarship (PM-USP CSSS via NSP)",
+    "category": "merit_cum_means",
+    "financial_value": 12000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 450000,
+      "min_percentage": 80.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-post-matric-sc-st",
+      "tn-post-matric-bc-mbc",
+      "aicte-pragati",
+      "tn-first-graduate"
+    ],
+    "portal_name": "NSP (National Scholarship Portal)",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "12th Marksheet (80th percentile)",
+      "Income Certificate (Revenue Dept)",
+      "Aadhar Card"
+    ]
+  },
+  {
+    "id": "aicte-pragati",
+    "name": "AICTE Pragati Scholarship for Girls",
+    "category": "merit_cum_means",
+    "financial_value": 50000,
+    "benefit_breakdown": {
+      "tuition_waiver": 50000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "female",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 800000,
+      "min_percentage": 90.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Diploma"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-first-graduate",
+      "tn-post-matric-sc-st",
+      "tn-post-matric-bc-mbc",
+      "pm-usp-csss"
+    ],
+    "portal_name": "NSP (National Scholarship Portal)",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "Admission Letter to AICTE Course",
+      "Income Certificate (Revenue Dept)",
+      "Aadhar Card"
+    ]
+  },
+  {
+    "id": "tn-differently-abled-welfare",
+    "name": "TN Differently Abled Welfare Higher Education Assistance",
+    "category": "entitlement",
+    "financial_value": 7000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 7000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": true,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "TN Differently Abled Welfare Dept",
+    "portal_url": "https://www.scd.tn.gov.in",
+    "required_docs": [
+      "Disability Certificate",
+      "Aadhar Card",
+      "Bank Passbook",
+      "Admission Letter"
+    ]
+  }
+]

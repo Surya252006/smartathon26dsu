@@ -1,0 +1,70 @@
+/**
+ * SMARTATHON'26 - Problem Statement #6: AI Scholarship Eligibility Matcher
+ * Fast Demo Injector Personas for Jury Evaluation
+ */
+
+export const DEMO_PERSONAS = [
+  {
+    id: "priya",
+    name: "Priya — Rural Govt School First Graduate",
+    shortName: "Priya (Govt Stacking)",
+    badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+    showcase: "Showcases Maximum Legal Stacking & Guaranteed Entitlements",
+    expectedOutcome: "Stacks Pudhumai Penn (₹12,000/yr) + First Graduate Concession (₹25,000) = ₹37,000/yr (98% Guaranteed).",
+    payload: {
+      full_name: "Priya M (Rural Govt School)",
+      gender: "female",
+      community: "BC",
+      annual_income: 120000,
+      is_first_graduate: true,
+      schooling_type: "tn_govt_school_6_to_12",
+      board_percentage: 86.5,
+      admission_mode: "govt_counseling_single_window",
+      current_course: "Engineering",
+      is_differently_abled: false,
+      available_docs: ["income_certificate", "community_certificate", "marksheet"]
+    }
+  },
+  {
+    id: "karthik",
+    name: "Karthik — High Merit Conflict Case",
+    shortName: "Karthik (Merit Conflict)",
+    badgeColor: "bg-blue-100 text-blue-800 border-blue-300",
+    showcase: "Showcases Mutual Exclusivity Resolution & High Merit Scoring",
+    expectedOutcome: "Eligible for PM-USP Central Sector Scheme (₹12,000/yr) with 88% Merit Probability. Excludes State Post-Matric & Tamil Pudhalvan due to private school & quota rules.",
+    payload: {
+      full_name: "Karthik R (Private CBSE)",
+      gender: "male",
+      community: "OC",
+      annual_income: 210000,
+      is_first_graduate: false,
+      schooling_type: "private_cbse",
+      board_percentage: 94.8,
+      admission_mode: "management_quota",
+      current_course: "Engineering",
+      is_differently_abled: false,
+      available_docs: ["marksheet", "aadhaar"]
+    }
+  },
+  {
+    id: "ananya",
+    name: "Ananya — Capped Tech Scholarship",
+    shortName: "Ananya (Tech Merit)",
+    badgeColor: "bg-purple-100 text-purple-800 border-purple-300",
+    showcase: "Showcases Competitive Merit Probability Scoring (~83%)",
+    expectedOutcome: "AICTE Pragati (₹50,000/yr) with calculated selection chance (83.4%) based on merit cutoff delta, female quota, and MBC equity weighting.",
+    payload: {
+      full_name: "Ananya S (Govt-Aided Tech)",
+      gender: "female",
+      community: "MBC",
+      annual_income: 340000,
+      is_first_graduate: false,
+      schooling_type: "govt_aided",
+      board_percentage: 91.0,
+      admission_mode: "govt_counseling_single_window",
+      current_course: "Engineering",
+      is_differently_abled: false,
+      available_docs: ["income_certificate", "community_certificate", "marksheet"]
+    }
+  }
+];
