@@ -42,12 +42,11 @@ export default function Navbar({
   isChatOpen,
   currentLang = 'en',
   onSelectLang,
-  onSearch,
-  searchQuery,
   onOpenNotices,
   onOpenGrievance,
   onOpenAdmin,
-  onOpenScanner
+  onOpenScanner,
+  onOpenEligibilityChecker
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [showSearch, setShowSearch] = useState(false);
@@ -243,7 +242,7 @@ export default function Navbar({
               <span>{t.nav_home || 'Home'}</span>
             </button>
 
-            {/* 2. My Profile */}
+            {/* 2. Student Bio-Data Form */}
             <button
               onClick={() => setCurrentTab('profile')}
               className={`px-3 py-1.5 rounded-md flex items-center space-x-1.5 transition cursor-pointer ${
@@ -251,22 +250,24 @@ export default function Navbar({
                   ? 'bg-emerald-800 text-white font-bold shadow-inner ring-1 ring-emerald-600'
                   : 'text-emerald-100 hover:text-white hover:bg-emerald-600/70'
               }`}
+              title="View, enter, and edit full student bio-data form"
             >
-              <User size={15} />
-              <span>{t.nav_profile || 'My Profile'}</span>
+              <FileText size={15} />
+              <span>{currentLang === 'ta' ? 'பயோடேட்டா படிவம்' : 'Bio-Data Form'}</span>
             </button>
 
-            {/* 3. Eligibility Checker */}
+            {/* 3. Eligibility Checker (Directly Evaluates from Saved Profile) */}
             <button
-              onClick={() => setCurrentTab('matcher')}
+              onClick={() => onOpenEligibilityChecker ? onOpenEligibilityChecker() : setCurrentTab('matcher')}
               className={`px-3 py-1.5 rounded-md flex items-center space-x-1.5 transition cursor-pointer ${
                 currentTab === 'matcher' || currentTab === 'results'
                   ? 'bg-emerald-800 text-white font-bold shadow-inner ring-1 ring-emerald-600'
                   : 'text-emerald-100 hover:text-white hover:bg-emerald-600/70'
               }`}
+              title="Calculate scholarship eligibility directly from your saved bio-data"
             >
               <Compass size={15} />
-              <span>{t.nav_matcher || 'Eligibility Checker'}</span>
+              <span>{currentLang === 'ta' ? 'தகுதி சரிபார்ப்பு' : 'Eligibility Checker'}</span>
             </button>
 
             {/* 4. My Applications */}

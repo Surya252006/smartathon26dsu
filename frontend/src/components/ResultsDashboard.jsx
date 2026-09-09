@@ -33,7 +33,7 @@ import {
 import { generateRoadmapPdf } from '../utils/generateRoadmapPdf';
 import { saveApplicationToCluster } from '../utils/cloudSync';
 
-export default function ResultsDashboard({ result, profile, onReset, currentUser = null, currentLang = 'en' }) {
+export default function ResultsDashboard({ result, profile, onReset, currentUser = null, currentLang = 'en', onEditProfile = null }) {
   if (!result) return null;
 
   const { 
@@ -242,6 +242,42 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
         </div>
       )}
 
+      {/* Top Bio-Data Provenance Banner */}
+      <div className="bg-emerald-50 border-2 border-emerald-500/80 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs shadow-xs">
+        <div className="flex items-start sm:items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold shrink-0 shadow-xs border border-emerald-500">
+            <ShieldCheck size={22} />
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-slate-900 text-sm">
+                ✓ Eligibility Evaluated Directly From Your Saved Bio-Data Profile
+              </span>
+              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                Zero Form Refill
+              </span>
+            </div>
+            <p className="text-xs text-slate-700">
+              Candidate: <strong>{profile?.full_name || profile?.fullName || currentUser?.profile?.full_name || 'Student Candidate'}</strong> • Community: <strong>{profile?.community || 'BC'}</strong> • Course: <strong>{profile?.current_course || profile?.currentCourse || 'Higher Education'}</strong> • District: <strong>{profile?.district || 'Tamil Nadu'}</strong> • Income: <strong>₹{Number(profile?.annual_income || profile?.annualIncome || 140000).toLocaleString('en-IN')}/yr</strong>
+            </p>
+            <p className="text-[11px] text-slate-500">
+              All 18+ Tamil Nadu welfare rules and collision matrices were executed directly against your stored credentials.
+            </p>
+          </div>
+        </div>
+
+        {onEditProfile && (
+          <button
+            type="button"
+            onClick={onEditProfile}
+            className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition cursor-pointer shadow-xs border border-emerald-600 shrink-0 self-start md:self-auto"
+          >
+            <Edit3 size={13} />
+            <span>Edit Bio-Data in Profile Form</span>
+          </button>
+        )}
+      </div>
+
       {/* ========================================================================= */}
       {/* SECTION 8: RESULTS DASHBOARD TOP SUMMARY BANNER                           */}
       {/* ========================================================================= */}
@@ -379,10 +415,12 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             </div>
 
             <button 
-              onClick={onReset}
-              className="text-xs font-bold text-slate-500 hover:text-slate-900 underline cursor-pointer ml-auto"
+              type="button"
+              onClick={onEditProfile || onReset}
+              className="text-xs font-bold text-emerald-800 hover:text-emerald-950 underline cursor-pointer ml-auto flex items-center space-x-1"
             >
-              ← Edit Student Profile
+              <Edit3 size={12} className="mr-1" />
+              <span>Edit Bio-Data in Profile Form</span>
             </button>
           </div>
         </div>

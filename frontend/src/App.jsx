@@ -259,16 +259,25 @@ function App() {
     }
   };
 
+  const handleOpenEligibilityChecker = () => {
+    const activeProfile = currentProfile || currentUser?.profile;
+    if (activeProfile && (activeProfile.full_name || activeProfile.fullName || activeProfile.annual_income || activeProfile.annualIncome || activeProfile.community)) {
+      handleEvaluate(activeProfile);
+    } else if (result) {
+      setCurrentTab('results');
+    } else {
+      setCurrentTab('matcher');
+    }
+  };
+
   const handleStartMatcher = (overrideProfile = null) => {
     const activeProfile = overrideProfile || currentUser?.profile || currentProfile;
     // If student already has bio-data, directly calculate with saved profile - zero repeated filling!
     if (activeProfile && (activeProfile.full_name || activeProfile.fullName || activeProfile.annual_income || activeProfile.annualIncome || activeProfile.community)) {
       handleEvaluate(activeProfile);
-    } else if (currentUser) {
-      setCurrentTab('matcher');
     } else {
-      // Direct guest to 1-time bio-data registration
-      openRegister();
+      // Direct student to Bio-Data Form!
+      setCurrentTab('profile');
     }
   };
 
@@ -299,6 +308,7 @@ function App() {
         onOpenGrievance={() => setShowGrievanceModal(true)}
         onOpenAdmin={() => setCurrentTab('admin')}
         onOpenScanner={() => setShowScannerModal(true)}
+        onOpenEligibilityChecker={() => handleOpenEligibilityChecker()}
       />
 
       {/* 2. Main Content Container */}
@@ -324,67 +334,79 @@ function App() {
         {currentTab !== 'home' && (
           <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8">
             
-            {/* VIEW B: Eligibility Matcher / Form */}
-            {currentTab === 'matcher' && (
-              <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
-                <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-                  <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-widest block mb-1">
-                    Step 1 of 2 • Student Profile
-                  </span>
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    Check Higher Education Scheme Eligibility
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
-                    Fill in your accurate academic credentials and community certificates. Our MWIS constraint solver cross-references 18+ welfare rules to find the highest legal payout.
-                  </p>
-                </div>
-
+            {/* VIEW B & C: Eligibility Matcher & Results (Directly Evaluated from Saved Bio-Data Profile) */}
+            {(currentTab === 'matcher' || currentTab === 'results') && (
+              <div className="animate-in fade-in duration-300">
                 {isEvaluating ? (
                   <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-xs border border-slate-200">
                     <div className="relative mb-4">
                       <Loader2 className="animate-spin text-emerald-700" size={54} />
                     </div>
                     <h3 className="text-lg font-bold text-slate-900">
-                      Optimizing Scholarship Allocation...
+                      Optimizing Scholarship Allocation from Your Bio-Data...
                     </h3>
                     <p className="text-xs text-slate-500 mt-1.5 text-center max-w-sm">
-                      Checking mutual exclusivity matrices, quota provisions, and scoring merit-cum-means probabilities...
+                      Evaluating candidate community, income ceiling, 12th board marks, and mutual exclusivity matrices from your saved profile...
                     </p>
                   </div>
+                ) : result ? (
+                  <div>
+                    <div className="mb-4 flex items-center justify-between">
+                      <button
+                        onClick={() => setCurrentTab('home')}
+                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition flex items-center space-x-1 cursor-pointer"
+                      >
+                        <span>← Back to Portal Home</span>
+                      </button>
+                      <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                        Official Result • Policy Compliant
+                      </span>
+                    </div>
+                    <ResultsDashboard 
+                      result={result} 
+                      profile={currentProfile || currentUser?.profile} 
+                      currentUser={currentUser}
+                      onReset={() => setCurrentTab('profile')} 
+                      onEditProfile={() => setCurrentTab('profile')}
+                      currentLang={currentLang}
+                    />
+                  </div>
                 ) : (
-                  <ProfileForm 
-                    onSubmit={handleEvaluate} 
-                    currentLang={currentLang} 
-                    currentUser={currentUser}
-                    currentProfile={currentProfile}
-                    onOpenAuth={() => setShowAuthModal(true)}
-                    onOpenScanner={() => setShowScannerModal(true)}
-                  />
+                  /* If no result and no bio-data filled yet */
+                  <div className="max-w-2xl mx-auto bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-5 shadow-xs">
+                    <div className="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
+                      <ShieldCheck size={36} />
+                    </div>
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">
+                        Tamil Nadu Higher Education Welfare Decision Engine
+                      </span>
+                      <h3 className="text-2xl font-black text-slate-900">
+                        No Student Bio-Data Found
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                        Our intelligent MWIS optimization solver evaluates scholarship entitlements directly from your saved student bio-data. Please enter your credentials once in the Bio-Data Form.
+                      </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                      <button
+                        onClick={() => setCurrentTab('profile')}
+                        className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs transition cursor-pointer flex items-center space-x-2 shadow-sm"
+                      >
+                        <FileText size={15} />
+                        <span>Open Student Bio-Data Form</span>
+                        <ArrowRight size={15} />
+                      </button>
+                      <button
+                        onClick={() => injectPersona('surya')}
+                        className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer flex items-center space-x-1.5"
+                      >
+                        <Sparkles size={14} className="text-emerald-600" />
+                        <span>Test with Demo Profile (Surya Suresh • BC)</span>
+                      </button>
+                    </div>
+                  </div>
                 )}
-              </div>
-            )}
-
-            {/* VIEW C: Results Dashboard */}
-            {currentTab === 'results' && (
-              <div className="animate-in fade-in duration-300">
-                <div className="mb-4 flex items-center justify-between">
-                  <button
-                    onClick={() => setCurrentTab('home')}
-                    className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition flex items-center space-x-1 cursor-pointer"
-                  >
-                    <span>← Back to Portal Home</span>
-                  </button>
-                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                    Official Result • Policy Compliant
-                  </span>
-                </div>
-                <ResultsDashboard 
-                  result={result} 
-                  profile={currentProfile} 
-                  currentUser={currentUser}
-                  onReset={handleReset} 
-                  currentLang={currentLang}
-                />
               </div>
             )}
 
@@ -392,23 +414,24 @@ function App() {
             {currentTab === 'schemes' && (
               <SchemesDirectory
                 onBackToHome={() => setCurrentTab('home')}
-                onApplyWithProfile={() => setCurrentTab('matcher')}
+                onApplyWithProfile={() => handleOpenEligibilityChecker()}
                 searchQuery={searchQuery}
                 onSearchChange={(q) => setSearchQuery(q)}
                 currentLang={currentLang}
               />
             )}
 
-            {/* VIEW E: Dedicated Student Profile Page */}
+            {/* VIEW E: Official Student Bio-Data Form (Form Type) */}
             {currentTab === 'profile' && (
               <ProfilePage
                 user={currentUser}
                 profile={currentProfile || currentUser?.profile}
                 result={result}
                 onNavigateTab={setCurrentTab}
+                onEvaluate={handleEvaluate}
                 currentLang={currentLang}
                 onLogout={handleLogout}
-                onOpenAuth={() => setShowAuthModal(true)}
+                onOpenAuth={() => openLogin()}
                 onOpenScanner={() => setShowScannerModal(true)}
               />
             )}

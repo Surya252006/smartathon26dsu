@@ -925,11 +925,11 @@ export default function HomePage({
 
                 {(currentUser || studentProfile.fullName) && (
                   <button
-                    onClick={() => onNavigateTab ? onNavigateTab('matcher') : onStartMatcher()}
+                    onClick={() => onNavigateTab ? onNavigateTab('profile') : onStartMatcher()}
                     className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold rounded-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <Edit3 size={11} />
-                    <span>View / Edit Multi-Step Profile Wizard</span>
+                    <span>View / Edit Bio-Data Form</span>
                   </button>
                 )}
               </div>
