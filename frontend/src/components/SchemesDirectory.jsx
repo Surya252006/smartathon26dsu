@@ -33,6 +33,8 @@ export default function SchemesDirectory({
   currentLang = 'en'
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+  const isTa = currentLang === 'ta';
+
   // Initialize with bundled 50+ official Tamil Nadu schemes so public link works 100% offline & online
   const [schemes, setSchemes] = useState(defaultSchemesCatalog || []);
   const [searchQuery, setSearchQuery] = useState(externalSearchQuery);
@@ -75,15 +77,15 @@ export default function SchemesDirectory({
 
   // Department list dynamically derived or standard 8 departments
   const departmentsList = [
-    { key: 'all', label: 'All Implementing Departments (அனைத்து துறைகளும்)' },
-    { key: 'adw', label: 'Adi Dravidar & Tribal Welfare (ஆதிதிராவிடர் & பழங்குடியினர் நலத்துறை)', match: 'Adi Dravidar' },
-    { key: 'bc_mbc', label: 'BC, MBC & Minorities Welfare (பிற்படுத்தப்பட்டோர் நலத்துறை)', match: 'Backward Classes' },
-    { key: 'school_edu', label: 'School Education Department (பள்ளிக் கல்வித் துறை)', match: 'School Education' },
-    { key: 'higher_edu', label: 'Collegiate & Higher Education (கல்லூரி & உயர்கல்வித் துறை)', match: 'Collegiate' },
-    { key: 'differently_abled', label: 'Differently Abled Welfare (மாற்றுத்திறனாளிகள் நலத்துறை)', match: 'Differently Abled' },
-    { key: 'technical_edu', label: 'Technical Education - DOTE (தொழில்நுட்பக் கல்வி இயக்ககம்)', match: 'Technical Education' },
-    { key: 'social_welfare', label: 'Social Welfare & Women (சமூக நலம் & மகளிர் உரிமை)', match: 'Social Welfare' },
-    { key: 'sports', label: 'Youth Welfare & Sports - SDAT (விளையாட்டு மேம்பாட்டு ஆணையம்)', match: 'Sports' }
+    { key: 'all', label: isTa ? 'அனைத்து துறைகளும்' : 'All Implementing Departments (அனைத்து துறைகளும்)' },
+    { key: 'adw', label: isTa ? 'ஆதிதிராவிடர் & பழங்குடியினர் நலத்துறை' : 'Adi Dravidar & Tribal Welfare (ஆதிதிராவிடர் & பழங்குடியினர் நலத்துறை)', match: 'Adi Dravidar' },
+    { key: 'bc_mbc', label: isTa ? 'பிற்படுத்தப்பட்டோர் நலத்துறை' : 'BC, MBC & Minorities Welfare (பிற்படுத்தப்பட்டோர் நலத்துறை)', match: 'Backward Classes' },
+    { key: 'school_edu', label: isTa ? 'பள்ளிக் கல்வித் துறை' : 'School Education Department (பள்ளிக் கல்வித் துறை)', match: 'School Education' },
+    { key: 'higher_edu', label: isTa ? 'கல்லூரி & உயர்கல்வித் துறை' : 'Collegiate & Higher Education (கல்லூரி & உயர்கல்வித் துறை)', match: 'Collegiate' },
+    { key: 'differently_abled', label: isTa ? 'மாற்றுத்திறனாளிகள் நலத்துறை' : 'Differently Abled Welfare (மாற்றுத்திறனாளிகள் நலத்துறை)', match: 'Differently Abled' },
+    { key: 'technical_edu', label: isTa ? 'தொழில்நுட்பக் கல்வி இயக்ககம் (DOTE)' : 'Technical Education - DOTE (தொழில்நுட்பக் கல்வி இயக்ககம்)', match: 'Technical Education' },
+    { key: 'social_welfare', label: isTa ? 'சமூக நலம் & மகளிர் உரிமை' : 'Social Welfare & Women (சமூக நலம் & மகளிர் உரிமை)', match: 'Social Welfare' },
+    { key: 'sports', label: isTa ? 'விளையாட்டு மேம்பாட்டு ஆணையம் (SDAT)' : 'Youth Welfare & Sports - SDAT (விளையாட்டு மேம்பாட்டு ஆணையம்)', match: 'Sports' }
   ];
 
   // Tab counts
@@ -171,18 +173,20 @@ export default function SchemesDirectory({
                 <Landmark size={20} />
               </span>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Tamil Nadu Student Schemes — Combined Master Reference
+                {isTa ? 'தமிழ்நாடு அரசு மாணவர் நலத்திட்டங்கள் — ஒருங்கிணைந்த தகவல் களஞ்சியம்' : 'Tamil Nadu Student Schemes — Combined Master Reference'}
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-slate-600 mt-1.5 max-w-3xl leading-relaxed">
-              Complete official catalogue of <strong>47 Student Welfare Schemes</strong> (September 2026 Reference) spanning Centrally Sponsored (CSS), 100% Central Sector, and Tamil Nadu State-funded programs across 8 Government departments.
+              {isTa 
+                ? 'அனைத்து மத்திய (CSS), 100% மத்திய துறை மற்றும் தமிழ்நாடு மாநில நிதியுதவி பெறும் 47+ மாணவர் நலத்திட்டங்களின் முழுமையான அதிகாரப்பூர்வ பட்டியல்.' 
+                : 'Complete official catalogue of 47 Student Welfare Schemes (September 2026 Reference) spanning Centrally Sponsored (CSS), 100% Central Sector, and Tamil Nadu State-funded programs across 8 Government departments.'}
             </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs font-bold bg-emerald-100 text-emerald-800 px-3.5 py-1.5 rounded-full border border-emerald-200 flex items-center space-x-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>{filteredSchemes.length} of {schemes.length} Schemes Active</span>
+              <span>{isTa ? `${filteredSchemes.length} / ${schemes.length} திட்டங்கள் செயலில் உள்ளன` : `${filteredSchemes.length} of ${schemes.length} Schemes Active`}</span>
             </span>
           </div>
         </div>
@@ -197,9 +201,13 @@ export default function SchemesDirectory({
                 : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
             }`}
           >
-            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">Total Schemes</div>
+            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">
+              {isTa ? 'மொத்த திட்டங்கள்' : 'Total Schemes'}
+            </div>
             <div className="text-2xl font-black mt-0.5">{counts.all}</div>
-            <div className="text-[10px] mt-0.5 opacity-70">Deduplicated Master List</div>
+            <div className="text-[10px] mt-0.5 opacity-70">
+              {isTa ? 'ஒருங்கிணைந்த பட்டியல்' : 'Deduplicated Master List'}
+            </div>
           </div>
 
           <div 
@@ -210,9 +218,13 @@ export default function SchemesDirectory({
                 : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300'
             }`}
           >
-            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">CSS (Centre + State)</div>
+            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">
+              {isTa ? 'மத்திய-மாநில இணை நிதி (CSS)' : 'CSS (Centre + State)'}
+            </div>
             <div className="text-2xl font-black mt-0.5">{counts.css}</div>
-            <div className="text-[10px] mt-0.5 opacity-70">60:40 or 75:25 Funding</div>
+            <div className="text-[10px] mt-0.5 opacity-70">
+              {isTa ? '60:40 அல்லது 75:25 நிதி' : '60:40 or 75:25 Funding'}
+            </div>
           </div>
 
           <div 
@@ -223,9 +235,13 @@ export default function SchemesDirectory({
                 : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-300'
             }`}
           >
-            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">Central Sector</div>
+            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">
+              {isTa ? '100% மத்திய அரசு நிதி' : 'Central Sector'}
+            </div>
             <div className="text-2xl font-black mt-0.5">{counts.central_sector}</div>
-            <div className="text-[10px] mt-0.5 opacity-70">100% GoI Funded</div>
+            <div className="text-[10px] mt-0.5 opacity-70">
+              {isTa ? 'மத்திய அரசு நேரடி நிதி' : '100% GoI Funded'}
+            </div>
           </div>
 
           <div 
@@ -236,9 +252,13 @@ export default function SchemesDirectory({
                 : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'
             }`}
           >
-            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">TN State-Only</div>
+            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">
+              {isTa ? '100% தமிழக அரசு நிதி' : 'TN State-Only'}
+            </div>
             <div className="text-2xl font-black mt-0.5">{counts.state_only}</div>
-            <div className="text-[10px] mt-0.5 opacity-70">100% Tamil Nadu Funded</div>
+            <div className="text-[10px] mt-0.5 opacity-70">
+              {isTa ? 'தமிழ்நாடு அரசு முழு நிதி' : '100% Tamil Nadu Funded'}
+            </div>
           </div>
 
           <div 
@@ -249,9 +269,13 @@ export default function SchemesDirectory({
                 : 'bg-white text-slate-700 border-slate-200 hover:border-amber-300'
             }`}
           >
-            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">Mixed / Flagged</div>
+            <div className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">
+              {isTa ? 'கலப்பு / சிறப்பு திட்டங்கள்' : 'Mixed / Flagged'}
+            </div>
             <div className="text-2xl font-black mt-0.5">{counts.mixed}</div>
-            <div className="text-[10px] mt-0.5 opacity-70">State Hostels & Grants</div>
+            <div className="text-[10px] mt-0.5 opacity-70">
+              {isTa ? 'விடுதிகள் & மானியங்கள்' : 'State Hostels & Grants'}
+            </div>
           </div>
         </div>
       </div>
@@ -269,7 +293,7 @@ export default function SchemesDirectory({
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchInput(e.target.value)}
-              placeholder="Search by scheme name, Tamil title, department, or keyword..."
+              placeholder={isTa ? 'திட்டப் பெயர், துறை, அல்லது முக்கிய வார்த்தை கொண்டு தேடவும்...' : 'Search by scheme name, Tamil title, department, or keyword...'}
               className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
             {searchQuery && (
@@ -302,12 +326,12 @@ export default function SchemesDirectory({
               onChange={(e) => setSelectedCommunity(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
-              <option value="all">All Communities (அனைத்து சமூகம்)</option>
-              <option value="SC">SC (Scheduled Caste)</option>
-              <option value="ST">ST (Scheduled Tribe)</option>
-              <option value="BC">BC (Backward Classes)</option>
-              <option value="MBC">MBC / DNC (மிகவும் பிற்படுத்தப்பட்டோர்)</option>
-              <option value="OC">OC (General / EWS)</option>
+              <option value="all">{isTa ? 'அனைத்து சமூகம் (All Communities)' : 'All Communities (அனைத்து சமூகம்)'}</option>
+              <option value="SC">{isTa ? 'SC (ஆதிதிராவிடர்)' : 'SC (Scheduled Caste)'}</option>
+              <option value="ST">{isTa ? 'ST (பழங்குடியினர்)' : 'ST (Scheduled Tribe)'}</option>
+              <option value="BC">{isTa ? 'BC (பிற்படுத்தப்பட்டோர்)' : 'BC (Backward Classes)'}</option>
+              <option value="MBC">{isTa ? 'MBC / DNC (மிகவும் பிற்படுத்தப்பட்டோர்)' : 'MBC / DNC (Most Backward Classes)'}</option>
+              <option value="OC">{isTa ? 'OC / EWS (பொதுப் பிரிவு)' : 'OC (General / EWS)'}</option>
             </select>
           </div>
         </div>
@@ -315,14 +339,16 @@ export default function SchemesDirectory({
         {/* Level / Category Filter Pills */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-bold text-slate-400 mr-1">Level:</span>
+            <span className="text-[11px] font-bold text-slate-400 mr-1">
+              {isTa ? 'படிப்பு நிலை:' : 'Level:'}
+            </span>
             <button
               onClick={() => setSelectedLevel('all')}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
                 selectedLevel === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              All Levels
+              {isTa ? 'அனைத்து நிலைகள்' : 'All Levels'}
             </button>
             <button
               onClick={() => setSelectedLevel('college')}
@@ -330,7 +356,7 @@ export default function SchemesDirectory({
                 selectedLevel === 'college' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              🎓 College & Higher Ed
+              {isTa ? '🎓 கல்லூரி & உயர்கல்வி' : '🎓 College & Higher Ed'}
             </button>
             <button
               onClick={() => setSelectedLevel('school')}
@@ -338,7 +364,7 @@ export default function SchemesDirectory({
                 selectedLevel === 'school' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              🏫 School (Class 1–12)
+              {isTa ? '🏫 பள்ளி (1-12 வகுப்பு)' : '🏫 School (Class 1–12)'}
             </button>
             <button
               onClick={() => setSelectedLevel('differently_abled')}
@@ -346,13 +372,15 @@ export default function SchemesDirectory({
                 selectedLevel === 'differently_abled' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              ♿ Differently Abled
+              {isTa ? '♿ மாற்றுத்திறனாளிகள்' : '♿ Differently Abled'}
             </button>
           </div>
 
           {/* Quick Search Shortcut Tags */}
           <div className="flex items-center gap-1 text-xs text-slate-500 overflow-x-auto">
-            <span className="text-[11px] font-semibold text-slate-400">Quick:</span>
+            <span className="text-[11px] font-semibold text-slate-400">
+              {isTa ? 'விரைவு:' : 'Quick:'}
+            </span>
             <button
               onClick={() => handleSearchInput('Pudhumai Penn')}
               className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[11px] transition cursor-pointer"
@@ -394,7 +422,7 @@ export default function SchemesDirectory({
                 }}
                 className="text-[11px] text-red-600 font-bold ml-2 hover:underline cursor-pointer"
               >
-                Reset All
+                {isTa ? 'அனைத்தையும் மீட்டமை' : 'Reset All'}
               </button>
             )}
           </div>
@@ -406,12 +434,16 @@ export default function SchemesDirectory({
       {isLoading ? (
         <div className="text-center py-20 text-slate-400 text-sm flex flex-col items-center justify-center space-y-3">
           <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-          <span>Loading verified 47 Tamil Nadu & Central student schemes...</span>
+          <span>{isTa ? '47+ தமிழ்நாடு & மத்திய அரசு உதவித்தொகை திட்டங்கள் ஏற்றப்படுகின்றன...' : 'Loading verified 47 Tamil Nadu & Central student schemes...'}</span>
         </div>
       ) : filteredSchemes.length === 0 ? (
         <div className="bg-white p-12 text-center rounded-2xl border border-slate-200 text-slate-500 text-sm space-y-3">
-          <p className="text-base font-semibold text-slate-700">No schemes found matching your selected filters.</p>
-          <p className="text-xs text-slate-500">Try loosening your search query or selecting "All Implementing Departments".</p>
+          <p className="text-base font-semibold text-slate-700">
+            {isTa ? 'தேர்ந்தெடுக்கப்பட்ட வடிகட்டிகளுக்கு எந்தத் திட்டமும் பொருந்தவில்லை.' : 'No schemes found matching your selected filters.'}
+          </p>
+          <p className="text-xs text-slate-500">
+            {isTa ? 'தேடல் சொல்லை எளிமைப்படுத்தவும் அல்லது "அனைத்து துறைகளும்" என்பதைத் தேர்ந்தெடுக்கவும்.' : 'Try loosening your search query or selecting "All Implementing Departments".'}
+          </p>
           <button
             onClick={() => {
               handleSearchInput('');
@@ -422,7 +454,7 @@ export default function SchemesDirectory({
             }}
             className="text-xs font-bold text-emerald-700 hover:underline cursor-pointer"
           >
-            Reset All Filters
+            {isTa ? 'அனைத்து வடிகட்டிகளையும் மீட்டமை' : 'Reset All Filters'}
           </button>
         </div>
       ) : (
@@ -446,39 +478,44 @@ export default function SchemesDirectory({
                     <div className="flex flex-wrap gap-1.5 items-center">
                       {isCSS && (
                         <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-                          Centrally Sponsored (CSS {scheme.funding_ratio || '60:40'})
+                          {isTa ? `மத்திய-மாநில இணை நிதி (CSS ${scheme.funding_ratio || '60:40'})` : `Centrally Sponsored (CSS ${scheme.funding_ratio || '60:40'})`}
                         </span>
                       )}
                       {isCentralSector && (
                         <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
-                          Central Sector (100% GoI)
+                          {isTa ? 'மத்திய அரசு நேரடி நிதி (100% GoI)' : 'Central Sector (100% GoI)'}
                         </span>
                       )}
                       {isStateOnly && (
                         <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                          100% Tamil Nadu State Funded
+                          {isTa ? '100% தமிழ்நாடு அரசு முழு நிதி' : '100% Tamil Nadu State Funded'}
                         </span>
                       )}
                       {isMixed && (
                         <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                          Mixed / State Administered
+                          {isTa ? 'கலப்பு நிதி / மாநில மேலாண்மை' : 'Mixed / State Administered'}
                         </span>
                       )}
                     </div>
 
                     <span className="text-sm font-extrabold text-slate-900 bg-slate-100 px-3 py-1 rounded-xl shrink-0 border border-slate-200">
-                      ₹{(scheme.financial_value || 0).toLocaleString('en-IN')}{scheme.category === 'fellowship' ? '/yr' : scheme.financial_value > 50000 ? ' Benefit' : '/yr'}
+                      ₹{(scheme.financial_value || 0).toLocaleString('en-IN')}{scheme.category === 'fellowship' ? (isTa ? '/ஆண்டு' : '/yr') : scheme.financial_value > 50000 ? (isTa ? ' பலன்' : ' Benefit') : (isTa ? '/ஆண்டு' : '/yr')}
                     </span>
                   </div>
 
                   {/* Scheme Names (English + Tamil) */}
                   <div className="space-y-0.5 mb-2.5">
                     <h3 className="font-bold text-slate-900 text-base leading-snug">
-                      {scheme.name}
+                      {isTa && scheme.name_ta ? scheme.name_ta : scheme.name}
                     </h3>
-                    {scheme.name_ta && (
+                    {scheme.name_ta && !isTa && (
                       <p className="text-xs text-slate-500 font-medium font-sans">
                         {scheme.name_ta}
+                      </p>
+                    )}
+                    {isTa && scheme.name && (
+                      <p className="text-xs text-slate-500 font-medium font-sans">
+                        {scheme.name}
                       </p>
                     )}
                   </div>
@@ -487,7 +524,7 @@ export default function SchemesDirectory({
                   <div className="flex items-center space-x-1.5 text-xs text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
                     <Building2 size={13} className="text-slate-400 shrink-0" />
                     <span className="font-medium text-[11px] truncate">
-                      {scheme.department || 'Government of Tamil Nadu'}
+                      {scheme.department || (isTa ? 'தமிழ்நாடு அரசு' : 'Government of Tamil Nadu')}
                     </span>
                   </div>
 
@@ -495,41 +532,43 @@ export default function SchemesDirectory({
                   <div className="mb-3 text-xs text-slate-600 bg-slate-50/70 p-3 rounded-xl border border-slate-100 space-y-1">
                     <div className="font-semibold text-slate-800 flex items-center space-x-1 text-[11px]">
                       <Info size={12} className="text-slate-500" />
-                      <span>Target Beneficiaries & Eligibility:</span>
+                      <span>{isTa ? 'பயனாளிகள் & தகுதி வரம்புகள்:' : 'Target Beneficiaries & Eligibility:'}</span>
                     </div>
                     <p className="text-[11px] leading-relaxed text-slate-600">
-                      {scheme.target_beneficiaries || 'Eligible school and higher education students in Tamil Nadu.'}
+                      {scheme.target_beneficiaries || (isTa ? 'தமிழ்நாடு பள்ளி மற்றும் கல்லூரி மாணவர்கள்.' : 'Eligible school and higher education students in Tamil Nadu.')}
                     </p>
                   </div>
 
                   {/* Attribute Tags */}
                   <div className="flex flex-wrap gap-1.5 text-[10px] text-slate-600 mb-3">
                     <span className="capitalize font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
-                      Category: {scheme.category?.replace('_', ' ') || 'Welfare'}
+                      {isTa ? 'வகை: ' : 'Category: '}{scheme.category?.replace('_', ' ') || 'Welfare'}
                     </span>
                     {scheme.criteria?.govt_school_only && (
                       <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">
-                        Govt School (Class 6–12) Only
+                        {isTa ? 'அரசுப் பள்ளி (6-12) மட்டும்' : 'Govt School (Class 6–12) Only'}
                       </span>
                     )}
                     {scheme.criteria?.first_graduate_only && (
                       <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-medium">
-                        First Graduate Only
+                        {isTa ? 'முதல் பட்டதாரி மட்டும்' : 'First Graduate Only'}
                       </span>
                     )}
                     {scheme.criteria?.differently_abled_only && (
                       <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-medium">
-                        Differently Abled (≥40%)
+                        {isTa ? 'மாற்றுத்திறனாளி (≥40%)' : 'Differently Abled (≥40%)'}
                       </span>
                     )}
                     {scheme.criteria?.gender && scheme.criteria.gender !== 'any' && (
                       <span className="bg-pink-100 text-pink-800 px-2 py-0.5 rounded capitalize font-medium">
-                        {scheme.criteria.gender} Students Only
+                        {isTa 
+                          ? (scheme.criteria.gender === 'female' ? 'மாணவிகள் மட்டும்' : 'மாணவர்கள் மட்டும்') 
+                          : `${scheme.criteria.gender} Students Only`}
                       </span>
                     )}
                     {scheme.criteria?.max_income && (
                       <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium">
-                        Income ≤ ₹{(scheme.criteria.max_income).toLocaleString('en-IN')}/yr
+                        {isTa ? `வருமானம் ≤ ₹${(scheme.criteria.max_income).toLocaleString('en-IN')}/ஆண்டு` : `Income ≤ ₹${(scheme.criteria.max_income).toLocaleString('en-IN')}/yr`}
                       </span>
                     )}
                   </div>
@@ -539,19 +578,19 @@ export default function SchemesDirectory({
                     <div className="bg-slate-50 p-2.5 rounded-xl mb-3 text-[11px] space-y-1 text-slate-600">
                       {breakdown.tuition_waiver > 0 && (
                         <div className="flex justify-between">
-                          <span>Tuition Fee Waiver / Coverage:</span>
+                          <span>{isTa ? 'கல்விக் கட்டண விலக்கு / சலுகை:' : 'Tuition Fee Waiver / Coverage:'}</span>
                           <strong>₹{breakdown.tuition_waiver.toLocaleString('en-IN')}</strong>
                         </div>
                       )}
                       {breakdown.maintenance_stipend > 0 && (
                         <div className="flex justify-between">
-                          <span>Maintenance / Monthly DBT Stipend:</span>
+                          <span>{isTa ? 'மாதாந்திர DBT உதவித்தொகை / பராமரிப்பு:' : 'Maintenance / Monthly DBT Stipend:'}</span>
                           <strong>₹{breakdown.maintenance_stipend.toLocaleString('en-IN')}</strong>
                         </div>
                       )}
                       {breakdown.book_allowance > 0 && (
                         <div className="flex justify-between text-indigo-700 font-semibold">
-                          <span>Books / Equipment / In-Kind Value:</span>
+                          <span>{isTa ? 'புத்தகங்கள் / மடிக்கணினி / இதர மதிப்பு:' : 'Books / Equipment / In-Kind Value:'}</span>
                           <strong>₹{breakdown.book_allowance.toLocaleString('en-IN')}</strong>
                         </div>
                       )}
@@ -561,7 +600,9 @@ export default function SchemesDirectory({
                   {/* Required Documents */}
                   {scheme.required_docs && scheme.required_docs.length > 0 && (
                     <div className="mb-3 text-[11px] text-slate-600">
-                      <strong className="text-slate-800 block mb-1">Required Certificates:</strong>
+                      <strong className="text-slate-800 block mb-1">
+                        {isTa ? 'தேவையான சான்றிதழ்கள்:' : 'Required Certificates:'}
+                      </strong>
                       <div className="flex flex-wrap gap-1">
                         {scheme.required_docs.map((doc, dIdx) => (
                           <span key={dIdx} className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px]">
@@ -575,7 +616,7 @@ export default function SchemesDirectory({
                   {/* Incompatibility notice */}
                   {scheme.mutually_exclusive_with && scheme.mutually_exclusive_with.length > 0 && (
                     <div className="mb-3 text-[10px] text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200/60">
-                      <strong>⚠️ Mutually Exclusive With: </strong>
+                      <strong>{isTa ? '⚠️ இதனுடன் இணைக்க இயலாத திட்டங்கள்: ' : '⚠️ Mutually Exclusive With: '}</strong>
                       <span>{scheme.mutually_exclusive_with.join(', ')}</span>
                     </div>
                   )}
@@ -584,14 +625,14 @@ export default function SchemesDirectory({
                 {/* Footer Portal Link & Action */}
                 <div className="pt-3.5 border-t border-slate-100 flex items-center justify-between">
                   <div className="text-xs text-slate-500 truncate max-w-[200px]">
-                    Portal: <strong className="text-slate-800">{scheme.portal_name || 'Departmental'}</strong>
+                    {isTa ? 'இணையதளம்: ' : 'Portal: '}<strong className="text-slate-800">{scheme.portal_name || (isTa ? 'துறை தளம்' : 'Departmental')}</strong>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={onApplyWithProfile}
                       className="text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition cursor-pointer"
                     >
-                      Check Eligibility
+                      {isTa ? 'தகுதியை சரிபார்' : 'Check Eligibility'}
                     </button>
                     {scheme.portal_url && (
                       <a
@@ -599,7 +640,7 @@ export default function SchemesDirectory({
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-1.5 text-slate-400 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition"
-                        title="Open official government portal"
+                        title={isTa ? 'அதிகாரப்பூர்வ அரசு இணையதளத்தைத் திற' : 'Open official government portal'}
                       >
                         <ExternalLink size={14} />
                       </a>

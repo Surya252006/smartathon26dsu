@@ -46,6 +46,7 @@ export default function ProfilePage({
   onOpenScanner = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+  const isTa = currentLang === 'ta';
   const fileInputRef = useRef(null);
 
   // Load existing bio-data from props, session storage, or fallback defaults
@@ -308,13 +309,15 @@ export default function ProfilePage({
       if (data.avatar) sessionStorage.setItem('tn_student_avatar', data.avatar);
       
       const savedUser = sessionStorage.getItem('tn_scholarship_user');
-      let uObj = user;
+      let uObj = user ? { ...user } : null;
       if (savedUser) {
-        uObj = JSON.parse(savedUser);
-        uObj.profile = { ...(uObj.profile || {}), ...data };
-        sessionStorage.setItem('tn_scholarship_user', JSON.stringify(uObj));
+        try {
+          const parsed = JSON.parse(savedUser);
+          uObj = { ...parsed, profile: { ...(parsed.profile || {}), ...data } };
+          sessionStorage.setItem('tn_scholarship_user', JSON.stringify(uObj));
+        } catch (e) {}
       } else if (uObj) {
-        uObj.profile = { ...(uObj.profile || {}), ...data };
+        uObj = { ...uObj, profile: { ...(uObj.profile || {}), ...data } };
         sessionStorage.setItem('tn_scholarship_user', JSON.stringify(uObj));
       }
 
@@ -362,14 +365,14 @@ export default function ProfilePage({
           </button>
           <span className="text-slate-300">•</span>
           <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-            Form Type • Student Bio-Data Dossier
+            {currentLang === 'ta' ? 'படிவ முறை • மாணவர் பயோடேட்டா' : 'Form Type • Student Bio-Data Dossier'}
           </span>
         </div>
 
         {/* MongoDB Cluster Active Indicator */}
         <div className="flex items-center space-x-2 text-[11px] font-semibold text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-xl border border-emerald-300">
           <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-          <span>MongoDB Atlas Cluster Synced (`cluster0.fzucldr.mongodb.net`)</span>
+          <span>{currentLang === 'ta' ? 'MongoDB Atlas கிளஸ்டர் ஒத்திசைக்கப்பட்டது (cluster0.fzucldr)' : 'MongoDB Atlas Cluster Synced (`cluster0.fzucldr.mongodb.net`)'}</span>
         </div>
       </div>
 
@@ -396,20 +399,22 @@ export default function ProfilePage({
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-widest">
               <Sparkles size={14} />
-              <span>Government of Tamil Nadu • TNeGA e-Vidya</span>
+              <span>{currentLang === 'ta' ? 'தமிழ்நாடு அரசு • TNeGA இ-வித்யா' : 'Government of Tamil Nadu • TNeGA e-Vidya'}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              Student Bio-Data & Scholarship Profile Form
+              {currentLang === 'ta' ? 'மாணவர் பயோடேட்டா & கல்வி உதவித்தொகை விவரப் படிவம்' : 'Student Bio-Data & Scholarship Profile Form'}
             </h1>
             <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-              Fill in your verified bio-data once. All higher education welfare schemes (Pudhumai Penn, Tamil Pudhalvan, First Graduate, Post-Matric) directly pull from this profile. You never have to re-enter your details every time!
+              {currentLang === 'ta' 
+                ? 'உங்கள் சரிபார்க்கப்பட்ட பயோடேட்டாவை ஒருமுறை உள்ளிடுங்கள். அனைத்து உயர்கல்வி நலத்திட்டங்களும் (புதுமைப் பெண், தமிழ் புதல்வன், முதல் பட்டதாரி, போஸ்ட்-மெட்ரிக்) இந்த சுயவிவரத்திலிருந்து நேரடியாக விவரங்களை எடுத்துக் கொள்ளும். மீண்டும் மீண்டும் படிவம் நிரப்ப வேண்டிய அவசியமில்லை!'
+                : 'Fill in your verified bio-data once. All higher education welfare schemes (Pudhumai Penn, Tamil Pudhalvan, First Graduate, Post-Matric) directly pull from this profile. You never have to re-enter your details every time!'}
             </p>
           </div>
 
           {/* Persona Autofill Quick Bar */}
           <div className="bg-slate-800/90 border border-slate-700 p-3.5 rounded-2xl space-y-2 shrink-0">
             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
-              1-Click Demo Pre-fills (Optional):
+              {currentLang === 'ta' ? 'ஒரே கிளிக்கில் மாதிரி சுயவிவரங்கள் (விரும்பினால்):' : '1-Click Demo Pre-fills (Optional):'}
             </span>
             <div className="flex flex-wrap gap-1.5">
               <button
@@ -417,21 +422,21 @@ export default function ProfilePage({
                 onClick={() => handlePersonaFill('surya')}
                 className="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-200 text-[11px] font-bold rounded-lg border border-emerald-700 transition cursor-pointer"
               >
-                Surya (BC • Engg • FG)
+                Surya ({currentLang === 'ta' ? 'BC • பொறியியல் • முதல் பட்டதாரி' : 'BC • Engg • FG'})
               </button>
               <button
                 type="button"
                 onClick={() => handlePersonaFill('priya')}
                 className="px-2.5 py-1 bg-teal-950 hover:bg-teal-900 text-teal-200 text-[11px] font-bold rounded-lg border border-teal-700 transition cursor-pointer"
               >
-                Priya (SC • Arts • Govt 6-12)
+                Priya ({currentLang === 'ta' ? 'SC • கலை • அரசு பள்ளி 6-12' : 'SC • Arts • Govt 6-12'})
               </button>
               <button
                 type="button"
                 onClick={() => handlePersonaFill('karthik')}
                 className="px-2.5 py-1 bg-slate-900 hover:bg-slate-700 text-slate-200 text-[11px] font-bold rounded-lg border border-slate-600 transition cursor-pointer"
               >
-                Karthik (OC • Engg)
+                Karthik ({currentLang === 'ta' ? 'OC • பொறியியல்' : 'OC • Engg'})
               </button>
             </div>
           </div>
@@ -440,7 +445,9 @@ export default function ProfilePage({
         {/* Quick Save & Evaluate Actions Top Bar */}
         <div className="mt-6 pt-5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
           <div className="text-xs text-slate-400">
-            Applicant: <strong className="text-white">{fullName || 'New Candidate'}</strong> • Community: <strong className="text-white">{community}</strong> • District: <strong className="text-white">{district}</strong>
+            {currentLang === 'ta' 
+              ? <>விண்ணப்பதாரர்: <strong className="text-white">{fullName || 'புதிய மாணவர்'}</strong> • சமூகம்: <strong className="text-white">{community}</strong> • மாவட்டம்: <strong className="text-white">{district}</strong></>
+              : <>Applicant: <strong className="text-white">{fullName || 'New Candidate'}</strong> • Community: <strong className="text-white">{community}</strong> • District: <strong className="text-white">{district}</strong></>}
           </div>
           <div className="flex items-center space-x-2.5">
             <button
@@ -450,7 +457,7 @@ export default function ProfilePage({
               className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-600 transition flex items-center space-x-1.5 cursor-pointer shadow-xs"
             >
               <Save size={13} className="text-emerald-400" />
-              <span>{isSaving ? 'Saving to Cluster...' : '💾 Save Profile to Cluster'}</span>
+              <span>{isSaving ? (currentLang === 'ta' ? 'சேமிக்கப்படுகிறது...' : 'Saving to Cluster...') : (currentLang === 'ta' ? '💾 கிளஸ்டரில் சேமி' : '💾 Save Profile to Cluster')}</span>
             </button>
             <button
               type="button"
@@ -458,7 +465,7 @@ export default function ProfilePage({
               className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 text-xs font-black rounded-xl transition flex items-center space-x-1.5 cursor-pointer shadow-md"
             >
               <Sparkles size={14} className="fill-slate-950" />
-              <span>⚡ Save & Check Eligibility Now</span>
+              <span>{currentLang === 'ta' ? '⚡ சேமித்து தகுதி காண்க' : '⚡ Save & Check Eligibility Now'}</span>
               <ArrowRight size={14} />
             </button>
           </div>
@@ -479,15 +486,15 @@ export default function ProfilePage({
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-900">
-                  Section 1: Personal Demographics & Identification
+                  {isTa ? 'பிரிவு 1: தனிப்பட்ட விவரங்கள் & அடையாளம்' : 'Section 1: Personal Demographics & Identification'}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Legal name as registered in Class 10/12 Marksheet & Aadhaar card.
+                  {isTa ? '10/12-ஆம் வகுப்பு மதிப்பெண் சான்றிதழ் மற்றும் ஆதார் அட்டையில் உள்ள சட்டப்பூர்வ பெயர்.' : 'Legal name as registered in Class 10/12 Marksheet & Aadhaar card.'}
                 </p>
               </div>
             </div>
             <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase">
-              Mandatory
+              {isTa ? 'கட்டாயம்' : 'Mandatory'}
             </span>
           </div>
 
@@ -497,7 +504,7 @@ export default function ProfilePage({
               <div 
                 onClick={() => fileInputRef.current?.click()}
                 className="w-24 h-24 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-300 hover:border-emerald-600 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer transition shadow-2xs"
-                title="Upload student passport photo"
+                title={isTa ? 'மாணவர் புகைப்படம் பதிவேற்றுக' : 'Upload student passport photo'}
               >
                 {avatar ? (
                   <img src={avatar} alt={fullName} className="w-full h-full object-cover" />
@@ -505,13 +512,13 @@ export default function ProfilePage({
                   <>
                     <User size={38} className="text-slate-400 group-hover:text-emerald-700 transition mb-0.5" />
                     <span className="text-[9px] font-bold text-slate-500 font-mono group-hover:text-emerald-800">
-                      PHOTO
+                      {isTa ? 'படம்' : 'PHOTO'}
                     </span>
                   </>
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white text-[10px] font-semibold">
                   <Camera size={18} className="mb-0.5 text-emerald-300" />
-                  <span>{avatar ? 'Change' : 'Upload'}</span>
+                  <span>{avatar ? (isTa ? 'மாற்று' : 'Change') : (isTa ? 'பதிவேற்று' : 'Upload')}</span>
                 </div>
               </div>
               <input 
@@ -527,7 +534,7 @@ export default function ProfilePage({
                   onClick={() => fileInputRef.current?.click()}
                   className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer"
                 >
-                  {avatar ? 'Change' : 'Upload Photo'}
+                  {avatar ? (isTa ? 'மாற்று' : 'Change') : (isTa ? 'புகைப்படம் பதிவேற்று' : 'Upload Photo')}
                 </button>
                 {avatar && (
                   <button
@@ -535,7 +542,7 @@ export default function ProfilePage({
                     onClick={handleRemovePhoto}
                     className="text-[10px] font-bold text-red-600 hover:underline cursor-pointer"
                   >
-                    Remove
+                    {isTa ? 'நீக்கு' : 'Remove'}
                   </button>
                 )}
               </div>
@@ -545,13 +552,13 @@ export default function ProfilePage({
             <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
               <div>
                 <label className="block text-slate-700 font-bold mb-1">
-                  Full Name (மாணவர் பெயர்) *
+                  {isTa ? 'மாணவர் முழுப் பெயர் *' : 'Full Name (மாணவர் பெயர்) *'}
                 </label>
                 <input 
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Surya Suresh"
+                  placeholder={isTa ? 'எ.கா. சூர்யா சுரேஷ்' : 'e.g. Surya Suresh'}
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-semibold"
                   required
                 />
@@ -559,20 +566,20 @@ export default function ProfilePage({
 
               <div>
                 <label className="block text-slate-700 font-bold mb-1">
-                  Father's / Guardian's Name (தந்தை பெயர்)
+                  {isTa ? 'தந்தை / பாதுகாவலர் பெயர்' : "Father's / Guardian's Name (தந்தை பெயர்)"}
                 </label>
                 <input 
                   type="text"
                   value={fatherName}
                   onChange={(e) => setFatherName(e.target.value)}
-                  placeholder="e.g. Suresh K"
+                  placeholder={isTa ? 'எ.கா. சுரேஷ் கே' : 'e.g. Suresh K'}
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs"
                 />
               </div>
 
               <div>
                 <label className="block text-slate-700 font-bold mb-1">
-                  Date of Birth (பிறந்த தேதி) *
+                  {isTa ? 'பிறந்த தேதி *' : 'Date of Birth (பிறந்த தேதி) *'}
                 </label>
                 <input 
                   type="date"
@@ -585,22 +592,22 @@ export default function ProfilePage({
 
               <div>
                 <label className="block text-slate-700 font-bold mb-1">
-                  Gender (பாலினம்) *
+                  {isTa ? 'பாலினம் *' : 'Gender (பாலினம்) *'}
                 </label>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-semibold"
                 >
-                  <option value="male">Male (ஆண்) - Tamil Pudhalvan Eligible</option>
-                  <option value="female">Female (பெண்) - Pudhumai Penn Eligible</option>
-                  <option value="other">Transgender (மூன்றாம் பாலினம்)</option>
+                  <option value="male">{isTa ? 'ஆண் (தமிழ்ப் புதல்வன் தகுதி)' : 'Male (ஆண்) - Tamil Pudhalvan Eligible'}</option>
+                  <option value="female">{isTa ? 'பெண் (புதுமைப் பெண் தகுதி)' : 'Female (பெண்) - Pudhumai Penn Eligible'}</option>
+                  <option value="other">{isTa ? 'மூன்றாம் பாலினம்' : 'Transgender (மூன்றாம் பாலினம்)'}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-slate-700 font-bold mb-1">
-                  Mobile Number (கைபேசி எண்) *
+                  {isTa ? 'கைபேசி எண் *' : 'Mobile Number (கைபேசி எண்) *'}
                 </label>
                 <input 
                   type="tel"
@@ -613,7 +620,7 @@ export default function ProfilePage({
 
               <div>
                 <label className="block text-slate-700 font-bold mb-1">
-                  Email Address (மின்னஞ்சல்) *
+                  {isTa ? 'மின்னஞ்சல் முகவரி *' : 'Email Address (மின்னஞ்சல்) *'}
                 </label>
                 <input 
                   type="email"
@@ -636,41 +643,41 @@ export default function ProfilePage({
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-900">
-                  Section 2: Social Community & Quota Entitlements
+                  {isTa ? 'பிரிவு 2: சமூகப் பிரிவு & இடஒதுக்கீடு உரிமைகள்' : 'Section 2: Social Community & Quota Entitlements'}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Directly dictates Post-Matric waivers, Adi Dravidar grants, and BC/MBC scholarship matrices.
+                  {isTa ? 'போஸ்ட்-மெட்ரிக் கல்விக் கட்டண விலக்கு, ஆதிதிராவிடர் நிதி உதவி மற்றும் BC/MBC நலத்திட்ட கணக்கீட்டிற்கு பொருந்தும்.' : 'Directly dictates Post-Matric waivers, Adi Dravidar grants, and BC/MBC scholarship matrices.'}
                 </p>
               </div>
             </div>
             <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200 uppercase">
-              Welfare Rule Factor
+              {isTa ? 'நலத்திட்ட காரணி' : 'Welfare Rule Factor'}
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Social Community (சமூகப் பிரிவு) *
+                {isTa ? 'சமூகப் பிரிவு *' : 'Social Community (சமூகப் பிரிவு) *'}
               </label>
               <select
                 value={community}
                 onChange={(e) => setCommunity(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-bold text-slate-900"
               >
-                <option value="BC">BC - Backward Class (பிற்படுத்தப்பட்டோர்)</option>
-                <option value="BCM">BCM - Backward Class Muslim (பிற்படுத்தப்பட்ட முஸ்லிம்)</option>
-                <option value="MBC/DNC">MBC / DNC - Most Backward Class (மிகவும் பிற்படுத்தப்பட்டோர்)</option>
-                <option value="SC">SC - Scheduled Caste (ஆதிதிராவிடர்)</option>
-                <option value="SCA">SCA - Scheduled Caste Arunthathiyar (அருந்ததியர்)</option>
-                <option value="ST">ST - Scheduled Tribe (பழங்குடியினர்)</option>
-                <option value="OC">OC - Open Competition (பொதுப் பிரிவு)</option>
+                <option value="BC">{isTa ? 'BC - பிற்படுத்தப்பட்டோர் (Backward Class)' : 'BC - Backward Class (பிற்படுத்தப்பட்டோர்)'}</option>
+                <option value="BCM">{isTa ? 'BCM - பிற்படுத்தப்பட்ட முஸ்லிம் (BC Muslim)' : 'BCM - Backward Class Muslim (பிற்படுத்தப்பட்ட முஸ்லிம்)'}</option>
+                <option value="MBC/DNC">{isTa ? 'MBC / DNC - மிகவும் பிற்படுத்தப்பட்டோர் & சீர்மரபினர்' : 'MBC / DNC - Most Backward Class (மிகவும் பிற்படுத்தப்பட்டோர்)'}</option>
+                <option value="SC">{isTa ? 'SC - ஆதிதிராவிடர் (Scheduled Caste)' : 'SC - Scheduled Caste (ஆதிதிராவிடர்)'}</option>
+                <option value="SCA">{isTa ? 'SCA - அருந்ததியர் (SC Arunthathiyar)' : 'SCA - Scheduled Caste Arunthathiyar (அருந்ததியர்)'}</option>
+                <option value="ST">{isTa ? 'ST - பழங்குடியினர் (Scheduled Tribe)' : 'ST - Scheduled Tribe (பழங்குடியினர்)'}</option>
+                <option value="OC">{isTa ? 'OC - பொதுப் பிரிவு (Open Competition)' : 'OC - Open Competition (பொதுப் பிரிவு)'}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Aadhaar Number (ஆதார் எண்)
+                {isTa ? 'ஆதார் எண்' : 'Aadhaar Number (ஆதார் எண்)'}
               </label>
               <input 
                 type="text"
@@ -683,15 +690,15 @@ export default function ProfilePage({
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Differently Abled Quota (மாற்றுத்திறனாளியா?)
+                {isTa ? 'மாற்றுத்திறனாளியா?' : 'Differently Abled Quota (மாற்றுத்திறனாளியா?)'}
               </label>
               <select
                 value={isDifferentlyAbled ? 'yes' : 'no'}
                 onChange={(e) => setIsDifferentlyAbled(e.target.value === 'yes')}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-semibold"
               >
-                <option value="no">No (இல்லை)</option>
-                <option value="yes">Yes (ஆம் - Special Welfare Allowance)</option>
+                <option value="no">{isTa ? 'இல்லை' : 'No (இல்லை)'}</option>
+                <option value="yes">{isTa ? 'ஆம் (சிறப்பு நலப் படி தகுதி)' : 'Yes (ஆம் - Special Welfare Allowance)'}</option>
               </select>
             </div>
           </div>
@@ -706,22 +713,22 @@ export default function ProfilePage({
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-900">
-                  Section 3: Native Residential Location (Tamil Nadu)
+                  {isTa ? 'பிரிவு 3: சொந்த இருப்பிட விவரம் (தமிழ்நாடு)' : 'Section 3: Native Residential Location (Tamil Nadu)'}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Select from all 38 districts of Tamil Nadu to verify revenue jurisdiction.
+                  {isTa ? 'வருவாய் துறை அதிகார வரம்பை சரிபார்க்க தமிழ்நாட்டின் 38 மாவட்டங்களில் இருந்து தேர்வு செய்யவும்.' : 'Select from all 38 districts of Tamil Nadu to verify revenue jurisdiction.'}
                 </p>
               </div>
             </div>
             <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 uppercase">
-              All 38 Districts
+              {isTa ? 'அனைத்து 38 மாவட்டங்கள்' : 'All 38 Districts'}
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                District (மாவட்டம்) *
+                {isTa ? 'மாவட்டம் *' : 'District (மாவட்டம்) *'}
               </label>
               <select
                 value={district}
@@ -730,7 +737,7 @@ export default function ProfilePage({
               >
                 {TN_DISTRICTS.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.name_en} ({d.name_ta})
+                    {isTa ? `${d.name_ta} (${d.name_en})` : `${d.name_en} (${d.name_ta})`}
                   </option>
                 ))}
               </select>
@@ -738,41 +745,41 @@ export default function ProfilePage({
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Taluk (வட்டம்) *
+                {isTa ? 'வட்டம் *' : 'Taluk (வட்டம்) *'}
               </label>
               <input 
                 type="text"
                 value={taluk}
                 onChange={(e) => setTaluk(e.target.value)}
-                placeholder="e.g. Aranthangi"
+                placeholder={isTa ? 'எ.கா. அறந்தாங்கி' : 'e.g. Aranthangi'}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs"
               />
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                City / Town / Village (ஊர் / நகரம்)
+                {isTa ? 'ஊர் / நகரம்' : 'City / Town / Village (ஊர் / நகரம்)'}
               </label>
               <input 
                 type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Aranthangi Town"
+                placeholder={isTa ? 'எ.கா. அறந்தாங்கி நகரம்' : 'e.g. Aranthangi Town'}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs"
               />
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Residence Area (இருப்பிடம்)
+                {isTa ? 'இருப்பிட பகுதி' : 'Residence Area (இருப்பிடம்)'}
               </label>
               <select
                 value={residenceType}
                 onChange={(e) => setResidenceType(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs"
               >
-                <option value="Rural">Rural (ஊரகப் பகுதி)</option>
-                <option value="Urban">Urban (நகர்ப்புற பகுதி)</option>
+                <option value="Rural">{isTa ? 'ஊரகப் பகுதி (Rural)' : 'Rural (ஊரகப் பகுதி)'}</option>
+                <option value="Urban">{isTa ? 'நகர்ப்புற பகுதி (Urban)' : 'Urban (நகர்ப்புற பகுதி)'}</option>
               </select>
             </div>
           </div>
@@ -787,37 +794,37 @@ export default function ProfilePage({
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-900">
-                  Section 4: Collegiate & Academic Credentials
+                  {isTa ? 'பிரிவு 4: உயர்கல்வி & கல்வித் தகுதிகள்' : 'Section 4: Collegiate & Academic Credentials'}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Current course, college affiliation, 12th Board marks, and Single Window Counseling status.
+                  {isTa ? 'தற்போதைய படிப்பு, கல்லூரி அங்கீகாரம், 12-ஆம் வகுப்பு மதிப்பெண்கள் மற்றும் ஒற்றைச் சாளர சேர்க்கை நிலை.' : 'Current course, college affiliation, 12th Board marks, and Single Window Counseling status.'}
                 </p>
               </div>
             </div>
             <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 uppercase">
-              Merit & Quota
+              {isTa ? 'தகுதி & ஒதுக்கீடு' : 'Merit & Quota'}
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Degree Level (படிப்பு நிலை) *
+                {isTa ? 'படிப்பு நிலை *' : 'Degree Level (படிப்பு நிலை) *'}
               </label>
               <select
                 value={degree}
                 onChange={(e) => setDegree(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-semibold"
               >
-                <option value="Undergraduate (UG)">Undergraduate (இளங்கலை UG - B.E/B.Tech/B.Sc/B.Com)</option>
-                <option value="Postgraduate (PG)">Postgraduate (முதுகலை PG - M.E/M.Tech/M.Sc/MBA)</option>
-                <option value="Polytechnic Diploma">Polytechnic Diploma (டிப்ளமோ)</option>
+                <option value="Undergraduate (UG)">{isTa ? 'இளங்கலை (UG - B.E/B.Tech/B.Sc/B.Com)' : 'Undergraduate (இளங்கலை UG - B.E/B.Tech/B.Sc/B.Com)'}</option>
+                <option value="Postgraduate (PG)">{isTa ? 'முதுகலை (PG - M.E/M.Tech/M.Sc/MBA)' : 'Postgraduate (முதுகலை PG - M.E/M.Tech/M.Sc/MBA)'}</option>
+                <option value="Polytechnic Diploma">{isTa ? 'பாலிடெக்னிக் டிப்ளமோ' : 'Polytechnic Diploma (டிப்ளமோ)'}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Current Course / Department (பாடப்பிரிவு) *
+                {isTa ? 'தற்போதைய படிப்பு / துறை *' : 'Current Course / Department (பாடப்பிரிவு) *'}
               </label>
               <input 
                 type="text"
@@ -831,7 +838,7 @@ export default function ProfilePage({
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                College / Institution Name (கல்லூரி பெயர்)
+                {isTa ? 'கல்லூரி / கல்வி நிறுவனத்தின் பெயர்' : 'College / Institution Name (கல்லூரி பெயர்)'}
               </label>
               <input 
                 type="text"
@@ -844,38 +851,38 @@ export default function ProfilePage({
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                College Category (கல்லூரி வகை) *
+                {isTa ? 'கல்லூரி வகை *' : 'College Category (கல்லூரி வகை) *'}
               </label>
               <select
                 value={collegeType}
                 onChange={(e) => setCollegeType(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs"
               >
-                <option value="Government">Government College (அரசு கல்லூரி)</option>
-                <option value="Government-Aided">Government-Aided (அரசு உதவிபெறும் கல்லூரி)</option>
-                <option value="Private Self-Financing">Private Self-Financing (தனியார் சுயநிதி கல்லூரி)</option>
+                <option value="Government">{isTa ? 'அரசு கல்லூரி' : 'Government College (அரசு கல்லூரி)'}</option>
+                <option value="Government-Aided">{isTa ? 'அரசு உதவிபெறும் கல்லூரி' : 'Government-Aided (அரசு உதவிபெறும் கல்லூரி)'}</option>
+                <option value="Private Self-Financing">{isTa ? 'தனியார் சுயநிதி கல்லூரி' : 'Private Self-Financing (தனியார் சுயநிதி கல்லூரி)'}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Current Year of Study (பயிலும் ஆண்டு) *
+                {isTa ? 'பயிலும் ஆண்டு *' : 'Current Year of Study (பயிலும் ஆண்டு) *'}
               </label>
               <select
                 value={yearOfStudy}
                 onChange={(e) => setYearOfStudy(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs"
               >
-                <option value="1st Year (Fresher)">1st Year (முதலாம் ஆண்டு - Fresher)</option>
-                <option value="2nd Year">2nd Year (இரண்டாம் ஆண்டு)</option>
-                <option value="3rd Year">3rd Year (மூன்றாம் ஆண்டு)</option>
-                <option value="4th Year">4th Year (நான்காம் ஆண்டு)</option>
+                <option value="1st Year (Fresher)">{isTa ? 'முதலாம் ஆண்டு (Fresher)' : '1st Year (முதலாம் ஆண்டு - Fresher)'}</option>
+                <option value="2nd Year">{isTa ? 'இரண்டாம் ஆண்டு' : '2nd Year (இரண்டாம் ஆண்டு)'}</option>
+                <option value="3rd Year">{isTa ? 'மூன்றாம் ஆண்டு' : '3rd Year (மூன்றாம் ஆண்டு)'}</option>
+                <option value="4th Year">{isTa ? 'நான்காம் ஆண்டு' : '4th Year (நான்காம் ஆண்டு)'}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                12th Board Marks % (12-ஆம் வகுப்பு மதிப்பெண் %) *
+                {isTa ? '12-ஆம் வகுப்பு மதிப்பெண் % *' : '12th Board Marks % (12-ஆம் வகுப்பு மதிப்பெண் %) *'}
               </label>
               <input 
                 type="number"
@@ -892,15 +899,15 @@ export default function ProfilePage({
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Admission Mode (சேர்க்கை முறை) *
+                {isTa ? 'சேர்க்கை முறை *' : 'Admission Mode (சேர்க்கை முறை) *'}
               </label>
               <select
                 value={admissionMode}
                 onChange={(e) => setAdmissionMode(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs"
               >
-                <option value="govt_counseling_single_window">Single Window Counseling (ஒற்றைச் சாளர சேர்க்கை)</option>
-                <option value="management_quota">Management Quota (நிர்வாக ஒதுக்கீடு)</option>
+                <option value="govt_counseling_single_window">{isTa ? 'ஒற்றைச் சாளர கலந்தாய்வு சேர்க்கை (Single Window Counseling)' : 'Single Window Counseling (ஒற்றைச் சாளர சேர்க்கை)'}</option>
+                <option value="management_quota">{isTa ? 'நிர்வாக ஒதுக்கீடு (Management Quota)' : 'Management Quota (நிர்வாக ஒதுக்கீடு)'}</option>
               </select>
             </div>
           </div>
@@ -915,22 +922,22 @@ export default function ProfilePage({
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-900">
-                  Section 5: Family Income & Welfare Quotas
+                  {isTa ? 'பிரிவு 5: குடும்ப வருமானம் & நலத்திட்ட ஒதுக்கீடுகள்' : 'Section 5: Family Income & Welfare Quotas'}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Controls First Graduate fee waivers (₹25,000) and Pudhumai Penn / Tamil Pudhalvan DBT (₹12,000).
+                  {isTa ? 'முதல் பட்டதாரி கல்விக் கட்டண தள்ளுபடி (₹25,000) மற்றும் புதுமைப் பெண் / தமிழ்ப் புதல்வன் உதவித்தொகை (₹12,000) வழிநடத்துகிறது.' : 'Controls First Graduate fee waivers (₹25,000) and Pudhumai Penn / Tamil Pudhalvan DBT (₹12,000).'}
                 </p>
               </div>
             </div>
             <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 uppercase">
-              Financial Payout
+              {isTa ? 'நிதி உதவி வரம்பு' : 'Financial Payout'}
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Annual Family Income (குடும்ப ஆண்டு வருமானம் ₹) *
+                {isTa ? 'குடும்ப ஆண்டு வருமானம் ₹ *' : 'Annual Family Income (குடும்ப ஆண்டு வருமானம் ₹) *'}
               </label>
               <input 
                 type="number"
@@ -941,42 +948,42 @@ export default function ProfilePage({
                 required
               />
               <span className="text-[10px] text-slate-400 mt-1 block">
-                Cap: Under ₹2.50L for Post-Matric • Under ₹4.50L for Central CSSS
+                {isTa ? 'வரம்பு: போஸ்ட்-மெட்ரிக்கிற்கு ₹2.50 லட்சத்திற்குள் • மத்திய CSSS திட்டத்திற்கு ₹4.50 லட்சத்திற்குள்' : 'Cap: Under ₹2.50L for Post-Matric • Under ₹4.50L for Central CSSS'}
               </span>
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                First Graduate in Family? (முதல் பட்டதாரியா?) *
+                {isTa ? 'குடும்பத்தில் முதல் பட்டதாரியா? *' : 'First Graduate in Family? (முதல் பட்டதாரியா?) *'}
               </label>
               <select
                 value={isFirstGraduate ? 'yes' : 'no'}
                 onChange={(e) => setIsFirstGraduate(e.target.value === 'yes')}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-bold text-emerald-800"
               >
-                <option value="yes">Yes (ஆம் - ₹25,000 Tuition Waiver Eligible)</option>
-                <option value="no">No (இல்லை)</option>
+                <option value="yes">{isTa ? 'ஆம் (₹25,000 கல்விக் கட்டணத் தள்ளுபடி தகுதி)' : 'Yes (ஆம் - ₹25,000 Tuition Waiver Eligible)'}</option>
+                <option value="no">{isTa ? 'இல்லை' : 'No (இல்லை)'}</option>
               </select>
               <span className="text-[10px] text-slate-400 mt-1 block">
-                No sibling has availed First Graduate benefits previously.
+                {isTa ? 'உடன் பிறந்தவர்கள் எவரும் இதற்கு முன் முதல் பட்டதாரி சலுகை பெறவில்லை.' : 'No sibling has availed First Graduate benefits previously.'}
               </span>
             </div>
 
             <div>
               <label className="block text-slate-700 font-bold mb-1">
-                Schooling Type (பள்ளி வகை) *
+                {isTa ? 'பள்ளி வகை (6 முதல் 12 வரை) *' : 'Schooling Type (பள்ளி வகை) *'}
               </label>
               <select
                 value={schoolingType}
                 onChange={(e) => setSchoolingType(e.target.value)}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-bold"
               >
-                <option value="tn_govt_school_6_to_12">TN Govt School (Classes 6-12) - ₹12,000 DBT Eligible</option>
-                <option value="private_matriculation">Private Matriculation / CBSE School</option>
-                <option value="government_aided">Government-Aided School</option>
+                <option value="tn_govt_school_6_to_12">{isTa ? 'தமிழக அரசுப் பள்ளி (வகுப்புகள் 6-12) - ₹12,000 உதவித்தொகை தகுதி' : 'TN Govt School (Classes 6-12) - ₹12,000 DBT Eligible'}</option>
+                <option value="private_matriculation">{isTa ? 'தனியார் மெட்ரிகுலேஷன் / CBSE பள்ளி' : 'Private Matriculation / CBSE School'}</option>
+                <option value="government_aided">{isTa ? 'அரசு உதவிபெறும் பள்ளி' : 'Government-Aided School'}</option>
               </select>
               <span className="text-[10px] text-emerald-600 font-semibold mt-1 block">
-                Qualifies for Pudhumai Penn (Girls) / Tamil Pudhalvan (Boys)
+                {isTa ? 'புதுமைப் பெண் (மாணவியர்) / தமிழ்ப் புதல்வன் (மாணவர்கள்) திட்டங்களுக்கு தகுதிபெறுகிறது' : 'Qualifies for Pudhumai Penn (Girls) / Tamil Pudhalvan (Boys)'}
               </span>
             </div>
           </div>
@@ -990,10 +997,10 @@ export default function ProfilePage({
             </div>
             <div>
               <span className="font-bold text-slate-900 block text-xs">
-                Tamil Nadu e-Sevai & Revenue Document Verification Linked
+                {isTa ? 'தமிழ்நாடு இ-சேவை & வருவாய்த்துறை ஆவண சரிபார்ப்பு இணைக்கப்பட்டுள்ளது' : 'Tamil Nadu e-Sevai & Revenue Document Verification Linked'}
               </span>
               <p className="text-[11px] text-slate-600">
-                Income Certificate (REV-INC-01), Community Certificate (REV-COM-02), and Aadhaar-DBT can be verified live.
+                {isTa ? 'வருமானச் சான்றிதழ் (REV-INC-01), சாதிச் சான்றிதழ் (REV-COM-02) மற்றும் ஆதார்-DBT நேரலையாக சரிபார்க்கப்படும்.' : 'Income Certificate (REV-INC-01), Community Certificate (REV-COM-02), and Aadhaar-DBT can be verified live.'}
               </p>
             </div>
           </div>
@@ -1004,7 +1011,7 @@ export default function ProfilePage({
             className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition flex items-center space-x-1.5 cursor-pointer shadow-xs border border-emerald-600 shrink-0"
           >
             <FileCheck size={14} className="text-amber-300" />
-            <span>Launch e-Sevai Document Scanner</span>
+            <span>{isTa ? 'இ-சேவை ஆவண ஸ்கேனரைத் திற' : 'Launch e-Sevai Document Scanner'}</span>
           </button>
         </div>
 
@@ -1012,10 +1019,10 @@ export default function ProfilePage({
         <div className="bg-white rounded-3xl border-2 border-emerald-600/60 p-6 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-0.5">
             <h4 className="text-sm font-bold text-slate-900">
-              Ready to Evaluate Your Schemes?
+              {isTa ? 'உங்கள் திட்டங்களை மதிப்பிட தயாரா?' : 'Ready to Evaluate Your Schemes?'}
             </h4>
             <p className="text-xs text-slate-500">
-              Saving your bio-data updates the MongoDB Atlas cluster (`profiles` & `profile`) and computes your maximum payout immediately.
+              {isTa ? 'பயோடேட்டாவைச் சேமிப்பது MongoDB Atlas கிளஸ்டரை உடனடியாகப் புதுப்பித்து, உங்கள் அதிகபட்ச பலன்களைக் கணக்கிடுகிறது.' : 'Saving your bio-data updates the MongoDB Atlas cluster (`profiles` & `profile`) and computes your maximum payout immediately.'}
             </p>
           </div>
 
@@ -1026,7 +1033,7 @@ export default function ProfilePage({
               className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-600 transition flex items-center space-x-2 cursor-pointer shadow-xs"
             >
               <Save size={15} className="text-emerald-400" />
-              <span>{isSaving ? 'Saving to Cluster...' : '💾 Save Bio-Data to Cluster'}</span>
+              <span>{isSaving ? (isTa ? 'கிளஸ்டரில் சேமிக்கப்படுகிறது...' : 'Saving to Cluster...') : (isTa ? '💾 பயோடேட்டாவை கிளஸ்டரில் சேமி' : '💾 Save Bio-Data to Cluster')}</span>
             </button>
 
             <button
@@ -1035,7 +1042,7 @@ export default function ProfilePage({
               className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl transition flex items-center space-x-2 cursor-pointer shadow-lg border border-emerald-400"
             >
               <Sparkles size={15} className="text-amber-300" />
-              <span>⚡ Save & Check My Eligibility</span>
+              <span>{isTa ? '⚡ சேமித்து எனது தகுதியைச் சரிபார்' : '⚡ Save & Check My Eligibility'}</span>
               <ArrowRight size={15} />
             </button>
           </div>

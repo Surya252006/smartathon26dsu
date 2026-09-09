@@ -66,6 +66,8 @@ function App() {
 
   // Regional Language State (Handwritten Note Item #5)
   const [currentLang, setCurrentLang] = useState('en');
+  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+  const isTa = currentLang === 'ta';
 
   // Global Scheme Search State (Handwritten Note Item #6)
   const [searchQuery, setSearchQuery] = useState('');
@@ -333,8 +335,6 @@ function App() {
     }
   };
 
-  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
-
   return (
     <div className="min-h-screen bg-[#fafaf9] text-slate-900 font-sans flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
       
@@ -363,17 +363,14 @@ function App() {
         onOpenEligibilityChecker={() => handleOpenEligibilityChecker()}
       />
 
-      {/* 2. Main Content Container */}
-      <main className="flex-1 w-full mx-auto bg-slate-50">
+      {/* 2. Main Content View Router */}
+      <main className="flex-1">
         
-        {/* VIEW A: Official TN e-Vidya Dashboard (Home Page) */}
+        {/* VIEW A: Official Portal Homepage */}
         {currentTab === 'home' && (
           <HomePage
-            onStartMatcher={() => handleStartMatcher()}
-            onInjectPersona={injectPersona}
-            onViewSchemes={() => setCurrentTab('schemes')}
-            onOpenAuth={() => openLogin()}
-            onOpenRegister={() => openRegister()}
+            onOpenEligibilityChecker={handleOpenEligibilityChecker}
+            onSelectPersona={injectPersona}
             currentLang={currentLang}
             currentUser={currentUser}
             onNavigateTab={setCurrentTab}
@@ -399,11 +396,11 @@ function App() {
                       onClick={() => setCurrentTab('home')}
                       className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition flex items-center space-x-1 cursor-pointer"
                     >
-                      <span>← {t.nav_home || 'Back to Home'}</span>
+                      <span>← {t.nav_home || (isTa ? 'முகப்பு' : 'Back to Home')}</span>
                     </button>
                     <span className="text-slate-300">•</span>
                     <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                      Eligibility Checker • MWIS Optimization Engine
+                      {isTa ? 'தகுதி சரிபார்ப்பு • உகந்த சேர்க்கை அமைப்பு' : 'Eligibility Checker • MWIS Optimization Engine'}
                     </span>
                   </div>
 
@@ -417,7 +414,7 @@ function App() {
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      📊 Optimal Benefit Package
+                      {isTa ? '📊 உகந்த நலத்திட்ட பலன்' : '📊 Optimal Benefit Package'}
                     </button>
                     <button
                       onClick={() => setMatcherMode('wizard')}
@@ -427,13 +424,15 @@ function App() {
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      📝 5-Step Assessment Wizard
+                      {isTa ? '📝 5-படி மதிப்பீட்டு படிவம்' : '📝 5-Step Assessment Wizard'}
                     </button>
                   </div>
 
                   {/* Quick Persona Evaluator */}
                   <div className="flex items-center space-x-1.5 text-xs">
-                    <span className="text-slate-400 font-medium text-[11px] hidden md:inline">Quick Test:</span>
+                    <span className="text-slate-400 font-medium text-[11px] hidden md:inline">
+                      {isTa ? 'விரைவு சோதனை:' : 'Quick Test:'}
+                    </span>
                     <button
                       onClick={() => injectPersona('surya')}
                       className="px-2.5 py-1 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 font-semibold rounded-lg border border-slate-200 text-[11px] transition cursor-pointer"
@@ -465,10 +464,12 @@ function App() {
                       <Loader2 className="animate-spin text-emerald-700" size={54} />
                     </div>
                     <h3 className="text-lg font-bold text-slate-900">
-                      Optimizing Scholarship Allocation from Your Bio-Data...
+                      {isTa ? 'உங்கள் சுயவிவரத்திலிருந்து கல்வி உதவித்தொகை உகந்ததாக்கப்படுகிறது...' : 'Optimizing Scholarship Allocation from Your Bio-Data...'}
                     </h3>
                     <p className="text-xs text-slate-500 mt-1.5 text-center max-w-sm">
-                      Evaluating candidate community, income ceiling, 12th board marks, and mutual exclusivity matrices from your saved profile...
+                      {isTa 
+                        ? 'சேமிக்கப்பட்ட விவரங்களிலிருந்து சமூகம், ஆண்டு வருமானம் மற்றும் முரண்பாடில்லா விதிகள் பகுப்பாய்வு செய்யப்படுகின்றன...' 
+                        : 'Evaluating candidate community, income ceiling, 12th board marks, and mutual exclusivity matrices from your saved profile...'}
                     </p>
                   </div>
                 ) : matcherMode === 'wizard' ? (
@@ -504,13 +505,15 @@ function App() {
                     </div>
                     <div className="space-y-2">
                       <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">
-                        Tamil Nadu Higher Education Welfare Decision Engine
+                        {isTa ? 'தமிழ்நாடு உயர்கல்வி நலத்திட்ட முடிவு அமைப்பு' : 'Tamil Nadu Higher Education Welfare Decision Engine'}
                       </span>
                       <h3 className="text-2xl font-black text-slate-900">
-                        Ready to Check Your Scholarship Entitlements
+                        {isTa ? 'உங்கள் கல்வி உதவித்தொகை தகுதியை சரிபார்க்க தயார்' : 'Ready to Check Your Scholarship Entitlements'}
                       </h3>
                       <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                        Calculate which valid combination gives you the maximum possible financial benefit without legal claim collisions.
+                        {isTa 
+                          ? 'சட்டபூர்வ முரண்பாடுகள் இல்லாமல் அதிகபட்ச நிதி நன்மையை வழங்கும் உகந்த சேர்க்கையைக் கணக்கிடுங்கள்.' 
+                          : 'Calculate which valid combination gives you the maximum possible financial benefit without legal claim collisions.'}
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -519,14 +522,14 @@ function App() {
                         className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs transition cursor-pointer flex items-center space-x-2 shadow-sm"
                       >
                         <Sparkles size={15} className="text-amber-300" />
-                        <span>⚡ Run Eligibility Check Now</span>
+                        <span>{isTa ? '⚡ தகுதியை இப்போது சரிபார்' : '⚡ Run Eligibility Check Now'}</span>
                       </button>
                       <button
                         onClick={() => setCurrentTab('profile')}
                         className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer flex items-center space-x-1.5"
                       >
                         <FileText size={14} className="text-slate-600" />
-                        <span>Open Student Bio-Data Form</span>
+                        <span>{isTa ? 'மாணவர் பயோடேட்டா படிவம் திற' : 'Open Student Bio-Data Form'}</span>
                       </button>
                     </div>
                   </div>
@@ -636,6 +639,7 @@ function App() {
         initialMode={authModalMode}
         onClose={() => setShowAuthModal(false)}
         onAuthSuccess={handleAuthSuccess}
+        currentLang={currentLang}
       />
 
       {/* 5. Cloud Database Modal (MongoDB Atlas & SQLite Dual-Sync) */}
@@ -644,6 +648,7 @@ function App() {
         onClose={() => setShowDbModal(false)}
         dbStatus={dbStatus}
         onUpdateStatus={(newStatus) => setDbStatus(newStatus)}
+        currentLang={currentLang}
       />
 
       {/* 6. Official Government Orders & Notice Board Drawer Modal */}
@@ -668,6 +673,7 @@ function App() {
         onClose={() => setShowScannerModal(false)}
         studentProfile={currentProfile || currentUser?.profile}
         currentUser={currentUser}
+        currentLang={currentLang}
         onVerificationComplete={(updatedProf) => {
           setCurrentProfile(updatedProf);
           if (currentUser) {
@@ -693,42 +699,56 @@ function App() {
                 <span>{t.portal_name} • {t.dept_title}</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed max-w-md">
-                An official Tamil Nadu e-Governance initiative designed to bridge the accessibility gap for 1.2 Lakh rural and first-generation college students across Tamil Nadu with zero entitlement collisions.
+                {isTa 
+                  ? 'தமிழ்நாட்டின் 1.2 லட்சம் கிராமப்புற மற்றும் முதல் தலைமுறை கல்லூரி மாணவர்களுக்கான சட்டபூர்வ உதவித்தொகை முரண்பாடற்ற தமிழ்நாடு மின்-ஆளுமை முயற்சி.'
+                  : 'An official Tamil Nadu e-Governance initiative designed to bridge the accessibility gap for 1.2 Lakh rural and first-generation college students across Tamil Nadu with zero entitlement collisions.'}
               </p>
               <div className="flex items-center space-x-3 text-[11px] text-emerald-400 font-medium pt-1">
-                <span>Direct Benefit Transfer (DBT) Enabled</span>
+                <span>{isTa ? 'நேரடி பணப்பரிமாற்றம் (DBT) இணைக்கப்பட்டது' : 'Direct Benefit Transfer (DBT) Enabled'}</span>
                 <span>•</span>
-                <span>TNeGA Aligned</span>
+                <span>{isTa ? 'TNeGA அங்கீகரிக்கப்பட்டது' : 'TNeGA Aligned'}</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Quick Portals & Services</h4>
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                {isTa ? 'விரைவு தளங்கள் & சேவைகள்' : 'Quick Portals & Services'}
+              </h4>
               <ul className="space-y-1.5 text-[11px]">
-                <li><button onClick={() => setCurrentTab('tracker')} className="hover:text-white transition cursor-pointer text-left">Track DBT & Application Status</button></li>
-                <li><button onClick={() => setShowNoticeModal(true)} className="hover:text-white transition cursor-pointer text-left">Official Government Orders (G.O.)</button></li>
-                <li><button onClick={() => setShowGrievanceModal(true)} className="hover:text-white transition cursor-pointer text-left">Citizen Grievance & Helpdesk</button></li>
+                <li><button onClick={() => setCurrentTab('tracker')} className="hover:text-white transition cursor-pointer text-left">{isTa ? 'DBT & விண்ணப்ப நிலையை கண்காணித்தல்' : 'Track DBT & Application Status'}</button></li>
+                <li><button onClick={() => setShowNoticeModal(true)} className="hover:text-white transition cursor-pointer text-left">{isTa ? 'அதிகாரப்பூர்வ அரசாணைகள் (G.O.)' : 'Official Government Orders (G.O.)'}</button></li>
+                <li><button onClick={() => setShowGrievanceModal(true)} className="hover:text-white transition cursor-pointer text-left">{isTa ? 'குறைதீர்ப்பு & மாணவர் உதவி மையம்' : 'Citizen Grievance & Helpdesk'}</button></li>
                 <li><a href="https://www.pudhumaipenn.tn.gov.in" target="_blank" rel="noreferrer" className="hover:text-white transition">Penkalvi (Pudhumai Penn)</a></li>
                 <li><a href="https://ssp.tn.gov.in" target="_blank" rel="noreferrer" className="hover:text-white transition">TN SSP Post-Matric Portal</a></li>
               </ul>
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Citizen Helplines</h4>
-              <p className="text-[11px] text-slate-400">Toll-free Student Guidance:</p>
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                {isTa ? 'குடிமக்கள் உதவி எண்கள்' : 'Citizen Helplines'}
+              </h4>
+              <p className="text-[11px] text-slate-400">
+                {isTa ? 'மாணவர் இலவச வழிகாட்டல் எண்:' : 'Toll-free Student Guidance:'}
+              </p>
               <p className="text-sm font-bold text-emerald-400">14417 / 1800-425-1333</p>
-              <p className="text-[10px] text-slate-500">Available Mon-Sat 9:00 AM - 6:00 PM</p>
+              <p className="text-[10px] text-slate-500">
+                {isTa ? 'திங்கள் - சனி காலை 9:00 முதல் மாலை 6:00 வரை' : 'Available Mon-Sat 9:00 AM - 6:00 PM'}
+              </p>
             </div>
           </div>
 
           <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-3">
-            <p>© 2026 Government of Tamil Nadu. Department of Higher Education & Tamil Nadu e-Governance Agency (TNeGA). All rights reserved.</p>
+            <p>
+              {isTa 
+                ? '© 2026 தமிழ்நாடு அரசு. உயர்கல்வித் துறை & தமிழ்நாடு மின்-ஆளுமை முகமை (TNeGA). அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.'
+                : '© 2026 Government of Tamil Nadu. Department of Higher Education & Tamil Nadu e-Governance Agency (TNeGA). All rights reserved.'}
+            </p>
             <div className="flex space-x-4">
-              <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
+              <span className="hover:text-slate-400 cursor-pointer">{isTa ? 'தனியுரிமைக் கொள்கை' : 'Privacy Policy'}</span>
               <span>•</span>
-              <span className="hover:text-slate-400 cursor-pointer">Terms of Entitlement</span>
+              <span className="hover:text-slate-400 cursor-pointer">{isTa ? 'சட்ட விதிமுறைகள்' : 'Terms of Entitlement'}</span>
               <span>•</span>
-              <span className="hover:text-slate-400 cursor-pointer">e-District Guidelines</span>
+              <span className="hover:text-slate-400 cursor-pointer">{isTa ? 'மின்-மாவட்ட வழிகாட்டல்' : 'e-District Guidelines'}</span>
             </div>
           </div>
         </div>

@@ -124,10 +124,10 @@ export default function Navbar({
 
             <div>
               <div className="text-[11px] sm:text-xs text-slate-300 font-medium tracking-wide">
-                தமிழ்நாடு அரசு | Government of Tamil Nadu
+                {currentLang === 'ta' ? 'தமிழ்நாடு அரசு • உயர்கல்வித் துறை' : 'தமிழ்நாடு அரசு | Government of Tamil Nadu'}
               </div>
               <h1 className="text-sm sm:text-lg font-bold tracking-tight text-white leading-tight group-hover:text-emerald-300 transition">
-                TN e-Vidya | Scholarship & Welfare Portal
+                {currentLang === 'ta' ? 'தமிழ்நாடு இ-வித்யா | நலத்திட்டம் & கல்வி உதவித்தொகை தளம்' : 'TN e-Vidya | Scholarship & Welfare Portal'}
               </h1>
             </div>
           </div>
@@ -142,10 +142,10 @@ export default function Navbar({
               title="Cloud Database Cluster Status (MongoDB Atlas cluster0.fzucldr & Cloud Firestore). Click to inspect connection."
             >
               <Database size={13} className="text-emerald-400" />
-              <span className="text-[11px] text-emerald-300 font-bold hidden sm:inline">Cloud Cluster</span>
+              <span className="text-[11px] text-emerald-300 font-bold hidden sm:inline">{currentLang === 'ta' ? 'கிளவுட் கிளஸ்டர்' : 'Cloud Cluster'}</span>
               <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span>
-                LIVE
+                {currentLang === 'ta' ? 'நேரலை' : 'LIVE'}
               </span>
             </button>
 
@@ -183,7 +183,9 @@ export default function Navbar({
                 <div className="hidden md:flex items-center space-x-1.5 bg-slate-800/90 px-2.5 py-1 rounded-full border border-slate-700/80">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                   <span className="text-[11px] text-emerald-300 font-medium whitespace-nowrap">
-                    {currentUser?.role === 'admin' ? 'Connected (Admin)' : 'Connected (Student)'}
+                    {currentUser?.role === 'admin' 
+                      ? (currentLang === 'ta' ? 'இணைக்கப்பட்டது (நிர்வாகி)' : 'Connected (Admin)') 
+                      : (currentLang === 'ta' ? 'இணைக்கப்பட்டது (மாணவர்)' : 'Connected (Student)')}
                   </span>
                 </div>
 
@@ -194,7 +196,7 @@ export default function Navbar({
                   title="Switch or Sign In to another account"
                 >
                   <User size={12} />
-                  <span>Switch</span>
+                  <span>{currentLang === 'ta' ? 'மாற்று' : 'Switch'}</span>
                 </button>
 
                 {/* Logout button */}
@@ -214,7 +216,7 @@ export default function Navbar({
                 title="Student / Admin Sign In (உள்நுழைவு)"
               >
                 <LogIn size={13} />
-                <span>Sign In / உள்நுழைவு</span>
+                <span>{currentLang === 'ta' ? 'உள்நுழைவு' : 'Sign In / உள்நுழைவு'}</span>
               </button>
             )}
 
@@ -335,7 +337,7 @@ export default function Navbar({
                 title="Government Administrator Rule Builder & Scheme Configuration"
               >
                 <Sliders size={15} className="text-amber-300" />
-                <span>Admin Rules</span>
+                <span>{currentLang === 'ta' ? 'நிர்வாகி விதிகள்' : 'Admin Rules'}</span>
               </button>
             )}
 
@@ -346,7 +348,7 @@ export default function Navbar({
                 className="px-3 py-1.5 rounded-md flex items-center space-x-1.5 bg-emerald-950/80 text-amber-300 hover:text-white hover:bg-emerald-900 border border-amber-400/40 font-bold transition cursor-pointer"
               >
                 <LogIn size={15} />
-                <span>{t.nav_login || 'Sign In'}</span>
+                <span>{t.nav_login || (currentLang === 'ta' ? 'உள்நுழைவு' : 'Sign In')}</span>
               </button>
             )}
 
@@ -360,7 +362,7 @@ export default function Navbar({
               title="e-Sevai Document Scanner & Live Multi-Field Cross-Verification"
             >
               <QrCode size={13} className="text-amber-300" />
-              <span>e-Sevai சரிபார்</span>
+              <span>{currentLang === 'ta' ? 'இ-சேவை சரிபார்ப்பு' : 'e-Sevai Verify'}</span>
               <span className="bg-amber-400/20 text-amber-300 text-[9px] px-1 py-0.2 rounded font-mono">LIVE</span>
             </button>
 
@@ -370,7 +372,7 @@ export default function Navbar({
               title="Official Government Orders (G.O.) & Gazettes"
             >
               <Bell size={12} className="text-amber-300" />
-              <span>Official Circulars</span>
+              <span>{currentLang === 'ta' ? 'அரசாணைகள்' : 'Official Circulars'}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
             </button>
           </div>

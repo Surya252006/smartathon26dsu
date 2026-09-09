@@ -49,6 +49,8 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
     application_roadmap = []
   } = safeResult;
 
+  const isTa = currentLang === 'ta';
+
   // Modals state (Unconditionally called at component top level)
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
@@ -253,17 +255,29 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
           <div className="space-y-0.5">
             <div className="flex items-center space-x-2">
               <span className="font-bold text-slate-900 text-sm">
-                ✓ Eligibility Evaluated Directly From Your Saved Bio-Data Profile
+                {isTa 
+                  ? '✓ உங்கள் சேமிக்கப்பட்ட பயோடேட்டா சுயவிவரத்திலிருந்து தகுதி நேரடியாக கணக்கிடப்பட்டது'
+                  : '✓ Eligibility Evaluated Directly From Your Saved Bio-Data Profile'}
               </span>
               <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
-                Zero Form Refill
+                {isTa ? 'மீண்டும் படிவம் நிரப்ப தேவையில்லை' : 'Zero Form Refill'}
               </span>
             </div>
             <p className="text-xs text-slate-700">
-              Candidate: <strong>{profile?.full_name || profile?.fullName || currentUser?.profile?.full_name || 'Student Candidate'}</strong> • Community: <strong>{profile?.community || 'BC'}</strong> • Course: <strong>{profile?.current_course || profile?.currentCourse || 'Higher Education'}</strong> • District: <strong>{profile?.district || 'Tamil Nadu'}</strong> • Income: <strong>₹{Number(profile?.annual_income || profile?.annualIncome || 140000).toLocaleString('en-IN')}/yr</strong>
+              {isTa ? (
+                <>
+                  மாணவர்: <strong>{profile?.full_name || profile?.fullName || currentUser?.profile?.full_name || 'மாணவர்'}</strong> • சமூகப் பிரிவு: <strong>{profile?.community || 'BC'}</strong> • படிப்பு: <strong>{profile?.current_course || profile?.currentCourse || 'உயர்கல்வி'}</strong> • மாவட்டம்: <strong>{profile?.district || 'தமிழ்நாடு'}</strong> • ஆண்டு வருமானம்: <strong>₹{Number(profile?.annual_income || profile?.annualIncome || 140000).toLocaleString('en-IN')}/ஆண்டு</strong>
+                </>
+              ) : (
+                <>
+                  Candidate: <strong>{profile?.full_name || profile?.fullName || currentUser?.profile?.full_name || 'Student Candidate'}</strong> • Community: <strong>{profile?.community || 'BC'}</strong> • Course: <strong>{profile?.current_course || profile?.currentCourse || 'Higher Education'}</strong> • District: <strong>{profile?.district || 'Tamil Nadu'}</strong> • Income: <strong>₹{Number(profile?.annual_income || profile?.annualIncome || 140000).toLocaleString('en-IN')}/yr</strong>
+                </>
+              )}
             </p>
             <p className="text-[11px] text-slate-500">
-              All 18+ Tamil Nadu welfare rules and collision matrices were executed directly against your stored credentials.
+              {isTa 
+                ? 'அனைத்து 18+ தமிழ்நாடு நலத்திட்ட விதிகள் மற்றும் முரண்பாட்டு விதிகள் உங்கள் சேமிக்கப்பட்ட விவரங்களின்படி இயக்கப்பட்டது.'
+                : 'All 18+ Tamil Nadu welfare rules and collision matrices were executed directly against your stored credentials.'}
             </p>
           </div>
         </div>
@@ -275,7 +289,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition cursor-pointer shadow-xs border border-emerald-600 shrink-0 self-start md:self-auto"
           >
             <Edit3 size={13} />
-            <span>Edit Bio-Data in Profile Form</span>
+            <span>{isTa ? 'பயோடேட்டாவை திருத்து' : 'Edit Bio-Data in Profile Form'}</span>
           </button>
         )}
       </div>
@@ -293,10 +307,10 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             </div>
             <div>
               <div className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold">
-                Intelligent Decision Support System • Government of Tamil Nadu
+                {isTa ? 'அறிவார்ந்த முடிவு ஆதரவு அமைப்பு • தமிழ்நாடு அரசு' : 'Intelligent Decision Support System • Government of Tamil Nadu'}
               </div>
               <h1 className="text-base sm:text-xl font-black tracking-tight">
-                Your Scholarship Match & Optimization Ledger
+                {isTa ? 'உங்கள் கல்வி உதவித்தொகை தகுதி & உகந்த ஒதுக்கீடு பட்டியல்' : 'Your Scholarship Match & Optimization Ledger'}
               </h1>
             </div>
           </div>
@@ -304,11 +318,11 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
           {/* Match Counters (Section 8: "8 Scholarships Matched • 3 Recommended • ₹35,000 Max Benefit") */}
           <div className="flex items-center space-x-2 bg-slate-800/80 px-3.5 py-1.5 rounded-lg border border-slate-700 text-xs">
             <span className="text-slate-300 font-medium">
-              <strong className="text-white">{totalMatchedCount}</strong> Schemes Matched
+              <strong className="text-white">{totalMatchedCount}</strong> {isTa ? 'திட்டங்கள் பொருந்தின' : 'Schemes Matched'}
             </span>
             <span className="text-slate-500">•</span>
             <span className="text-emerald-400 font-medium">
-              <strong className="text-emerald-300">{recommended_bundle.length}</strong> Recommended
+              <strong className="text-emerald-300">{recommended_bundle.length}</strong> {isTa ? 'பரிந்துரைக்கப்பட்டவை' : 'Recommended'}
             </span>
           </div>
         </div>
@@ -321,34 +335,42 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             <div className="lg:col-span-7 space-y-4">
               <div>
                 <span className="text-[11px] font-bold text-[#006a4e] uppercase tracking-wider block mb-1">
-                  Verified Candidate Profile
+                  {isTa ? 'சரிபார்க்கப்பட்ட மாணவர் சுயவிவரம்' : 'Verified Candidate Profile'}
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-                  {profile?.full_name || currentUser?.profile?.full_name || 'Student Candidate'}
+                  {profile?.full_name || currentUser?.profile?.full_name || (isTa ? 'மாணவர்' : 'Student Candidate')}
                 </h2>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Academic Degree: <strong className="text-slate-800">{profile?.current_course || 'Engineering / Higher Education'}</strong> in <strong className="text-slate-800">{profile?.district || 'Tamil Nadu'}</strong>.
+                  {isTa ? (
+                    <>
+                      படிப்பு நிலை: <strong className="text-slate-800">{profile?.current_course || 'பொறியியல் / உயர்கல்வி'}</strong> ({profile?.district || 'தமிழ்நாடு'}).
+                    </>
+                  ) : (
+                    <>
+                      Academic Degree: <strong className="text-slate-800">{profile?.current_course || 'Engineering / Higher Education'}</strong> in <strong className="text-slate-800">{profile?.district || 'Tamil Nadu'}</strong>.
+                    </>
+                  )}
                 </p>
               </div>
 
               {/* Data Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Community:</span>
-                  <strong className="text-slate-800 font-bold">{profile?.community || 'BC'} Category</strong>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">{isTa ? 'சமூகப் பிரிவு:' : 'Community:'}</span>
+                  <strong className="text-slate-800 font-bold">{profile?.community || 'BC'} {isTa ? 'பிரிவு' : 'Category'}</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Family Income:</span>
-                  <strong className="text-slate-800 font-mono font-bold">₹{Number(profile?.annual_income || 140000).toLocaleString('en-IN')}/yr</strong>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">{isTa ? 'குடும்ப வருமானம்:' : 'Family Income:'}</span>
+                  <strong className="text-slate-800 font-mono font-bold">₹{Number(profile?.annual_income || 140000).toLocaleString('en-IN')}/{isTa ? 'ஆண்டு' : 'yr'}</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">12th Score:</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">{isTa ? '12-ஆம் மதிப்பெண்:' : '12th Score:'}</span>
                   <strong className="text-slate-800 font-mono font-bold">{profile?.board_percentage || '88.5'}%</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Schooling:</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">{isTa ? 'பள்ளி வகை:' : 'Schooling:'}</span>
                   <strong className="text-slate-800 truncate block font-bold">
-                    {profile?.schooling_type === 'tn_govt_school_6_to_12' ? 'Govt (6-12)' : 'General'}
+                    {profile?.schooling_type === 'tn_govt_school_6_to_12' ? (isTa ? 'அரசுப் பள்ளி (6-12)' : 'Govt (6-12)') : (isTa ? 'பொது' : 'General')}
                   </strong>
                 </div>
               </div>
@@ -358,10 +380,10 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             <div className="lg:col-span-5 bg-white p-6 rounded-2xl border-2 border-[#006a4e] text-slate-900 shadow-xs relative overflow-hidden">
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="font-bold text-[#006a4e] uppercase tracking-wider text-[11px]">
-                  Total Optimized Financial Benefit
+                  {isTa ? 'மொத்த உகந்த நிதி உதவி' : 'Total Optimized Financial Benefit'}
                 </span>
                 <span className="bg-emerald-100 text-emerald-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-300">
-                  MWIS Optimal Bundle
+                  {isTa ? 'MWIS சிறந்த தொகுப்பு' : 'MWIS Optimal Bundle'}
                 </span>
               </div>
 
@@ -369,15 +391,15 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 <span className="text-3xl sm:text-5xl font-black text-slate-900 font-mono tracking-tight">
                   ₹{total_financial_value.toLocaleString('en-IN')}
                 </span>
-                <span className="text-sm text-slate-500 font-semibold">/ Year</span>
+                <span className="text-sm text-slate-500 font-semibold">{isTa ? '/ ஆண்டு' : '/ Year'}</span>
               </div>
 
               <div className="mt-4 pt-3.5 border-t border-slate-100 text-[11px] text-slate-600 flex items-center justify-between">
                 <span className="flex items-center space-x-1 text-[#006a4e] font-bold">
                   <CheckCircle2 size={14} />
-                  <span>Maximum Valid Combination</span>
+                  <span>{isTa ? 'அதிகபட்ச செல்லுபடியாகும் சேர்க்கை' : 'Maximum Valid Combination'}</span>
                 </span>
-                <span className="font-semibold text-slate-500 text-[10px]">Zero Dual-Claim Collision</span>
+                <span className="font-semibold text-slate-500 text-[10px]">{isTa ? 'இரட்டை கோரிக்கை முரண்பாடு இல்லை' : 'Zero Dual-Claim Collision'}</span>
               </div>
             </div>
 
@@ -396,7 +418,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 ) : (
                   <Download size={14} className="mr-1.5" />
                 )}
-                <span>Download My Scholarship Guide (PDF)</span>
+                <span>{isTa ? 'உதவித்தொகை வழிகாட்டியை பதிவிறக்கு (PDF)' : 'Download My Scholarship Guide (PDF)'}</span>
               </button>
 
               <button 
@@ -404,7 +426,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 className="flex items-center bg-[#0f2942] hover:bg-[#1a3d5f] active:scale-[0.99] text-white font-semibold px-4 py-2.5 rounded-xl shadow-xs transition text-xs cursor-pointer"
               >
                 <UploadCloud size={14} className="mr-1.5 text-emerald-400" />
-                <span>e-Sevai Document OCR Scanner</span>
+                <span>{isTa ? 'இ-சேவை ஆவண OCR ஸ்கேனர்' : 'e-Sevai Document OCR Scanner'}</span>
               </button>
 
               <button 
@@ -412,7 +434,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 className="flex items-center bg-white hover:bg-slate-50 active:scale-[0.99] border border-slate-300 text-slate-800 font-bold px-4 py-2.5 rounded-xl transition text-xs cursor-pointer"
               >
                 <Bot size={14} className="mr-1.5 text-[#006a4e]" />
-                <span>Ask AI Advisor (தமிழ் / English)</span>
+                <span>{isTa ? 'AI ஆலோசகரிடம் கேளுங்கள்' : 'Ask AI Advisor (தமிழ் / English)'}</span>
               </button>
             </div>
 
@@ -422,7 +444,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
               className="text-xs font-bold text-emerald-800 hover:text-emerald-950 underline cursor-pointer ml-auto flex items-center space-x-1"
             >
               <Edit3 size={12} className="mr-1" />
-              <span>Edit Bio-Data in Profile Form</span>
+              <span>{isTa ? 'பயோடேட்டாவை திருத்து' : 'Edit Bio-Data in Profile Form'}</span>
             </button>
           </div>
         </div>
@@ -440,15 +462,15 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-bold text-slate-900">
-                Why We Recommended This Combination
+                {isTa ? 'இந்த சேர்க்கையை நாங்கள் பரிந்துரைத்ததற்கான காரணம்' : 'Why We Recommended This Combination'}
               </h2>
               <p className="text-[11px] text-slate-500">
-                Transparent rule-based decision explanation • No black-box algorithms
+                {isTa ? 'வெளிப்படையான விதிமுறை அடிப்படையிலான முடிவு விளக்கம் • சட்டபூர்வ வழிகாட்டல்' : 'Transparent rule-based decision explanation • No black-box algorithms'}
               </p>
             </div>
           </div>
           <span className="text-[10px] font-bold bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full border border-emerald-300">
-            Explainable AI Decision
+            {isTa ? 'விளக்கக்கூடிய AI முடிவு' : 'Explainable AI Decision'}
           </span>
         </div>
 
@@ -487,7 +509,11 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 <div key={idx} className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 flex items-start space-x-2">
                   <CheckCircle2 size={15} className="text-[#006a4e] mt-0.5 shrink-0" />
                   <span>
-                    <strong>✓ You are eligible for {s.name} (+₹{s.financial_value.toLocaleString('en-IN')}/yr):</strong> Satisfies your academic degree ({profile?.current_course || 'Engineering'}) and community criteria.
+                    <strong>
+                      {isTa 
+                        ? `✓ ${s.name_ta || s.name} (+₹${s.financial_value.toLocaleString('en-IN')}/ஆண்டு) தகுதி உள்ளது:` 
+                        : `✓ You are eligible for ${s.name} (+₹${s.financial_value.toLocaleString('en-IN')}/yr):`}
+                    </strong> {isTa ? `உங்கள் படிப்பு (${profile?.current_course || 'உயர்கல்வி'}) மற்றும் சமூகப் பிரிவு விதிகளுக்கு உட்பட்டது.` : `Satisfies your academic degree (${profile?.current_course || 'Engineering'}) and community criteria.`}
                   </span>
                 </div>
               ))}
@@ -495,14 +521,16 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 <div key={idx} className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 flex items-start space-x-2">
                   <AlertTriangle size={15} className="text-amber-600 mt-0.5 shrink-0" />
                   <span>
-                    <strong>⚠ {exc.scheme_name} was not selected:</strong> {exc.reason}
+                    <strong>
+                      {isTa ? `⚠ ${exc.scheme_name} தேர்ந்தெடுக்கப்படவில்லை:` : `⚠ ${exc.scheme_name} was not selected:`}
+                    </strong> {exc.reason}
                   </span>
                 </div>
               ))}
               <div className="p-3.5 bg-[#0f2942] text-white rounded-lg flex items-center space-x-2">
                 <IndianRupee size={16} className="text-emerald-400 shrink-0" />
                 <span>
-                  <strong>💰 Best Combination:</strong> [{recommended_bundle.map(s => s.name.split(' (')[0]).join(' + ')}] delivers the highest valid estimated benefit: <strong>₹{total_financial_value.toLocaleString('en-IN')}/year</strong>.
+                  <strong>{isTa ? '💰 சிறந்த தொகுப்பு:' : '💰 Best Combination:'}</strong> {isTa ? `[${recommended_bundle.map(s => (s.name_ta || s.name).split(' (')[0]).join(' + ')}] அதிகபட்ச சட்டபூர்வ உதவித்தொகை ₹${total_financial_value.toLocaleString('en-IN')}/ஆண்டு வழங்குகிறது.` : `[${recommended_bundle.map(s => s.name.split(' (')[0]).join(' + ')}] delivers the highest valid estimated benefit: ₹${total_financial_value.toLocaleString('en-IN')}/year.`}
                 </span>
               </div>
             </div>
@@ -518,19 +546,25 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
           <div className="flex items-center space-x-2">
             <ShieldCheck className="text-[#006a4e]" size={20} />
             <h2 className="text-sm sm:text-base font-bold text-slate-900">
-              Recommended Scholarship Combination ({recommended_bundle.length} Compatible Schemes)
+              {isTa 
+                ? `பரிந்துரைக்கப்பட்ட கல்வி உதவித்தொகை சேர்க்கை (${recommended_bundle.length} இணக்கமான திட்டங்கள்)` 
+                : `Recommended Scholarship Combination (${recommended_bundle.length} Compatible Schemes)`}
             </h2>
           </div>
           <span className="text-xs text-[#006a4e] font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            Validated by MWIS Solver
+            {isTa ? 'MWIS கணிப்பான் மூலம் சரிபார்க்கப்பட்டது' : 'Validated by MWIS Solver'}
           </span>
         </div>
 
         {recommended_bundle.length === 0 ? (
           <div className="p-10 text-center text-slate-500">
             <AlertTriangle className="mx-auto mb-2 text-amber-500" size={36} />
-            <p className="text-sm font-bold text-slate-700">No qualifying schemes matched the strict parameters.</p>
-            <p className="text-xs text-slate-500 mt-1">Try modifying course stream or community credentials.</p>
+            <p className="text-sm font-bold text-slate-700">
+              {isTa ? 'கடுமையான நிபந்தனைகளுக்கு எந்த திட்டமும் பொருந்தவில்லை.' : 'No qualifying schemes matched the strict parameters.'}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              {isTa ? 'படிப்பு விவரம் அல்லது சமூகப் பிரிவை மாற்றி முயற்சிக்கவும்.' : 'Try modifying course stream or community credentials.'}
+            </p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -546,50 +580,58 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                     <div className="flex-1 space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-base font-bold text-slate-900">
-                          {scheme.name}
+                          {isTa ? (scheme.name_ta || scheme.name) : scheme.name}
                         </h3>
                         <span className="text-xs font-mono font-black px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-900 border border-emerald-300">
-                          ₹{scheme.financial_value.toLocaleString('en-IN')}/year
+                          ₹{scheme.financial_value.toLocaleString('en-IN')}/{isTa ? 'ஆண்டு' : 'year'}
                         </span>
                         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                           {scheme.category?.replace(/_/g, ' ')}
                         </span>
                       </div>
 
-                      {scheme.name_ta && (
+                      {scheme.name_ta && !isTa && (
                         <p className="text-xs text-slate-500 font-medium">
                           {scheme.name_ta}
                         </p>
                       )}
 
                       <p className="text-xs text-slate-600 leading-relaxed">
-                        {scheme.description}
+                        {isTa ? (scheme.description_ta || scheme.description) : scheme.description}
                       </p>
 
                       {/* Benefit Breakdown */}
                       <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs grid grid-cols-1 sm:grid-cols-3 gap-2 text-slate-700">
                         {breakdown.tuition_waiver > 0 && (
                           <div>
-                            <span className="text-[10px] text-slate-400 block uppercase font-semibold">Tuition Fee Concession:</span>
+                            <span className="text-[10px] text-slate-400 block uppercase font-semibold">
+                              {isTa ? 'கல்விக் கட்டண சலுகை:' : 'Tuition Fee Concession:'}
+                            </span>
                             <strong className="text-slate-900 font-mono font-bold">₹{breakdown.tuition_waiver.toLocaleString('en-IN')}</strong>
                           </div>
                         )}
                         {breakdown.maintenance_stipend > 0 && (
                           <div>
-                            <span className="text-[10px] text-slate-400 block uppercase font-semibold">Direct Benefit Transfer (DBT):</span>
+                            <span className="text-[10px] text-slate-400 block uppercase font-semibold">
+                              {isTa ? 'நேரடி பணப்பரிமாற்றம் (DBT):' : 'Direct Benefit Transfer (DBT):'}
+                            </span>
                             <strong className="text-slate-900 font-mono font-bold">₹{breakdown.maintenance_stipend.toLocaleString('en-IN')}</strong>
                           </div>
                         )}
                         <div>
-                          <span className="text-[10px] text-slate-400 block uppercase font-semibold">Application Deadline:</span>
-                          <strong className="text-slate-900 font-bold">{scheme.deadline || '31st October 2026'}</strong>
+                          <span className="text-[10px] text-slate-400 block uppercase font-semibold">
+                            {isTa ? 'கடைசி தேதி:' : 'Application Deadline:'}
+                          </span>
+                          <strong className="text-slate-900 font-bold">{scheme.deadline || (isTa ? '31 அக்டோபர் 2026' : '31st October 2026')}</strong>
                         </div>
                       </div>
 
                       {/* Required Verification Documents */}
                       {scheme.required_docs && scheme.required_docs.length > 0 && (
                         <div className="text-xs text-slate-600">
-                          <span className="font-bold text-slate-700 block mb-1">Required Documents:</span>
+                          <span className="font-bold text-slate-700 block mb-1">
+                            {isTa ? 'தேவைப்படும் ஆவணங்கள்:' : 'Required Documents:'}
+                          </span>
                           <div className="flex flex-wrap gap-1.5">
                             {scheme.required_docs.map((doc, dIdx) => (
                               <span key={dIdx} className="bg-white border border-slate-200 text-slate-700 text-[11px] px-2.5 py-0.5 rounded-md">
@@ -605,9 +647,9 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                     <div className="w-full lg:w-64 bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 shrink-0">
                       <div>
                         <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-500 font-semibold">Eligibility Status:</span>
+                          <span className="text-slate-500 font-semibold">{isTa ? 'தகுதி நிலை:' : 'Eligibility Status:'}</span>
                           <strong className="text-[#006a4e] font-bold">
-                            {prob.level === 'Statutory Entitlement' ? '100% Entitled' : `${prob.score}% Probability`}
+                            {prob.level === 'Statutory Entitlement' ? (isTa ? '100% தகுதி உறுதி' : '100% Entitled') : `${prob.score}% ${isTa ? 'வாய்ப்பு' : 'Probability'}`}
                           </strong>
                         </div>
                         <div className="w-full bg-slate-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
@@ -617,14 +659,16 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                           ></div>
                         </div>
                         <p className="text-[10px] text-slate-500 mt-1">
-                          {prob.explanation || "Statutory state entitlement."}
+                          {isTa ? 'அரசாணை மற்றும் பட்ஜெட் ஆதரவு பெற்ற சட்டபூர்வ உரிமை.' : (prob.explanation || "Statutory state entitlement.")}
                         </p>
                       </div>
 
                       <div className="pt-2 border-t border-slate-200">
-                        <span className="text-[10px] text-slate-400 block uppercase font-semibold">Official Application Gateway:</span>
+                        <span className="text-[10px] text-slate-400 block uppercase font-semibold">
+                          {isTa ? 'அதிகாரப்பூர்வ விண்ணப்ப தளம்:' : 'Official Application Gateway:'}
+                        </span>
                         <div className="flex items-center justify-between mt-1">
-                          <strong className="text-xs text-slate-800 truncate">{scheme.portal_name || 'Departmental Portal'}</strong>
+                          <strong className="text-xs text-slate-800 truncate">{scheme.portal_name || (isTa ? 'துறை இணையதளம்' : 'Departmental Portal')}</strong>
                           {scheme.portal_url && (
                             <a
                               href={scheme.portal_url}
@@ -638,11 +682,11 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                                   district: profile?.district || currentUser?.profile?.district || 'Chennai',
                                   portal_name: scheme.portal_name
                                 }).catch(err => console.warn("App cluster write notice:", err));
-                                showToast(`Application initiated for ${scheme.name}. Saved to Cloud Cluster!`);
+                                showToast(isTa ? `${scheme.name} விண்ணப்பம் தொடங்கப்பட்டது. கிளவுட் கிளஸ்டரில் சேமிக்கப்பட்டது!` : `Application initiated for ${scheme.name}. Saved to Cloud Cluster!`);
                               }}
                               className="text-xs font-bold text-[#006a4e] hover:underline flex items-center shrink-0 ml-2"
                             >
-                              <span>Apply</span>
+                              <span>{isTa ? 'விண்ணப்பி' : 'Apply'}</span>
                               <ExternalLink size={12} className="ml-1" />
                             </a>
                           )}
@@ -666,14 +710,14 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
           <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
             <div>
               <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wider block">
-                Section 9 • Alternative Valid Options
+                {isTa ? 'பிரிவு 9 • மாற்று செல்லுபடியாகும் தேர்வுகள்' : 'Section 9 • Alternative Valid Options'}
               </span>
               <h2 className="text-sm sm:text-base font-bold text-slate-900">
-                Other Permitted Scholarship Combinations
+                {isTa ? 'பிற அனுமதிக்கப்பட்ட உதவித்தொகை சேர்க்கைகள்' : 'Other Permitted Scholarship Combinations'}
               </h2>
             </div>
             <span className="text-xs text-slate-500 font-mono">
-              {alternative_options.length} Valid Combinations Computed
+              {alternative_options.length} {isTa ? 'செல்லுபடியாகும் தேர்வுகள் கணக்கிடப்பட்டன' : 'Valid Combinations Computed'}
             </span>
           </div>
 
@@ -692,26 +736,28 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-700">
-                      Option {opt.option_number}
+                      {isTa ? `தேர்வு ${opt.option_number}` : `Option ${opt.option_number}`}
                     </span>
                     {isBest ? (
                       <span className="text-[9px] font-black uppercase tracking-wide bg-[#006a4e] text-white px-2 py-0.5 rounded-full">
-                        BEST FINANCIAL BENEFIT
+                        {isTa ? 'அதிகபட்ச நிதி உதவி' : 'BEST FINANCIAL BENEFIT'}
                       </span>
                     ) : (
                       <span className="text-[9px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
-                        Alternative
+                        {isTa ? 'மாற்றுத் தேர்வு' : 'Alternative'}
                       </span>
                     )}
                   </div>
 
                   <div className="text-2xl font-black text-slate-900 font-mono my-2">
                     ₹{opt.total_value.toLocaleString('en-IN')}
-                    <span className="text-xs text-slate-500 font-normal"> / year</span>
+                    <span className="text-xs text-slate-500 font-normal">{isTa ? ' / ஆண்டு' : ' / year'}</span>
                   </div>
 
                   <div className="space-y-1 mt-3 pt-3 border-t border-slate-200/80 text-xs">
-                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Includes Schemes:</span>
+                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">
+                      {isTa ? 'உள்ளடக்கிய திட்டங்கள்:' : 'Includes Schemes:'}
+                    </span>
                     {opt.schemes?.map((s, sIdx) => (
                       <div key={sIdx} className="flex justify-between items-center text-[11px] text-slate-700">
                         <span className="truncate pr-1">• {s.name.split(' (')[0]}</span>
@@ -734,11 +780,11 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
           <div className="flex items-center space-x-2">
             <ArrowUpDown size={16} className="text-[#006a4e]" />
             <h2 className="text-sm sm:text-base font-bold text-slate-900">
-              Side-by-Side Scheme Comparison Matrix
+              {isTa ? 'திட்டங்களின் நேரடி ஒப்பீட்டு அட்டவணை' : 'Side-by-Side Scheme Comparison Matrix'}
             </h2>
           </div>
           <span className="text-xs text-slate-400">
-            Compare Benefit, Renewal & Document Burden
+            {isTa ? 'நிதி உதவி, புதுப்பித்தல் மற்றும் ஆவண தேவைகளை ஒப்பிடுக' : 'Compare Benefit, Renewal & Document Burden'}
           </span>
         </div>
 
@@ -746,25 +792,25 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-100/80 text-slate-700 font-bold border-b border-slate-200">
-                <th className="p-3">Comparison Feature</th>
+                <th className="p-3">{isTa ? 'ஒப்பீட்டு அம்சம்' : 'Comparison Feature'}</th>
                 {recommended_bundle.map((s, idx) => (
                   <th key={idx} className="p-3 min-w-[200px] text-[#006a4e]">
-                    {s.name.split(' (')[0]}
+                    {isTa ? (s.name_ta || s.name).split(' (')[0] : s.name.split(' (')[0]}
                   </th>
                 ))}
                 {excluded_schemes?.slice(0, 1).map((exc, idx) => (
                   <th key={`exc-${idx}`} className="p-3 min-w-[200px] text-slate-500 line-through">
-                    {exc.scheme_name?.split(' (')[0]} (Excluded)
+                    {exc.scheme_name?.split(' (')[0]} ({isTa ? 'விலக்கப்பட்டது' : 'Excluded'})
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               <tr className="hover:bg-slate-50/50">
-                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">Annual Benefit</td>
+                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">{isTa ? 'ஆண்டு நிதி உதவி' : 'Annual Benefit'}</td>
                 {recommended_bundle.map((s, idx) => (
                   <td key={idx} className="p-3 font-mono font-bold text-emerald-800">
-                    ₹{s.financial_value.toLocaleString('en-IN')} / year
+                    ₹{s.financial_value.toLocaleString('en-IN')} /{isTa ? 'ஆண்டு' : 'year'}
                   </td>
                 ))}
                 {excluded_schemes?.slice(0, 1).map((exc, idx) => (
@@ -775,71 +821,71 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
               </tr>
 
               <tr className="hover:bg-slate-50/50">
-                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">Eligibility Status</td>
+                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">{isTa ? 'தகுதி நிலை' : 'Eligibility Status'}</td>
                 {recommended_bundle.map((s, idx) => (
                   <td key={idx} className="p-3 text-[#006a4e] font-bold">
-                    ✓ 100% Eligible
+                    {isTa ? '✓ 100% தகுதி' : '✓ 100% Eligible'}
                   </td>
                 ))}
                 {excluded_schemes?.slice(0, 1).map((exc, idx) => (
                   <td key={`exc-el-${idx}`} className="p-3 text-amber-700 font-semibold">
-                    ⚠ Collides with selected bundle
+                    {isTa ? '⚠ தேர்ந்தெடுக்கப்பட்ட தொகுப்புடன் மோதல்' : '⚠ Collides with selected bundle'}
                   </td>
                 ))}
               </tr>
 
               <tr className="hover:bg-slate-50/50">
-                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">Conflict Collision</td>
+                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">{isTa ? 'முரண்பாடு / மோதல்' : 'Conflict Collision'}</td>
                 {recommended_bundle.map((s, idx) => (
                   <td key={idx} className="p-3 text-emerald-700 font-medium">
-                    No (Fully Permitted)
+                    {isTa ? 'இல்லை (முழு அனுமதி)' : 'No (Fully Permitted)'}
                   </td>
                 ))}
                 {excluded_schemes?.slice(0, 1).map((exc, idx) => (
                   <td key={`exc-cf-${idx}`} className="p-3 text-red-600 font-bold">
-                    Yes (Mutual Exclusion)
+                    {isTa ? 'ஆம் (இருமுறை சலுகை விலக்கு)' : 'Yes (Mutual Exclusion)'}
                   </td>
                 ))}
               </tr>
 
               <tr className="hover:bg-slate-50/50">
-                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">Renewal Conditions</td>
+                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">{isTa ? 'புதுப்பித்தல் நிபந்தனை' : 'Renewal Conditions'}</td>
                 {recommended_bundle.map((s, idx) => (
                   <td key={idx} className="p-3 text-slate-600">
-                    {s.renewal || 'Annual verification'}
+                    {isTa ? 'ஆண்டுதோறும் கல்லூரி சரிபார்ப்பு' : (s.renewal || 'Annual verification')}
                   </td>
                 ))}
                 {excluded_schemes?.slice(0, 1).map((exc, idx) => (
                   <td key={`exc-rn-${idx}`} className="p-3 text-slate-400">
-                    Semester passing
+                    {isTa ? 'செமஸ்டர் தேர்ச்சி' : 'Semester passing'}
                   </td>
                 ))}
               </tr>
 
               <tr className="hover:bg-slate-50/50">
-                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">Mandatory Documents</td>
+                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">{isTa ? 'கட்டாய ஆவணங்கள்' : 'Mandatory Documents'}</td>
                 {recommended_bundle.map((s, idx) => (
                   <td key={idx} className="p-3 font-bold text-slate-700">
-                    {s.required_docs?.length || 4} Certificates
+                    {s.required_docs?.length || 4} {isTa ? 'சான்றிதழ்கள்' : 'Certificates'}
                   </td>
                 ))}
                 {excluded_schemes?.slice(0, 1).map((exc, idx) => (
                   <td key={`exc-doc-${idx}`} className="p-3 text-slate-400">
-                    4 Certificates
+                    4 {isTa ? 'சான்றிதழ்கள்' : 'Certificates'}
                   </td>
                 ))}
               </tr>
 
               <tr className="hover:bg-slate-50/50">
-                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">Application Portal</td>
+                <td className="p-3 font-bold text-slate-800 bg-slate-50/50">{isTa ? 'விண்ணப்ப தளம்' : 'Application Portal'}</td>
                 {recommended_bundle.map((s, idx) => (
                   <td key={idx} className="p-3 text-slate-800 font-semibold">
-                    {s.portal_name || 'Online Portal'}
+                    {s.portal_name || (isTa ? 'இணைய தளம்' : 'Online Portal')}
                   </td>
                 ))}
                 {excluded_schemes?.slice(0, 1).map((exc, idx) => (
                   <td key={`exc-prt-${idx}`} className="p-3 text-slate-400">
-                    National Scholarship Portal
+                    {isTa ? 'தேசிய கல்வி உதவித்தொகை தளம் (NSP)' : 'National Scholarship Portal'}
                   </td>
                 ))}
               </tr>
@@ -855,10 +901,10 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
         <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wider block">
-              Section 13 • Document Readiness Tracker
+              {isTa ? 'பிரிவு 13 • ஆவண தயார்நிலை கண்காணிப்பான்' : 'Section 13 • Document Readiness Tracker'}
             </span>
             <h2 className="text-sm sm:text-base font-bold text-slate-900">
-              Documents You May Need (Tailored to Recommended Schemes)
+              {isTa ? 'உங்களுக்கு தேவைப்படும் ஆவணங்கள் (பரிந்துரைக்கப்பட்ட திட்டங்களின்படி)' : 'Documents You May Need (Tailored to Recommended Schemes)'}
             </h2>
           </div>
 
@@ -866,13 +912,15 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
           <div className="flex items-center space-x-2 bg-emerald-50 px-3.5 py-1.5 rounded-xl border border-emerald-200">
             <FileCheck2 size={16} className="text-[#006a4e]" />
             <span className="text-xs font-bold text-[#006a4e]">
-              {readyCount} / {consolidated_docs.length || 4} documents ready
+              {readyCount} / {consolidated_docs.length || 4} {isTa ? 'ஆவணங்கள் தயார்' : 'documents ready'}
             </span>
           </div>
         </div>
 
         <p className="text-xs text-slate-600 leading-relaxed">
-          Only documents required for your recommended scholarship combination are listed below. Click the checkboxes as you prepare and scan your certificates:
+          {isTa 
+            ? 'உங்கள் பரிந்துரைக்கப்பட்ட கல்வி உதவித்தொகை சேர்க்கைக்கு தேவையான ஆவணங்கள் மட்டுமே கீழே பட்டியலிடப்பட்டுள்ளன. நீங்கள் சான்றிதழ்களை தயார் செய்யும்போது தேர்வுப் பெட்டிகளை கிளிக் செய்யவும்:'
+            : 'Only documents required for your recommended scholarship combination are listed below. Click the checkboxes as you prepare and scan your certificates:'}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -906,7 +954,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                   </span>
                   {docItem.required_by && (
                     <span className="text-[10px] text-slate-400 block mt-0.5">
-                      Needed for: {docItem.required_by.join(', ')}
+                      {isTa ? 'தேவைப்படும் திட்டம்:' : 'Needed for:'} {docItem.required_by.join(', ')}
                     </span>
                   )}
                 </div>
@@ -923,21 +971,31 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
         <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wider block">
-              Section 11 • Chronological Application Plan
+              {isTa ? 'பிரிவு 11 • காலவரிசை விண்ணப்பத் திட்டம்' : 'Section 11 • Chronological Application Plan'}
             </span>
             <h2 className="text-sm sm:text-base font-bold text-slate-900">
-              Your 7-Step Application Roadmap
+              {isTa ? 'உங்கள் 7-படி விண்ணப்ப வழிகாட்டி' : 'Your 7-Step Application Roadmap'}
             </h2>
           </div>
 
           <div className="bg-blue-50 text-blue-900 px-3 py-1 rounded-lg border border-blue-200 text-[11px] font-medium">
-            Note: Scholarship Matching is complete. Applications must be submitted on official portals.
+            {isTa 
+              ? 'குறிப்பு: தகுதி பொருத்தம் முடிந்தது. விண்ணப்பங்களை அதிகாரப்பூர்வ தளங்களில் சமர்ப்பிக்க வேண்டும்.' 
+              : 'Note: Scholarship Matching is complete. Applications must be submitted on official portals.'}
           </div>
         </div>
 
         {/* 7-Step Roadmap Timeline */}
         <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
-          {[
+          {(isTa ? [
+            { step: 1, title: "ஆவணங்கள் தயார்", desc: "இ-சேவை சான்றிதழ்கள், மதிப்பெண் சான்றிதழ், ஆதார் சேகரிக்கவும்." },
+            { step: 2, title: "வலைத்தளம் செல்லுதல்", desc: "அதிகாரப்பூர்வ அரசு விண்ணப்ப இணையதளத்தை அணுகவும்." },
+            { step: 3, title: "பதிவு / உள்நுழைவு", desc: "EMIS, ஆதார் அல்லது சேர்க்கை எண் மூலம் உள்நுழைக." },
+            { step: 4, title: "விவரங்களை நிரப்புதல்", desc: "சரிபார்க்கப்பட்ட திட்டத்தைத் தேர்ந்தெடுத்து வங்கிக் கணக்கு வழங்கவும்." },
+            { step: 5, title: "ஆவண பதிவேற்றம்", desc: "சான்றிதழ்களின் டிஜிட்டல் நகல்களை பதிவேற்றவும்." },
+            { step: 6, title: "விண்ணப்ப சமர்ப்பிப்பு", desc: "விவரங்களை உறுதிசெய்து ஒப்புதல் ரசீதை பெறவும்." },
+            { step: 7, title: "DBT கண்காணிப்பு", desc: "அதிகாரி ஒப்புதல் மற்றும் வங்கிக் கணக்கு வரவை கண்காணிக்கவும்." }
+          ] : [
             { step: 1, title: "Prepare Docs", desc: "Gather e-Sevai certificates, marksheet, and Aadhaar." },
             { step: 2, title: "Visit Portal", desc: "Access official state application website." },
             { step: 3, title: "Register / Login", desc: "Authenticate via EMIS, Aadhaar, or TNEA ID." },
@@ -945,7 +1003,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             { step: 5, title: "Upload Files", desc: "Attach verified digital copies of certificates." },
             { step: 6, title: "Submit Form", desc: "Review declaration and generate acknowledgment." },
             { step: 7, title: "Track DBT", desc: "Follow nodal officer approval and DBT bank credit." }
-          ].map((item) => (
+          ]).map((item) => (
             <div key={item.step} className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 text-center">
               <div className="w-6 h-6 rounded-full bg-[#006a4e] text-white text-[11px] font-bold mx-auto flex items-center justify-center">
                 {item.step}
@@ -964,33 +1022,35 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
         <div className="flex items-center space-x-2">
           <Lock size={16} className="text-[#006a4e]" />
           <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-            Fraud & Double Claim Prevention Architecture
+            {isTa ? 'மோசடி மற்றும் இரட்டை பலன் தடுப்பு கட்டமைப்பு' : 'Fraud & Double Claim Prevention Architecture'}
           </span>
           <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300">
-            Future Government Integration
+            {isTa ? 'எதிர்கால அரசு ஒருங்கிணைப்பு' : 'Future Government Integration'}
           </span>
         </div>
 
         <p className="text-xs text-slate-600 leading-relaxed">
-          The system architecture is designed for future automated cross-verification with Tamil Nadu State Treasury and National Scholarship Portal backends:
+          {isTa 
+            ? 'தமிழ்நாடு மாநில கருவூலம் மற்றும் தேசிய கல்வி உதவித்தொகை தளத்துடன் தானியங்கி குறுக்கு சரிபார்ப்புக்காக இந்த கட்டமைப்பு வடிவமைக்கப்பட்டுள்ளது:'
+            : 'The system architecture is designed for future automated cross-verification with Tamil Nadu State Treasury and National Scholarship Portal backends:'}
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-700">
           <div className="bg-white p-2.5 rounded-lg border border-slate-200 flex items-center space-x-1.5">
             <Check size={12} className="text-[#006a4e]" />
-            <span>Duplicate Claim Interceptor</span>
+            <span>{isTa ? 'போலி கோரிக்கை தடுப்பான்' : 'Duplicate Claim Interceptor'}</span>
           </div>
           <div className="bg-white p-2.5 rounded-lg border border-slate-200 flex items-center space-x-1.5">
             <Check size={12} className="text-[#006a4e]" />
-            <span>Aadhaar Vault e-KYC</span>
+            <span>{isTa ? 'ஆதார் வால்ட் e-KYC' : 'Aadhaar Vault e-KYC'}</span>
           </div>
           <div className="bg-white p-2.5 rounded-lg border border-slate-200 flex items-center space-x-1.5">
             <Check size={12} className="text-[#006a4e]" />
-            <span>NPCI Bank Account Mapper</span>
+            <span>{isTa ? 'NPCI வங்கிக் கணக்கு இணைப்பு' : 'NPCI Bank Account Mapper'}</span>
           </div>
           <div className="bg-white p-2.5 rounded-lg border border-slate-200 flex items-center space-x-1.5">
             <Check size={12} className="text-[#006a4e]" />
-            <span>AISHE Attendance Sync</span>
+            <span>{isTa ? 'AISHE வருகை ஒத்திசைவு' : 'AISHE Attendance Sync'}</span>
           </div>
         </div>
       </div>
@@ -1012,32 +1072,34 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             <div className="flex items-center space-x-2 text-[#006a4e] mb-2">
               <UploadCloud size={20} />
               <h3 className="font-bold text-base text-slate-900">
-                e-Sevai Document OCR & Readiness Scanner
+                {isTa ? 'இ-சேவை ஆவண OCR & தயார்நிலை ஸ்கேனர்' : 'e-Sevai Document OCR & Readiness Scanner'}
               </h3>
             </div>
             <p className="text-xs text-slate-600 mb-4 leading-relaxed">
-              Upload your Tahsildar revenue certificate, community card, or school bonafide PDF/Image to cross-check credentials against the official e-District schema.
+              {isTa 
+                ? 'அதிகாரப்பூர்வ இ-மாவட்ட வழிகாட்டலின்படி சான்றிதழ்களை சரிபார்க்க உங்கள் வட்டாட்சியர் வருமான சான்றிதழ், சாதி சான்றிதழ் அல்லது பள்ளி போனாஃபைட் PDF/படத்தை பதிவேற்றவும்.'
+                : 'Upload your Tahsildar revenue certificate, community card, or school bonafide PDF/Image to cross-check credentials against the official e-District schema.'}
             </p>
 
             <form onSubmit={handleVerifySubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Certificate Type (சான்றிதழ் வகை)
+                  {isTa ? 'சான்றிதழ் வகை' : 'Certificate Type (சான்றிதழ் வகை)'}
                 </label>
                 <select 
                   value={docType} 
                   onChange={(e) => setDocType(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 p-2 text-xs text-slate-800 focus:border-[#006a4e] outline-none"
                 >
-                  <option value="income_certificate">Tahsildar Income Certificate (வருமானச் சான்றிதழ்)</option>
-                  <option value="community_certificate">Permanent Community Certificate (சாதிச் சான்றிதழ்)</option>
-                  <option value="marksheet">10th / 12th Board Examination Marksheet (மதிப்பெண் பட்டியல்)</option>
+                  <option value="income_certificate">{isTa ? 'வட்டாட்சியர் வருமானச் சான்றிதழ்' : 'Tahsildar Income Certificate (வருமானச் சான்றிதழ்)'}</option>
+                  <option value="community_certificate">{isTa ? 'நிரந்தர சாதிச் சான்றிதழ்' : 'Permanent Community Certificate (சாதிச் சான்றிதழ்)'}</option>
+                  <option value="marksheet">{isTa ? '10/12-ஆம் வகுப்பு பொதுத்தேர்வு மதிப்பெண் பட்டியல்' : '10th / 12th Board Examination Marksheet (மதிப்பெண் பட்டியல்)'}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Select Certificate File (PDF, PNG, JPG)
+                  {isTa ? 'சான்றிதழ் கோப்பைத் தேர்வு செய்க (PDF, PNG, JPG)' : 'Select Certificate File (PDF, PNG, JPG)'}
                 </label>
                 <input 
                   type="file" 
@@ -1053,7 +1115,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                   onClick={() => setShowVerifyModal(false)}
                   className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
                 >
-                  Cancel
+                  {isTa ? 'ரத்து' : 'Cancel'}
                 </button>
                 <button
                   type="submit"
@@ -1063,10 +1125,10 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                   {isVerifying ? (
                     <>
                       <Loader2 size={14} className="animate-spin" />
-                      <span>Scanning Document OCR...</span>
+                      <span>{isTa ? 'ஆவணம் ஆய்வு செய்யப்படுகிறது...' : 'Scanning Document OCR...'}</span>
                     </>
                   ) : (
-                    <span>Inspect Document</span>
+                    <span>{isTa ? 'ஆவணத்தை ஆய்வு செய்' : 'Inspect Document'}</span>
                   )}
                 </button>
               </div>
@@ -1076,13 +1138,13 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
             {verificationResult && (
               <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2 animate-in fade-in">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800">Verification Result:</span>
+                  <span className="font-bold text-slate-800">{isTa ? 'ஆய்வு முடிவு:' : 'Verification Result:'}</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                     verificationResult.is_authentic 
                       ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
                       : 'bg-amber-100 text-amber-800 border border-amber-300'
                   }`}>
-                    {verificationResult.status || 'Certified Authentic'}
+                    {verificationResult.status || (isTa ? 'சான்றளிக்கப்பட்ட உண்மை' : 'Certified Authentic')}
                   </span>
                 </div>
                 <p className="text-slate-600 leading-relaxed text-[11px]">
@@ -1116,8 +1178,12 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                   <Bot size={18} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Tamil Nadu e-Vidya AI Advisory Desk</h3>
-                  <p className="text-[10px] text-emerald-400 font-medium">Bilingual Guidance • தமிழ் & English</p>
+                  <h3 className="font-bold text-sm">
+                    {isTa ? 'தமிழ்நாடு இ-வித்யா AI ஆலோசனை மையம்' : 'Tamil Nadu e-Vidya AI Advisory Desk'}
+                  </h3>
+                  <p className="text-[10px] text-emerald-400 font-medium">
+                    {isTa ? 'இருமொழி வழிகாட்டல் • தமிழ் & English' : 'Bilingual Guidance • தமிழ் & English'}
+                  </p>
                 </div>
               </div>
               <button 
@@ -1149,7 +1215,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 <div className="flex justify-start">
                   <div className="bg-white border border-slate-200 p-3 rounded-xl rounded-bl-none text-slate-500 text-xs flex items-center space-x-2">
                     <Loader2 size={14} className="animate-spin text-[#006a4e]" />
-                    <span>Analyzing scheme criteria & G.O. orders...</span>
+                    <span>{isTa ? 'திட்ட விதிகள் மற்றும் அரசாணைகள் ஆய்வு செய்யப்படுகின்றன...' : 'Analyzing scheme criteria & G.O. orders...'}</span>
                   </div>
                 </div>
               )}
@@ -1161,7 +1227,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 type="text"
                 value={inputQuery}
                 onChange={(e) => setInputQuery(e.target.value)}
-                placeholder="Ask any question in Tamil or English (e.g. How to get First Graduate certificate?)..."
+                placeholder={isTa ? 'தமிழ் அல்லது ஆங்கிலத்தில் ஏதேனும் கேளுங்கள் (எ.கா. முதல் பட்டதாரி சான்றிதழ் பெறுவது எப்படி?)...' : 'Ask any question in Tamil or English (e.g. How to get First Graduate certificate?)...'}
                 className="flex-1 rounded-lg border border-slate-300 px-3.5 py-2 text-xs text-slate-900 focus:border-[#006a4e] outline-none"
               />
               <button
@@ -1169,7 +1235,7 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                 disabled={isChatLoading || !inputQuery.trim()}
                 className="bg-[#006a4e] hover:bg-[#00523d] active:scale-[0.98] text-white px-4 py-2 rounded-lg text-xs font-bold transition disabled:opacity-50 flex items-center space-x-1 cursor-pointer"
               >
-                <span>Send</span>
+                <span>{isTa ? 'அனுப்பு' : 'Send'}</span>
                 <Send size={13} />
               </button>
             </form>
@@ -1181,10 +1247,14 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
       {/* Official GovTech Footer Notice */}
       <div className="text-center text-[11px] text-slate-500 space-y-1 pt-4 border-t border-slate-200">
         <p>
-          Government of Tamil Nadu • Directorate of Higher Education & Social Welfare • TNeGA Portal Service
+          {isTa 
+            ? 'தமிழ்நாடு அரசு • உயர்கல்வி மற்றும் சமூக நலத்துறை • TNeGA இணைய சேவை'
+            : 'Government of Tamil Nadu • Directorate of Higher Education & Social Welfare • TNeGA Portal Service'}
         </p>
         <p className="text-[10px] text-slate-400">
-          Student Grievance & DBT Helpline: <strong>14417</strong> (Toll-free, 24x7) • Scheme criteria verified against G.O. (Ms) No. 47/2026.
+          {isTa 
+            ? 'மாணவர் குறைதீர்ப்பு & DBT உதவி எண்: 14417 (கட்டணமில்லா சேவை, 24x7) • அரசாணை எண் 47/2026-ன் படி திட்ட விதிகள் சரிபார்க்கப்பட்டது.'
+            : 'Student Grievance & DBT Helpline: 14417 (Toll-free, 24x7) • Scheme criteria verified against G.O. (Ms) No. 47/2026.'}
         </p>
       </div>
 

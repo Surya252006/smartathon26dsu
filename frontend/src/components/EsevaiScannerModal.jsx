@@ -71,8 +71,10 @@ export default function EsevaiScannerModal({
   onClose, 
   studentProfile = {}, 
   currentUser = null, 
+  currentLang = 'en',
   onVerificationComplete = null 
 }) {
+  const isTa = currentLang === 'ta';
   const [docType, setDocType] = useState('income_certificate');
   const [selectedFile, setSelectedFile] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -337,11 +339,13 @@ export default function EsevaiScannerModal({
           </div>
           
           <h2 className="text-xl sm:text-2xl font-bold flex items-center space-x-2">
-            <span>ஆவண சரிபார்ப்பு / Certificate Cross-Verifier</span>
+            <span>{isTa ? 'இ-சேவை சான்றிதழ் நேரடி சரிபார்ப்பு' : 'ஆவண சரிபார்ப்பு / Certificate Cross-Verifier'}</span>
           </h2>
           
           <p className="text-xs text-slate-300 mt-1">
-            Automated OCR cross-verification against Tamil Nadu e-District registry. Validates Name, DOB, District, Community, and Tahsildar seal.
+            {isTa 
+              ? 'தமிழ்நாடு இ-மாவட்ட பதிவேட்டுடன் நேரடி OCR சரிபார்ப்பு: பெயர், பிறந்த தேதி, மாவட்டம், சமூகம் மற்றும் வட்டாட்சியர் முத்திரை சரிபார்க்கப்படுகிறது.' 
+              : 'Automated OCR cross-verification against Tamil Nadu e-District registry. Validates Name, DOB, District, Community, and Tahsildar seal.'}
           </p>
         </div>
 
@@ -351,14 +355,14 @@ export default function EsevaiScannerModal({
           {/* Target Certificate Type Selector */}
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Select Certificate to Verify (சரிபார்க்க வேண்டிய சான்றிதழ்):
+              {isTa ? 'சரிபார்க்க வேண்டிய சான்றிதழைத் தேர்ந்தெடுக்கவும்:' : 'Select Certificate to Verify (சரிபார்க்க வேண்டிய சான்றிதழ்):'}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {[
-                { id: 'income_certificate', label: 'Income Cert', sub: 'வருமானச் சான்றிதழ்' },
-                { id: 'community_certificate', label: 'Community Cert', sub: 'சாதிச் சான்றிதழ்' },
-                { id: 'marksheet', label: '12th Marksheet', sub: 'மதிப்பெண் பட்டியல்' },
-                { id: 'first_graduate_certificate', label: 'First Graduate', sub: 'முதல் பட்டதாரி' }
+                { id: 'income_certificate', label: isTa ? 'வருமானச் சான்றிதழ்' : 'Income Cert', sub: isTa ? 'Tahsildar Income' : 'வருமானச் சான்றிதழ்' },
+                { id: 'community_certificate', label: isTa ? 'சாதிச் சான்றிதழ்' : 'Community Cert', sub: isTa ? 'Community Card' : 'சாதிச் சான்றிதழ்' },
+                { id: 'marksheet', label: isTa ? '12ஆம் மதிப்பெண்' : '12th Marksheet', sub: isTa ? 'HSC Marksheet' : 'மதிப்பெண் பட்டியல்' },
+                { id: 'first_graduate_certificate', label: isTa ? 'முதல் பட்டதாரி' : 'First Graduate', sub: isTa ? 'First Graduate Cert' : 'முதல் பட்டதாரி' }
               ].map((item) => (
                 <button
                   key={item.id}
@@ -381,10 +385,10 @@ export default function EsevaiScannerModal({
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-slate-800 flex items-center">
-                <FileText size={14} className="text-emerald-600 mr-1.5" /> Certificate File (PDF / JPG / PNG):
+                <FileText size={14} className="text-emerald-600 mr-1.5" /> {isTa ? 'சான்றிதழ் கோப்பு (PDF / JPG / PNG):' : 'Certificate File (PDF / JPG / PNG):'}
               </span>
               <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                OCR Enabled
+                {isTa ? 'OCR பகுப்பாய்வு தயார்' : 'OCR Enabled'}
               </span>
             </div>
 
@@ -399,10 +403,10 @@ export default function EsevaiScannerModal({
               <label htmlFor="esevai_file_input" className="cursor-pointer block space-y-1">
                 <UploadCloud size={24} className="mx-auto text-slate-400" />
                 <p className="text-xs font-semibold text-slate-700">
-                  {selectedFile ? selectedFile.name : 'Click to Browse Certificate File'}
+                  {selectedFile ? selectedFile.name : (isTa ? 'சான்றிதழ் கோப்பை பதிவேற்ற கிளிக் செய்யவும்' : 'Click to Browse Certificate File')}
                 </p>
                 <p className="text-[10px] text-slate-400">
-                  Supports Tahsildar revenue PDF, DigiLocker Community Card, or TNDGE Marksheet
+                  {isTa ? 'வட்டாட்சியர் PDF, டிஜிலாக்கர் சாதிச் சான்றிதழ் அல்லது 12ஆம் வகுப்பு மதிப்பெண் பட்டியல் ஏற்கப்படும்' : 'Supports Tahsildar revenue PDF, DigiLocker Community Card, or TNDGE Marksheet'}
                 </p>
               </label>
             </div>
@@ -415,7 +419,7 @@ export default function EsevaiScannerModal({
                 className="text-[11px] text-emerald-700 hover:text-emerald-800 font-bold flex items-center space-x-1 cursor-pointer underline underline-offset-2"
               >
                 <Sparkles size={12} className="text-amber-500 mr-1" />
-                <span>Use Sample Official Tamil Nadu Certificate</span>
+                <span>{isTa ? 'மாதிரி சான்றிதழைப் பயன்படுத்துக (1-Click Demo)' : 'Use Sample Official Tamil Nadu Certificate'}</span>
               </button>
 
               <button
@@ -427,12 +431,12 @@ export default function EsevaiScannerModal({
                 {isScanning ? (
                   <>
                     <RefreshCw size={13} className="animate-spin" />
-                    <span>Scanning & Cross-Verifying...</span>
+                    <span>{isTa ? 'சரிபார்க்கப்படுகிறது...' : 'Scanning & Cross-Verifying...'}</span>
                   </>
                 ) : (
                   <>
                     <ShieldCheck size={14} />
-                    <span>Cross-Verify Now</span>
+                    <span>{isTa ? 'இப்போது சரிபார்' : 'Cross-Verify Now'}</span>
                   </>
                 )}
               </button>
@@ -530,17 +534,17 @@ export default function EsevaiScannerModal({
                   {isSavingToCluster ? (
                     <>
                       <RefreshCw size={13} className="animate-spin" />
-                      <span>Syncing to Cluster...</span>
+                      <span>{isTa ? 'தரவுத்தளத்தில் இணைக்கப்படுகிறது...' : 'Syncing to Cluster...'}</span>
                     </>
                   ) : isApplied ? (
                     <>
                       <CheckCircle2 size={14} className="text-emerald-600" />
-                      <span>Applied to Profile & Cluster!</span>
+                      <span>{isTa ? 'சுயவிவரம் & கிளஸ்டரில் இணைக்கப்பட்டது!' : 'Applied to Profile & Cluster!'}</span>
                     </>
                   ) : (
                     <>
                       <Sparkles size={14} className="text-amber-400" />
-                      <span>Approve & Store in Cluster</span>
+                      <span>{isTa ? 'ஒப்புதல் அளித்து சேமி' : 'Approve & Store in Cluster'}</span>
                     </>
                   )}
                 </button>
@@ -554,14 +558,14 @@ export default function EsevaiScannerModal({
         {/* Footer */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs shrink-0">
           <span className="text-[10px] text-slate-500">
-            Powered by Tamil Nadu e-Governance e-Sevai / Revenue Certificate Protocol
+            {isTa ? 'தமிழ்நாடு மின்-ஆளுமை முகமை (TNeGA) இ-சேவை / வருவாய்த் துறை சான்றிதழ் நெறிமுறை' : 'Powered by Tamil Nadu e-Governance e-Sevai / Revenue Certificate Protocol'}
           </span>
           <button
             type="button"
             onClick={onClose}
             className="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-700 font-bold transition cursor-pointer"
           >
-            Close
+            {isTa ? 'மூடுக' : 'Close'}
           </button>
         </div>
 

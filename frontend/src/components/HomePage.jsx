@@ -242,37 +242,49 @@ export default function HomePage({
   };
 
   // Dynamic Scheme Calculations based on Profile
+  // Dynamic Scheme Calculations based on Profile and Regional Language
+  const isTa = currentLang === 'ta';
   const isFemale = (studentProfile.gender || '').toLowerCase() === 'female';
   const isGovtSchool = studentProfile.schoolingType === 'tn_govt_school_6_to_12' || studentProfile.schooling_type === 'tn_govt_school_6_to_12';
 
   const primaryScheme = isFemale
     ? {
-        name: 'Pudhumai Penn Thittam',
-        amount: '₹12,000/yr',
-        description: 'Monthly financial assistance of ₹1,000 directly credited via Direct Benefit Transfer (DBT) to student Aadhaar-seeded bank account for girls from TN Govt Schools (6-12).'
+        name: isTa ? 'புதுமைப் பெண் திட்டம்' : 'Pudhumai Penn Thittam',
+        amount: isTa ? '₹12,000/ஆண்டு' : '₹12,000/yr',
+        description: isTa
+          ? 'அரசுப் பள்ளிகளில் (6-12) பயின்ற மாணவிகளுக்கு மாதம் ₹1,000 ஆதார் இணைக்கப்பட்ட வங்கிக் கணக்கில் நேரடியாக (DBT) செலுத்தப்படுகிறது.'
+          : 'Monthly financial assistance of ₹1,000 directly credited via Direct Benefit Transfer (DBT) to student Aadhaar-seeded bank account for girls from TN Govt Schools (6-12).'
       }
     : {
-        name: 'Tamil Pudhalvan Thittam',
-        amount: '₹12,000/yr',
-        description: 'Monthly financial stipend of ₹1,000 credited directly to student bank account via DBT for boys who studied in TN Government Schools (6-12).'
+        name: isTa ? 'தமிழ் புதல்வன் திட்டம்' : 'Tamil Pudhalvan Thittam',
+        amount: isTa ? '₹12,000/ஆண்டு' : '₹12,000/yr',
+        description: isTa
+          ? 'அரசுப் பள்ளிகளில் (6-12) பயின்ற மாணவர்களுக்கு மாதம் ₹1,000 வங்கிக் கணக்கில் நேரடியாக DBT மூலம் செலுத்தப்படுகிறது.'
+          : 'Monthly financial stipend of ₹1,000 credited directly to student bank account via DBT for boys who studied in TN Government Schools (6-12).'
       };
 
   const secondaryScheme = studentProfile.isFirstGraduate
     ? {
-        name: 'First Graduate Fee Concession',
-        amount: '₹25,000/yr',
-        description: '100% Tuition Fee Concession automatically credited directly to the college academic cell via Single Window Counseling.'
+        name: isTa ? 'முதல் பட்டதாரி கல்விக் கட்டணச் சலுகை' : 'First Graduate Fee Concession',
+        amount: isTa ? '₹25,000/ஆண்டு' : '₹25,000/yr',
+        description: isTa
+          ? 'ஒற்றைச் சாளர கலந்தாய்வு மூலம் சேர்க்கை பெறும் முதல் தலைமுறை பட்டதாரிகளுக்கு 100% கல்விக் கட்டண விலக்கு.'
+          : '100% Tuition Fee Concession automatically credited directly to the college academic cell via Single Window Counseling.'
       }
     : (['SC', 'SCA', 'ST'].includes(studentProfile.community)
         ? {
-            name: 'Post-Matric Scholarship (SC/SCA/ST)',
-            amount: '₹50,000/yr',
-            description: '100% Compulsory Tuition Fee waiver and hostel maintenance allowance under Adi Dravidar & Tribal Welfare.'
+            name: isTa ? 'போஸ்ட்-மெட்ரிக் கல்வி உதவித்தொகை (SC/SCA/ST)' : 'Post-Matric Scholarship (SC/SCA/ST)',
+            amount: isTa ? '₹50,000/ஆண்டு' : '₹50,000/yr',
+            description: isTa
+              ? 'ஆதிதிராவிடர் & பழங்குடியினர் நலத்துறையின் கீழ் 100% கட்டண தள்ளுபடி மற்றும் பராமரிப்புப் படி.'
+              : '100% Compulsory Tuition Fee waiver and hostel maintenance allowance under Adi Dravidar & Tribal Welfare.'
           }
         : {
-            name: 'BC/MBC Post-Matric Tuition Assistance',
-            amount: '₹15,000/yr',
-            description: 'Special fee & examination grant assistance under Department of Backward Classes & Minorities Welfare.'
+            name: isTa ? 'BC/MBC போஸ்ட்-மெட்ரிக் கல்விக் கட்டண உதவி' : 'BC/MBC Post-Matric Tuition Assistance',
+            amount: isTa ? '₹15,000/ஆண்டு' : '₹15,000/yr',
+            description: isTa
+              ? 'பிற்படுத்தப்பட்டோர் மற்றும் சிறுபான்மையினர் நலத்துறையின் கீழ் சிறப்பு தேர்வு & கல்விக் கட்டண உதவி.'
+              : 'Special fee & examination grant assistance under Department of Backward Classes & Minorities Welfare.'
           }
       );
 
@@ -286,14 +298,16 @@ export default function HomePage({
   const [isAiOpen, setIsAiOpen] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState([
+  const [chatMessages, setChatMessages] = useState(() => [
     {
       sender: 'user',
-      text: 'NSP applying rules?'
+      text: isTa ? 'NSP உதவித்தொகை விண்ணப்ப விதிகள் என்ன?' : 'NSP applying rules?'
     },
     {
       sender: 'bot',
-      text: 'For the Central Sector Scheme (NSP CSSS), you must be in the top 20th percentile in your 12th Board (>80%) with family annual income under ₹4.50 Lakh.\n\n⚠️ Important Policy Constraint: Under Section 4(c) guidelines, claiming NSP directly conflicts with your First Graduate fee waiver (₹25,000). The MWIS optimization engine selected your optimal package (₹37,000/yr) to prevent legal claim collisions.'
+      text: isTa
+        ? 'மத்திய துறை திட்டத்திற்கு (NSP CSSS) 12-ஆம் வகுப்பில் 80%-க்கு மேல் மதிப்பெண்களும், குடும்ப வருமானம் ₹4.50 லட்சத்திற்குள்ளும் இருக்க வேண்டும்.\n\n⚠️ முக்கிய விதி முரண்பாடு: பிரிவு 4(c) வழிகாட்டுதலின்படி, NSP பெறுவது உங்கள் முதல் பட்டதாரி கட்டண விலக்குடன் (₹25,000) நேரடியாக முரண்படுகிறது. சட்டவிரோத இரட்டைப் பலனைத் தடுக்க MWIS அல்காரிதம் உகந்த அதிகபட்ச தொகுப்பை (₹37,000/ஆண்டு) தேர்ந்தெடுத்துள்ளது.'
+        : 'For the Central Sector Scheme (NSP CSSS), you must be in the top 20th percentile in your 12th Board (>80%) with family annual income under ₹4.50 Lakh.\n\n⚠️ Important Policy Constraint: Under Section 4(c) guidelines, claiming NSP directly conflicts with your First Graduate fee waiver (₹25,000). The MWIS optimization engine selected your optimal package (₹37,000/yr) to prevent legal claim collisions.'
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
@@ -313,14 +327,22 @@ export default function HomePage({
     setTimeout(() => {
       let reply = "";
       const lower = userText.toLowerCase();
-      if (lower.includes('pudhumai') || lower.includes('girl') || lower.includes('1000')) {
-        reply = "Under G.O. (Ms) No. 47/2026, Pudhumai Penn provides ₹1,000/month (₹12,000/yr) via DBT for students who studied in TN Government schools from classes 6 to 12. No parental income ceiling applies!";
-      } else if (lower.includes('first graduate') || lower.includes('fg')) {
-        reply = "First Graduate Tuition Concession waives up to ₹25,000/yr for professional courses through Single Window Counseling, provided no sibling has previously availed the benefit.";
-      } else if (lower.includes('income') || lower.includes('certificate')) {
-        reply = "Income certificates can be downloaded from Tamil Nadu e-District portal with code REV-INC-01. The validity is 1 year from the date of issue.";
+      if (lower.includes('pudhumai') || lower.includes('girl') || lower.includes('1000') || lower.includes('பெண்') || lower.includes('புதுமை')) {
+        reply = isTa 
+          ? "அரசாணை 47/2026-ன் படி, 6 முதல் 12-ஆம் வகுப்பு வரை அரசுப் பள்ளிகளில் படித்த மாணவிகளுக்கு புதுமைப் பெண் திட்டத்தின் கீழ் மாதம் ₹1,000 (ஆண்டுக்கு ₹12,000) DBT மூலம் நேரடியாக வழங்கப்படுகிறது. இதற்கு பெற்றோரின் வருமான வரம்பு இல்லை!"
+          : "Under G.O. (Ms) No. 47/2026, Pudhumai Penn provides ₹1,000/month (₹12,000/yr) via DBT for students who studied in TN Government schools from classes 6 to 12. No parental income ceiling applies!";
+      } else if (lower.includes('first graduate') || lower.includes('fg') || lower.includes('முதல் பட்டதாரி')) {
+        reply = isTa
+          ? "முதல் பட்டதாரி கட்டணச் சலுகை மூலம் தொழிற்கல்விக்கு ஆண்டுக்கு ₹25,000 வரை கட்டண விலக்கு பெறலாம். குடும்பத்தில் வேறு யாரும் இதற்கு முன் இச்சலுகை பெற்றிருக்கக் கூடாது."
+          : "First Graduate Tuition Concession waives up to ₹25,000/yr for professional courses through Single Window Counseling, provided no sibling has previously availed the benefit.";
+      } else if (lower.includes('income') || lower.includes('certificate') || lower.includes('வருமானம்') || lower.includes('சான்றிதழ்')) {
+        reply = isTa
+          ? "வருமானச் சான்றிதழை தமிழ்நாடு இ-சேவை தளம் (REV-INC-01) மூலம் பதிவிறக்கம் செய்யலாம். இதன் செல்லுபடியாகும் காலம் 1 வருடம் ஆகும்."
+          : "Income certificates can be downloaded from Tamil Nadu e-District portal with code REV-INC-01. The validity is 1 year from the date of issue.";
       } else {
-        reply = "I am cross-referencing your candidate profile (BC, ₹1.40L, 88.5% Board marks) with the Tamil Nadu Higher Education welfare database. You qualify for 100% legal coverage under Pudhumai Penn and First Graduate fee waivers!";
+        reply = isTa
+          ? "உங்கள் விவரங்கள் தமிழ்நாடு உயர்கல்வி நலத்திட்ட தரவுத்தளத்துடன் ஒப்பிடப்பட்டது. புதுமைப் பெண் மற்றும் முதல் பட்டதாரி சலுகைகளின் கீழ் 100% சட்டபூர்வ சலுகைகளுக்கு நீங்கள் தகுதி பெற்றுள்ளீர்கள்!"
+          : "I am cross-referencing your candidate profile (BC, ₹1.40L, 88.5% Board marks) with the Tamil Nadu Higher Education welfare database. You qualify for 100% legal coverage under Pudhumai Penn and First Graduate fee waivers!";
       }
 
       setChatMessages(prev => [...prev, { sender: 'bot', text: reply }]);
@@ -351,15 +373,15 @@ export default function HomePage({
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center space-x-2 bg-emerald-950/90 text-emerald-300 text-xs font-bold px-3.5 py-1.5 rounded-full border border-emerald-700/80 shadow-xs">
                 <Sparkles size={14} className="text-emerald-400" />
-                <span>AI-Powered Decision System • Government of Tamil Nadu</span>
+                <span>{t.hero_decision_system || "AI-Powered Decision System • Government of Tamil Nadu"}</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-                Find the Scholarships You Actually Qualify For
+                {t.hero_headline || "Find the Scholarships You Actually Qualify For"}
               </h1>
 
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
-                Enter your profile once. Our intelligent scholarship matcher checks eligibility, detects policy conflicts, and identifies the highest-benefit combination for you.
+                {t.hero_desc || "Enter your profile once. Our intelligent scholarship matcher checks eligibility, detects policy conflicts, and identifies the highest-benefit combination for you."}
               </p>
 
               {/* CTAs */}
@@ -371,8 +393,8 @@ export default function HomePage({
                   <Sparkles size={16} className="text-amber-300" />
                   <span>
                     {currentUser?.profile?.full_name || studentProfile.fullName
-                      ? '⚡ Find My Scholarships (Saved Bio-Data)'
-                      : '📝 Register Bio-Data & Find Scholarships'}
+                      ? (t.btn_find_saved || '⚡ Find My Scholarships (Saved Bio-Data)')
+                      : (t.btn_register_find || '📝 Register Bio-Data & Find Scholarships')}
                   </span>
                   <ArrowRight size={16} />
                 </button>
@@ -381,7 +403,7 @@ export default function HomePage({
                   href="#how-it-works"
                   className="px-5 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-sm rounded-xl border border-slate-700 transition flex items-center space-x-2 cursor-pointer"
                 >
-                  <span>How It Works</span>
+                  <span>{t.btn_how_it_works || "How It Works"}</span>
                 </a>
               </div>
 
@@ -390,7 +412,7 @@ export default function HomePage({
                 <div className="flex items-center space-x-2 text-xs text-emerald-300 bg-emerald-950/70 px-3.5 py-1.5 rounded-lg border border-emerald-800/80 w-fit">
                   <CheckCircle size={14} className="text-emerald-400 shrink-0" />
                   <span>
-                    Saved Profile: <strong>{currentUser?.profile?.full_name || studentProfile.fullName}</strong> ({currentUser?.profile?.community || studentProfile.community} • {currentUser?.profile?.district || studentProfile.district}) — <em>Zero Repeated Form Filling</em>
+                    {t.saved_profile_badge || 'Saved Profile'}: <strong>{currentUser?.profile?.full_name || studentProfile.fullName}</strong> ({currentUser?.profile?.community || studentProfile.community} • {currentUser?.profile?.district || studentProfile.district}) — <em>{t.zero_repeated_form || 'Zero Repeated Form Filling'}</em>
                   </span>
                 </div>
               )}
@@ -412,18 +434,18 @@ export default function HomePage({
                     <img src="/tn_temple_emblem.jpg" alt="TN Temple Seal" className="w-full h-full object-cover" />
                   </div>
                   <span className="text-[11px] font-bold text-amber-300 tracking-wide">
-                    தமிழ்நாடு அரசு Official Seal
+                    {t.official_seal_text || "தமிழ்நாடு அரசு Official Seal"}
                   </span>
                 </div>
 
                 {/* Bottom Overlay Info */}
                 <div className="absolute bottom-3 left-3 right-3 bg-slate-900/85 backdrop-blur-md rounded-xl p-3 border border-slate-700/80 text-xs text-white space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-emerald-400 text-[11px]">Direct Benefit Transfer (DBT)</span>
+                    <span className="font-bold text-emerald-400 text-[11px]">{t.dbt_label || "Direct Benefit Transfer (DBT)"}</span>
                     <span className="bg-emerald-800/90 text-emerald-200 text-[9px] font-bold px-2 py-0.5 rounded">G.O. Ms 47/2026</span>
                   </div>
                   <p className="text-[11px] text-slate-300 leading-tight">
-                    Higher Education Welfare covering 1.2 Lakh rural & first-generation college students statewide.
+                    {t.statewide_coverage || "Higher Education Welfare covering 1.2 Lakh rural & first-generation college students statewide."}
                   </p>
                 </div>
               </div>
@@ -436,15 +458,15 @@ export default function HomePage({
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1">
                 <span className="text-[10px] font-black tracking-widest uppercase text-emerald-400 block">
-                  THE KEY INNOVATION
+                  {t.key_innovation_badge || "THE KEY INNOVATION"}
                 </span>
                 <p className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug">
-                  "We don't just tell students what scholarships they are eligible for. We calculate which valid combination gives them the maximum possible benefit and explain why."
+                  {t.key_innovation_quote || "\"We don't just tell students what scholarships they are eligible for. We calculate which valid combination gives them the maximum possible benefit and explain why.\""}
                 </p>
               </div>
               <div className="shrink-0 flex items-center space-x-2 bg-emerald-900/60 px-4 py-2 rounded-xl border border-emerald-700 text-xs font-semibold text-emerald-200">
                 <ShieldCheck size={16} className="text-emerald-400" />
-                <span>Zero Conflict Collisions</span>
+                <span>{t.zero_conflict_badge || "Zero Conflict Collisions"}</span>
               </div>
             </div>
           </div>
@@ -452,19 +474,19 @@ export default function HomePage({
           {/* Section 19: Visual Decision Flow Diagram */}
           <div className="space-y-2 pt-2">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block text-center sm:text-left">
-              Decision Support Flow:
+              {t.decision_flow_title || "Decision Support Flow:"}
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
               {[
-                { step: "1", title: "Your Profile", desc: "Single entry" },
-                { step: "2", title: "Smart Eligibility", desc: "Rule engine" },
-                { step: "3", title: "Conflict Detection", desc: "Matrix filter" },
-                { step: "4", title: "Benefit Optimization", desc: "MWIS solver" },
-                { step: "5", title: "Best Combination", desc: "Highest benefit" },
-                { step: "6", title: "Application Roadmap", desc: "Action plan" }
+                { step: "1", title: t.flow_step_1_title || "Your Profile", desc: t.flow_step_1_desc || "Single entry" },
+                { step: "2", title: t.flow_step_2_title || "Smart Eligibility", desc: t.flow_step_2_desc || "Rule engine" },
+                { step: "3", title: t.flow_step_3_title || "Conflict Detection", desc: t.flow_step_3_desc || "Matrix filter" },
+                { step: "4", title: t.flow_step_4_title || "Benefit Optimization", desc: t.flow_step_4_desc || "MWIS solver" },
+                { step: "5", title: t.flow_step_5_title || "Best Combination", desc: t.flow_step_5_desc || "Highest benefit" },
+                { step: "6", title: t.flow_step_6_title || "Application Roadmap", desc: t.flow_step_6_desc || "Action plan" }
               ].map((flow, fIdx) => (
                 <div key={fIdx} className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 text-center space-y-1 relative">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase block">Step 0{flow.step}</span>
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase block">{isTa ? `படி 0${flow.step}` : `Step 0${flow.step}`}</span>
                   <div className="font-bold text-white text-xs leading-tight">{flow.title}</div>
                   <div className="text-[10px] text-slate-400">{flow.desc}</div>
                 </div>
@@ -488,15 +510,15 @@ export default function HomePage({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-xs font-black uppercase tracking-wider text-emerald-950">
-                  Fullstack Cloud Ecosystem
+                  {t.fullstack_ecosystem_title || "Fullstack Cloud Ecosystem"}
                 </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-ping"></span>
-                  ALL SYSTEMS LIVE & CONNECTED
+                  {t.all_systems_live || "ALL SYSTEMS LIVE & CONNECTED"}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Multi-driver persistence mirroring student dossiers and eligibility decisions across cloud and local nodes.
+                {t.fullstack_desc || "Multi-driver persistence mirroring student dossiers and eligibility decisions across cloud and local nodes."}
               </p>
             </div>
           </div>
@@ -531,7 +553,7 @@ export default function HomePage({
                 onClick={onOpenDbConfig}
                 className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition cursor-pointer shadow-xs"
               >
-                Inspect
+                {t.inspect_btn || "Inspect"}
               </button>
             )}
           </div>
@@ -546,14 +568,14 @@ export default function HomePage({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-4 gap-2">
           <div>
             <span className="text-xs font-bold text-[#006a4e] uppercase tracking-wider block mb-1">
-              Section 20 • Process Blueprint
+              {isTa ? 'செயல்முறை வரைபடம்' : 'Section 20 • Process Blueprint'}
             </span>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-              How It Works: Intelligent Decision Support
+              {isTa ? 'எவ்வாறு செயல்படுகிறது: அறிவார்ந்த முடிவு ஆதரவு' : 'How It Works: Intelligent Decision Support'}
             </h2>
           </div>
           <p className="text-xs text-slate-500 max-w-md">
-            Deterministic rule-based evaluation ensures complete transparency with zero black-box bias.
+            {t.how_it_works_subtitle || "Deterministic rule-based evaluation ensures complete transparency with zero black-box bias."}
           </p>
         </div>
 
@@ -561,27 +583,27 @@ export default function HomePage({
           {[
             {
               step: "01",
-              title: "Build Your Profile",
-              desc: "Tell us about your education, income, category, and eligibility once in a clean 5-step wizard.",
-              badge: "Single Input"
+              title: isTa ? "சுயவிவரத்தை உள்ளிடுங்கள்" : "Build Your Profile",
+              desc: isTa ? "உங்கள் கல்வி, வருமானம், சமூகப் பிரிவு விவரங்களை எளிதாக ஒருமுறை உள்ளிடுங்கள்." : "Tell us about your education, income, category, and eligibility once in a clean 5-step wizard.",
+              badge: t.step1_badge || "Single Input"
             },
             {
               step: "02",
-              title: "Match Criteria",
-              desc: "The rule engine checks community quota, family income caps, and academic criteria.",
-              badge: "Smart Filtering"
+              title: isTa ? "தகுதி விதிகள் சரிபார்ப்பு" : "Match Criteria",
+              desc: isTa ? "சமூக இடஒதுக்கீடு, குடும்ப வருமான வரம்பு மற்றும் கல்வித் தகுதிகளை எங்கள் விதித் தொகுப்பு சரிபார்க்கிறது." : "The rule engine checks community quota, family income caps, and academic criteria.",
+              badge: t.step2_badge || "Smart Filtering"
             },
             {
               step: "03",
-              title: "Optimize Legitimate Benefit",
-              desc: "Conflicting schemes are removed and the highest-benefit valid combination is mathematically calculated.",
-              badge: "Conflict Free"
+              title: isTa ? "சட்டபூர்வ சலுகையை உகப்பாக்குதல்" : "Optimize Legitimate Benefit",
+              desc: isTa ? "ஒன்றையொன்று முரண்படும் திட்டங்கள் நீக்கப்பட்டு, அதிகபட்ச பலனளிக்கும் சேர்க்கை கணக்கிடப்படுகிறது." : "Conflicting schemes are removed and the highest-benefit valid combination is mathematically calculated.",
+              badge: t.step3_badge || "Conflict Free"
             },
             {
               step: "04",
-              title: "Apply with Roadmap",
-              desc: "Get a personalized document checklist and 7-step roadmap pointing to official government gateways.",
-              badge: "Ready Checklist"
+              title: isTa ? "வழிகாட்டியுடன் விண்ணப்பிக்கவும்" : "Apply with Roadmap",
+              desc: isTa ? "அதிகாரப்பூர்வ அரசு இணையதளங்களுக்கான ஆவண சரிபார்ப்பு பட்டியல் மற்றும் 7-படி வழிகாட்டியைப் பெறுங்கள்." : "Get a personalized document checklist and 7-step roadmap pointing to official government gateways.",
+              badge: t.step4_badge || "Ready Checklist"
             }
           ].map((card, cIdx) => (
             <div key={cIdx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:shadow-md transition">
@@ -604,9 +626,9 @@ export default function HomePage({
               <ShieldCheck size={20} />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-sm">Why This System Is Different</h4>
+              <h4 className="font-bold text-slate-900 text-sm">{t.why_different_title || "Why This System Is Different"}</h4>
               <p className="text-slate-600 text-xs">
-                No false "100% guarantees". All calculations are deterministic, backed by Government Orders (G.O.), and explainable down to the rupee.
+                {t.why_different_desc || "No false \"100% guarantees\". All calculations are deterministic, backed by Government Orders (G.O.), and explainable down to the rupee."}
               </p>
             </div>
           </div>
@@ -614,7 +636,7 @@ export default function HomePage({
             onClick={onStartMatcher}
             className="px-4 py-2 bg-[#006a4e] hover:bg-[#00523d] text-white font-bold rounded-lg transition shrink-0 cursor-pointer shadow-xs"
           >
-            Launch Eligibility Checker →
+            {t.launch_checker_btn || "Launch Eligibility Checker →"}
           </button>
         </div>
       </section>
@@ -626,14 +648,14 @@ export default function HomePage({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-3 gap-2">
           <div>
             <span className="text-xs font-bold text-[#006a4e] uppercase tracking-wider block mb-1">
-              Visual References & Official Insignia
+              {isTa ? "அதிகாரப்பூர்வ அரசு அடையாளங்கள்" : "Visual References & Official Insignia"}
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Official State Scheme & Beneficiary References
+              {isTa ? "அரசு திட்டங்கள் மற்றும் பயனாளிகளின் குறிப்புகள்" : "Official State Scheme & Beneficiary References"}
             </h2>
           </div>
           <p className="text-xs text-slate-500 max-w-md">
-            Visual references for Tamil Nadu state government emblems, college institutions, and sanction documentation.
+            {isTa ? "தமிழ்நாடு அரசு முத்திரை, கல்லூரி கல்வி நிறுவனங்கள் மற்றும் ஆணை ஆவணங்களின் புகைப்படங்கள்." : "Visual references for Tamil Nadu state government emblems, college institutions, and sanction documentation."}
           </p>
         </div>
 
@@ -647,18 +669,18 @@ export default function HomePage({
                 className="h-40 w-40 object-contain rounded-full shadow-lg border-2 border-amber-400 transition duration-300 group-hover:scale-105"
               />
               <span className="absolute top-2.5 right-2.5 bg-emerald-950/80 text-amber-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-400/40">
-                Official Web Logo
+                {isTa ? "அரசு சின்னம்" : "Official Web Logo"}
               </span>
             </div>
             <div className="p-4 space-y-1.5 text-xs">
               <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wide">
-                State Government Emblem
+                {isTa ? "மாநில அரசு சின்னம்" : "State Government Emblem"}
               </span>
               <h3 className="font-bold text-slate-900 text-sm">
-                Srivilliputhur Andal Temple Gopuram Seal
+                {isTa ? "ஸ்ரீவில்லிபுத்தூர் ஆண்டாள் கோவில் கோபுர முத்திரை" : "Srivilliputhur Andal Temple Gopuram Seal"}
               </h3>
               <p className="text-slate-600 text-[11px] leading-relaxed">
-                The statutory seal of the Government of Tamil Nadu (தமிழ்நாடு அரசு), guaranteeing authentic departmental sanction and legal welfare coverage.
+                {isTa ? "தமிழ்நாடு அரசின் அதிகாரப்பூர்வ முத்திரை, சட்டபூர்வ அரசு அங்கீகாரம் மற்றும் நிதி ஒதுக்கீட்டை உறுதி செய்கிறது." : "The statutory seal of the Government of Tamil Nadu (தமிழ்நாடு அரசு), guaranteeing authentic departmental sanction and legal welfare coverage."}
               </p>
             </div>
           </div>
@@ -672,18 +694,18 @@ export default function HomePage({
                 className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
               />
               <span className="absolute top-2.5 right-2.5 bg-slate-900/80 text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/40">
-                Campus Beneficiaries
+                {isTa ? "கல்லூரி பயனாளிகள்" : "Campus Beneficiaries"}
               </span>
             </div>
             <div className="p-4 space-y-1.5 text-xs">
               <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wide">
-                Higher Education Campuses
+                {isTa ? "உயர்கல்வி வளாகங்கள்" : "Higher Education Campuses"}
               </span>
               <h3 className="font-bold text-slate-900 text-sm">
-                Engineering, Arts & Science, and Polytechnics
+                {isTa ? "பொறியியல், கலை & அறிவியல் மற்றும் பாலிடெக்னிக்" : "Engineering, Arts & Science, and Polytechnics"}
               </h3>
               <p className="text-slate-600 text-[11px] leading-relaxed">
-                Empowering first-generation and rural scholars across Anna University, Government Colleges, and approved institutions statewide.
+                {isTa ? "அண்ணா பல்கலைக்கழகம் மற்றும் அரசு கல்லூரிகளில் பயிலும் முதல் தலைமுறை மற்றும் கிராமப்புற மாணவர்களுக்கு அதிகாரமளித்தல்." : "Empowering first-generation and rural scholars across Anna University, Government Colleges, and approved institutions statewide."}
               </p>
             </div>
           </div>
@@ -697,18 +719,18 @@ export default function HomePage({
                 className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
               />
               <span className="absolute top-2.5 right-2.5 bg-slate-900/80 text-amber-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-500/40">
-                Sanction Reference
+                {isTa ? "ஒப்புதல் குறிப்பு" : "Sanction Reference"}
               </span>
             </div>
             <div className="p-4 space-y-1.5 text-xs">
               <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wide">
-                DBT & Welfare Sanctions
+                {isTa ? "நேரடிப் பலன் மற்றும் நலத்திட்ட ஆணைகள்" : "DBT & Welfare Sanctions"}
               </span>
               <h3 className="font-bold text-slate-900 text-sm">
-                Pudhumai Penn & First Graduate Sanctions
+                {isTa ? "புதுமைப் பெண் & முதல் பட்டதாரி ஒப்புதல் கடிதங்கள்" : "Pudhumai Penn & First Graduate Sanctions"}
               </h3>
               <p className="text-slate-600 text-[11px] leading-relaxed">
-                Verifiable sanction letters cross-referenced against e-Sevai revenue databases, delivering up to ₹50,000/yr with zero collision risk.
+                {isTa ? "இ-சேவை வருவாய்த்துறை தரவுகளுடன் சரிபார்க்கப்பட்டு, ஆண்டிற்கு ₹50,000 வரை முரண்பாடின்றி பெற்றுத்தரும் அரசாணைகள்." : "Verifiable sanction letters cross-referenced against e-Sevai revenue databases, delivering up to ₹50,000/yr with zero collision risk."}
               </p>
             </div>
           </div>
@@ -731,7 +753,7 @@ export default function HomePage({
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div className="flex items-center space-x-1.5">
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                    Candidate Snapshot
+                    {t.candidate_snapshot_title || "Candidate Snapshot"}
                   </span>
                   <button
                     onClick={() => setShowEditModal(true)}
@@ -739,7 +761,7 @@ export default function HomePage({
                     title="Edit candidate profile, income, marks & upload photo"
                   >
                     <Pencil size={10} />
-                    <span>Edit</span>
+                    <span>{t.btn_edit || "Edit"}</span>
                   </button>
                 </div>
                 <div className="flex items-center space-x-1.5">
@@ -750,7 +772,7 @@ export default function HomePage({
                       title="Sign in with your Student ID or Switch User"
                     >
                       <LogIn size={10} />
-                      <span>{currentUser ? 'Switch' : 'Sign In'}</span>
+                      <span>{currentUser ? (isTa ? 'மாற்று' : 'Switch') : (isTa ? 'உள்நுழைவு' : 'Sign In')}</span>
                     </button>
                   )}
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${
@@ -758,7 +780,7 @@ export default function HomePage({
                       ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
                       : 'bg-amber-100 text-amber-800 border-amber-200'
                   }`}>
-                    {currentUser || studentProfile.fullName ? 'Verified' : 'Guest Mode'}
+                    {currentUser || studentProfile.fullName ? (t.verified_badge || 'Verified') : (t.guest_mode_badge || 'Guest Mode')}
                   </span>
                 </div>
               </div>
@@ -768,24 +790,24 @@ export default function HomePage({
                 <div className="mb-4 p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-xl text-xs space-y-2 shadow-2xs">
                   <div className="flex items-center space-x-1.5 font-bold text-emerald-900 text-xs">
                     <Sparkles size={14} className="text-emerald-600 shrink-0" />
-                    <span>New Student Registration • 1-Time Bio-Data Setup</span>
+                    <span>{t.new_reg_card_title || "New Student Registration • 1-Time Bio-Data Setup"}</span>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-snug">
-                    Register your complete bio-data once. All scholarships will automatically pull from your saved profile without needing to fill the form again.
+                    {t.new_reg_card_desc || "Register your complete bio-data once. All scholarships will automatically pull from your saved profile without needing to fill the form again."}
                   </p>
                   <div className="flex items-center gap-2 pt-0.5">
                     <button
                       onClick={onOpenRegister || onStartMatcher}
                       className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition cursor-pointer shadow-xs flex items-center space-x-1"
                     >
-                      <span>📝 Register Bio-Data</span>
+                      <span>{t.btn_register_biodata || "📝 Register Bio-Data"}</span>
                     </button>
                     {onOpenAuth && (
                       <button
                         onClick={onOpenAuth}
                         className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-lg text-xs border border-slate-200 transition cursor-pointer"
                       >
-                        Sign In / உள்நுழைவு
+                        {isTa ? 'உள்நுழைவு' : 'Sign In / உள்நுழைவு'}
                       </button>
                     )}
                   </div>
@@ -813,7 +835,7 @@ export default function HomePage({
                         <>
                           <User size={34} className="text-slate-400 group-hover:text-emerald-700 transition mb-0.5" />
                           <span className="text-[8px] font-bold text-slate-500 font-mono group-hover:text-emerald-800">
-                            ADD PHOTO
+                            {isTa ? 'புகைப்படம்' : 'ADD PHOTO'}
                           </span>
                         </>
                       )}
@@ -821,7 +843,7 @@ export default function HomePage({
                       {/* Hover Camera Overlay */}
                       <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white text-[9px] font-semibold">
                         <Camera size={16} className="mb-0.5 text-emerald-300" />
-                        <span>{profileImage ? 'Change' : 'Upload'}</span>
+                        <span>{profileImage ? (isTa ? 'மாற்றுக' : 'Change') : (isTa ? 'பதிவேற்றுக' : 'Upload')}</span>
                       </div>
 
                       <div className="absolute bottom-0 inset-x-0 bg-slate-900/85 text-[8px] font-mono text-center text-white py-0.5">
@@ -859,7 +881,7 @@ export default function HomePage({
                       title="Upload photo from your device"
                     >
                       <Camera size={11} />
-                      <span>{profileImage ? 'Change Photo' : 'Upload Photo'}</span>
+                      <span>{profileImage ? (t.change_photo || 'Change Photo') : (t.upload_photo || 'Upload Photo')}</span>
                     </button>
 
                     <button
@@ -869,7 +891,7 @@ export default function HomePage({
                       title="Edit all credentials"
                     >
                       <Edit3 size={9} />
-                      <span>Edit Info</span>
+                      <span>{t.edit_info || "Edit Info"}</span>
                     </button>
                   </div>
                 </div>
@@ -877,45 +899,45 @@ export default function HomePage({
                 {/* Compact List of Credentials */}
                 <div className="flex-1 min-w-0 space-y-1 text-xs">
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">Name</span>
+                    <span className="text-slate-500 font-medium">{t.label_name || "Name"}</span>
                     <strong className="text-slate-900 font-semibold truncate ml-2">
-                      {studentProfile.fullName || 'Guest Student (விருந்தினர்)'}
+                      {studentProfile.fullName || (isTa ? 'விருந்தினர் மாணவர்' : 'Guest Student')}
                     </strong>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">Gender</span>
+                    <span className="text-slate-500 font-medium">{t.label_gender_tag || "Gender"}</span>
                     <span className="text-slate-800 font-medium capitalize">
-                      {studentProfile.gender || 'Not specified'}
+                      {studentProfile.gender === 'female' ? (isTa ? 'பெண்' : 'Female') : (studentProfile.gender === 'male' ? (isTa ? 'ஆண்' : 'Male') : (studentProfile.gender || '--'))}
                     </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">Community</span>
+                    <span className="text-slate-500 font-medium">{t.label_community_tag || "Community"}</span>
                     <span className="text-slate-800 font-semibold bg-slate-100 px-1.5 py-0.2 rounded font-mono uppercase">
                       {studentProfile.community || 'BC'}
                     </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">Income</span>
+                    <span className="text-slate-500 font-medium">{t.label_income_tag || "Income"}</span>
                     <span className="text-slate-900 font-semibold font-mono">
-                      {studentProfile.annualIncome ? `₹${Number(studentProfile.annualIncome).toLocaleString('en-IN')}` : '-- (Not Set)'}
+                      {studentProfile.annualIncome ? `₹${Number(studentProfile.annualIncome).toLocaleString('en-IN')}` : (isTa ? '-- (குறிப்பிடப்படவில்லை)' : '-- (Not Set)')}
                     </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">12th Marks</span>
+                    <span className="text-slate-500 font-medium">{t.label_marks_tag || "12th Marks"}</span>
                     <span className="text-emerald-700 font-bold font-mono">
                       {studentProfile.boardPercentage ? `${studentProfile.boardPercentage}%` : '--'}
                     </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
-                    <span className="text-slate-500 font-medium">Course</span>
+                    <span className="text-slate-500 font-medium">{t.label_course_tag || "Course"}</span>
                     <span className="text-slate-800 font-medium truncate ml-2" title={studentProfile.currentCourse}>
-                      {studentProfile.currentCourse || '-- (Select Course)'}
+                      {studentProfile.currentCourse || (isTa ? '-- (தேர்வு செய்யப்படவில்லை)' : '-- (Select Course)')}
                     </span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-500 font-medium">FG</span>
+                    <span className="text-slate-500 font-medium">{t.label_fg_tag || "FG"}</span>
                     <span className={`inline-flex items-center font-bold ${studentProfile.isFirstGraduate ? 'text-emerald-700' : 'text-slate-600'}`}>
-                      {studentProfile.isFirstGraduate ? 'Yes' : 'No'}
+                      {studentProfile.isFirstGraduate ? (t.yes || 'Yes') : (t.no || 'No')}
                     </span>
                   </div>
                 </div>
@@ -928,7 +950,7 @@ export default function HomePage({
               <div>
                 <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
                   <ShieldCheck size={14} className="text-emerald-700" />
-                  <span>Verification Status</span>
+                  <span>{t.verification_status_title || "Verification Status"}</span>
                 </h4>
 
                 {/* List with green CheckCircle icons */}
@@ -936,30 +958,30 @@ export default function HomePage({
                   <li className="flex items-center justify-between p-2 rounded-md bg-emerald-50/50 border border-emerald-200/60">
                     <div className="flex items-center space-x-2">
                       <CheckCircle size={15} className="text-emerald-600 shrink-0" />
-                      <span className="font-semibold text-slate-800">Aadhaar</span>
+                      <span className="font-semibold text-slate-800">{isTa ? 'ஆதார் சரிபார்ப்பு' : 'Aadhaar'}</span>
                     </div>
                     <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                      {currentUser || studentProfile.fullName ? 'UIDAI e-KYC Verified' : 'Aadhaar e-KYC Ready'}
+                      {currentUser || studentProfile.fullName ? (isTa ? 'UIDAI e-KYC சரிபார்க்கப்பட்டது' : 'UIDAI e-KYC Verified') : (isTa ? 'ஆதார் e-KYC தயார்' : 'Aadhaar e-KYC Ready')}
                     </span>
                   </li>
 
                   <li className="flex items-center justify-between p-2 rounded-md bg-emerald-50/50 border border-emerald-200/60">
                     <div className="flex items-center space-x-2">
                       <CheckCircle size={15} className="text-emerald-600 shrink-0" />
-                      <span className="font-semibold text-slate-800">Income Cert</span>
+                      <span className="font-semibold text-slate-800">{isTa ? 'வருமானச் சான்றிதழ்' : 'Income Cert'}</span>
                     </div>
                     <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
-                      {currentUser || studentProfile.annualIncome ? 'REV-INC-01 Verified' : 'e-Sevai Linked'}
+                      {currentUser || studentProfile.annualIncome ? (isTa ? 'REV-INC-01 சரிபார்க்கப்பட்டது' : 'REV-INC-01 Verified') : (isTa ? 'இ-சேவை இணைக்கப்பட்டது' : 'e-Sevai Linked')}
                     </span>
                   </li>
 
                   <li className="flex items-center justify-between p-2 rounded-md bg-emerald-50/50 border border-emerald-200/60">
                     <div className="flex items-center space-x-2">
                       <CheckCircle size={15} className="text-emerald-600 shrink-0" />
-                      <span className="font-semibold text-slate-800">Community Cert</span>
+                      <span className="font-semibold text-slate-800">{isTa ? 'சாதிச் சான்றிதழ்' : 'Community Cert'}</span>
                     </div>
                     <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
-                      {currentUser || studentProfile.fullName ? 'REV-COM-02 Verified' : 'Revenue Department'}
+                      {currentUser || studentProfile.fullName ? (isTa ? 'REV-COM-02 சரிபார்க்கப்பட்டது' : 'REV-COM-02 Verified') : (isTa ? 'வருவாய்த்துறை' : 'Revenue Department')}
                     </span>
                   </li>
                 </ul>
@@ -973,7 +995,7 @@ export default function HomePage({
                     title="Launch Tamil Nadu e-Sevai Document Scanner & Multi-Field Cross-Verification"
                   >
                     <FileCheck size={14} className="text-amber-300" />
-                    <span>Scan & Cross-Verify with e-Sevai</span>
+                    <span>{t.scan_cross_verify_btn || "Scan & Cross-Verify with e-Sevai"}</span>
                   </button>
                 </div>
               </div>
@@ -987,8 +1009,8 @@ export default function HomePage({
                   <Sparkles size={14} className="text-amber-300" />
                   <span>
                     {currentUser || studentProfile.fullName
-                      ? '⚡ Run Instant Calculation (Saved Bio-Data)'
-                      : '📝 Register Bio-Data & Check Eligibility'}
+                      ? (t.btn_run_instant_calc || '⚡ Run Instant Calculation (Saved Bio-Data)')
+                      : (t.btn_register_find || '📝 Register Bio-Data & Check Eligibility')}
                   </span>
                   <ArrowRight size={13} />
                 </button>
@@ -999,7 +1021,7 @@ export default function HomePage({
                     className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold rounded-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <Edit3 size={11} />
-                    <span>View / Edit Bio-Data Form</span>
+                    <span>{t.btn_view_edit_biodata || "View / Edit Bio-Data Form"}</span>
                   </button>
                 )}
               </div>
@@ -1010,18 +1032,18 @@ export default function HomePage({
             <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-xs text-xs text-slate-600 space-y-2">
               <div className="flex items-center space-x-2 font-bold text-slate-800">
                 <HelpCircle size={14} className="text-emerald-700" />
-                <span>Student Direct Benefit Transfer (DBT) Cell</span>
+                <span>{t.dbt_cell_title || "Student Direct Benefit Transfer (DBT) Cell"}</span>
               </div>
               <p className="text-[11px] text-slate-500 leading-relaxed">
-                Stipends and college fee waivers are sanctioned under statutory Government Orders. Inquiries can be lodged directly at the Helpdesk.
+                {t.dbt_cell_desc || "Stipends and college fee waivers are sanctioned under statutory Government Orders. Inquiries can be lodged directly at the Helpdesk."}
               </p>
               <div className="pt-1 flex items-center justify-between text-[11px] font-semibold">
-                <span className="text-emerald-700">Toll Free: 14417</span>
+                <span className="text-emerald-700">{t.toll_free_number || "Toll Free: 14417"}</span>
                 <button 
                   onClick={onOpenGrievance}
                   className="text-slate-800 hover:underline cursor-pointer"
                 >
-                  File Grievance →
+                  {t.file_grievance_btn || "File Grievance →"}
                 </button>
               </div>
             </div>
@@ -1036,10 +1058,10 @@ export default function HomePage({
             {/* Column Title */}
             <div className="flex items-center justify-between">
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-                My Matching Schemes
+                {t.my_matching_schemes || "My Matching Schemes"}
               </h2>
               <span className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200">
-                MWIS Solver Verified • Zero Collision
+                {t.mwis_solver_tag || "MWIS Solver Verified • Zero Collision"}
               </span>
             </div>
 
@@ -1050,7 +1072,7 @@ export default function HomePage({
               <div className="flex items-center space-x-2 pb-4 border-b border-emerald-600/60">
                 <Sparkles size={20} className="text-amber-300 fill-amber-300 shrink-0" />
                 <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
-                  Optimal Stacking Recommendation (Max Benefit): <span className="text-amber-200 font-mono">₹{recommendedTotal.toLocaleString('en-IN')} /yr</span>
+                  {t.optimal_stacking_prefix || "Optimal Stacking Recommendation (Max Benefit):"} <span className="text-amber-200 font-mono">₹{recommendedTotal.toLocaleString('en-IN')} {isTa ? '/ஆண்டு' : '/yr'}</span>
                 </h3>
               </div>
 
@@ -1076,7 +1098,7 @@ export default function HomePage({
                     onClick={() => handleApply(primaryScheme.name, primaryScheme.amount)}
                     className="bg-white hover:bg-emerald-50 text-[#006a4e] font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm whitespace-nowrap self-start sm:self-auto cursor-pointer"
                   >
-                    Apply Now
+                    {t.apply_now_btn || "Apply Now"}
                   </button>
                 </div>
 
@@ -1099,7 +1121,7 @@ export default function HomePage({
                     onClick={() => handleApply(secondaryScheme.name, secondaryScheme.amount)}
                     className="bg-white hover:bg-emerald-50 text-[#006a4e] font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm whitespace-nowrap self-start sm:self-auto cursor-pointer"
                   >
-                    Apply Now
+                    {t.apply_now_btn || "Apply Now"}
                   </button>
                 </div>
 
@@ -1111,13 +1133,13 @@ export default function HomePage({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm sm:text-base font-bold text-slate-800">
-                  Other Potential Schemes
+                  {t.other_potential_schemes || "Other Potential Schemes"}
                 </h3>
                 <button
                   onClick={onViewSchemes}
                   className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition flex items-center space-x-1 cursor-pointer"
                 >
-                  <span>Browse All 18+ Catalog</span>
+                  <span>{t.browse_all_catalog_btn || "Browse All 18+ Catalog"}</span>
                   <ArrowRight size={13} />
                 </button>
               </div>
@@ -1130,31 +1152,35 @@ export default function HomePage({
                   <div className="space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <h4 className="font-bold text-xs sm:text-sm text-slate-900">
-                        Central Sector Scheme (NSP)
+                        {isTa ? 'மத்திய துறை உதவித்தொகை (NSP)' : 'Central Sector Scheme (NSP)'}
                       </h4>
                       <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
-                        ₹12,000 / yr
+                        ₹12,000 / {isTa ? 'ஆண்டு' : 'yr'}
                       </span>
                     </div>
 
                     <p className="text-xs text-slate-500 leading-relaxed">
-                      Requires 80th percentile in Class 12 Board exams (&gt;80%). Family annual income must be under ₹4.50 Lakh. Subject to Central Ministry quota allocation.
+                      {isTa 
+                        ? '12-ஆம் வகுப்பு பொதுத்தேர்வில் முதல் 20% சதவீதத்திற்குள் இருக்க வேண்டும் (>80%). குடும்ப ஆண்டு வருமானம் ₹4.50 லட்சத்திற்குள் இருக்க வேண்டும்.'
+                        : 'Requires 80th percentile in Class 12 Board exams (>80%). Family annual income must be under ₹4.50 Lakh. Subject to Central Ministry quota allocation.'}
                     </p>
 
                     <div className="bg-amber-50 border border-amber-200 rounded p-2 text-[11px] text-amber-800 font-medium">
-                      ⚠️ Mutually Exclusive: Cannot co-claim with state First Graduate tuition concession.
+                      {isTa 
+                        ? '⚠️ ஒன்றுக்கொன்று முரண்பாடானது: மாநில முதல் பட்டதாரி கட்டண சலுகையுடன் சேர்த்து பெற முடியாது.' 
+                        : '⚠️ Mutually Exclusive: Cannot co-claim with state First Graduate tuition concession.'}
                     </div>
                   </div>
 
                   <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-bold text-slate-400">Single Welfare Rule</span>
+                    <span className="text-[11px] font-bold text-slate-400">{isTa ? 'ஒற்றை நல விதி' : 'Single Welfare Rule'}</span>
                     <a
                       href="https://scholarships.gov.in"
                       target="_blank"
                       rel="noreferrer"
                       className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
                     >
-                      <span>NSP Guidelines</span>
+                      <span>{isTa ? 'NSP வழிகாட்டி' : 'NSP Guidelines'}</span>
                       <ExternalLink size={11} />
                     </a>
                   </div>
@@ -1165,31 +1191,35 @@ export default function HomePage({
                   <div className="space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <h4 className="font-bold text-xs sm:text-sm text-slate-900">
-                        AICTE Pragati
+                        {isTa ? 'AICTE பிரகதி உதவித்தொகை' : 'AICTE Pragati'}
                       </h4>
                       <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap font-mono">
-                        ₹50,000 / yr
+                        ₹50,000 / {isTa ? 'ஆண்டு' : 'yr'}
                       </span>
                     </div>
 
                     <p className="text-xs text-slate-500 leading-relaxed">
-                      Technical degree scholarship for eligible female candidates in AICTE approved engineering institutes with family income under ₹8.00 Lakh.
+                      {isTa
+                        ? 'AICTE அங்கீகாரம் பெற்ற பொறியியல் கல்லூரிகளில் படிக்கும் மாணவிகளுக்கான தொழில்நுட்ப பட்டப்படிப்பு உதவித்தொகை (வருமானம் ₹8.00 லட்சத்திற்குள்).'
+                        : 'Technical degree scholarship for eligible female candidates in AICTE approved engineering institutes with family income under ₹8.00 Lakh.'}
                     </p>
 
                     <div className="bg-slate-100 border border-slate-200 rounded p-2 text-[11px] text-slate-600 font-medium">
-                      ℹ️ Category Quota: Limited to 2 girl students per family. Excludes state quota waivers.
+                      {isTa
+                        ? 'ℹ️ ஒதுக்கீடு வரம்பு: ஒரு குடும்பத்திற்கு 2 மாணவிகள் வரை மட்டுமே. மாநில ஒதுக்கீட்டுடன் முரண்படும்.'
+                        : 'ℹ️ Category Quota: Limited to 2 girl students per family. Excludes state quota waivers.'}
                     </div>
                   </div>
 
                   <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-bold text-slate-400">Quota Restricted</span>
+                    <span className="text-[11px] font-bold text-slate-400">{isTa ? 'ஒதுக்கீடு கட்டுப்பாடு' : 'Quota Restricted'}</span>
                     <a
                       href="https://www.aicte-india.org"
                       target="_blank"
                       rel="noreferrer"
                       className="text-slate-600 hover:text-slate-900 font-medium flex items-center space-x-1 text-[11px]"
                     >
-                      <span>AICTE Portal</span>
+                      <span>{isTa ? 'AICTE தளம்' : 'AICTE Portal'}</span>
                       <ExternalLink size={11} />
                     </a>
                   </div>
@@ -1203,14 +1233,14 @@ export default function HomePage({
               <div className="flex items-center space-x-2">
                 <CheckCircle2 size={18} className="text-emerald-700 shrink-0" />
                 <span className="font-medium">
-                  All recommendations are backed by Government of Tamil Nadu Welfare Orders (G.O. 47/2026).
+                  {t.go_guarantee_text || "All recommendations are backed by Government of Tamil Nadu Welfare Orders (G.O. 47/2026)."}
                 </span>
               </div>
               <button
                 onClick={() => onNavigateTab && onNavigateTab('tracker')}
                 className="font-bold text-emerald-800 hover:underline whitespace-nowrap cursor-pointer"
               >
-                Track My Status →
+                {t.track_my_status_btn || "Track My Status →"}
               </button>
             </div>
 
@@ -1233,7 +1263,7 @@ export default function HomePage({
             <div className="flex items-center space-x-2">
               <Bot size={18} className="text-emerald-200" />
               <span className="font-bold text-xs sm:text-sm">
-                AI Advisor (Tamil/EN)
+                {t.ai_advisor_title || "AI Advisor (Tamil/EN)"}
               </span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             </div>
@@ -1243,7 +1273,7 @@ export default function HomePage({
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
                 className="p-1 hover:bg-emerald-800 rounded transition cursor-pointer text-emerald-100 hover:text-white"
-                title={isMinimized ? "Expand" : "Minimize"}
+                title={isMinimized ? (isTa ? "விரிவாக்கு" : "Expand") : (isTa ? "சிறிதாக்கு" : "Minimize")}
               >
                 <Minus size={15} />
               </button>
@@ -1251,14 +1281,14 @@ export default function HomePage({
               <button
                 onClick={() => setIsAiOpen(false)}
                 className="p-1 hover:bg-emerald-800 rounded transition cursor-pointer text-emerald-100 hover:text-white"
-                title="Close"
+                title={isTa ? "மூடு" : "Close"}
               >
                 <X size={15} />
               </button>
             </div>
           </div>
 
-          {/* White chat body showing grey user bubble "NSP applying rules?" */}
+          {/* White chat body showing grey user bubble */}
           {!isMinimized && (
             <div className="flex flex-col h-80 bg-white">
               
@@ -1280,7 +1310,7 @@ export default function HomePage({
                       <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-tl-xs shadow-xs max-w-[90%] space-y-1.5">
                         <div className="flex items-center space-x-1 text-[11px] font-bold text-emerald-800">
                           <Sparkles size={12} />
-                          <span>TN e-Vidya Counselor</span>
+                          <span>{isTa ? 'தமிழ்நாடு இ-வித்யா ஆலோசகர்' : 'TN e-Vidya Counselor'}</span>
                         </div>
                         <p className="whitespace-pre-line leading-relaxed text-slate-700">
                           {msg.text}
@@ -1294,7 +1324,7 @@ export default function HomePage({
                   <div className="flex justify-start">
                     <div className="bg-white border border-slate-200 text-slate-500 text-[11px] px-3 py-1.5 rounded-full flex items-center space-x-1.5 shadow-xs">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
-                      <span>Counselor is composing reply...</span>
+                      <span>{isTa ? 'ஆலோசகர் பதில் எழுதுகிறார்...' : 'Counselor is composing reply...'}</span>
                     </div>
                   </div>
                 )}
@@ -1310,7 +1340,7 @@ export default function HomePage({
                   type="text"
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Ask policy, document, or scheme question..."
+                  placeholder={t.ask_question_placeholder || "Ask policy, document, or scheme question..."}
                   className="flex-1 px-3 py-1.5 bg-slate-100 focus:bg-white text-xs text-slate-800 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-600"
                 />
                 <button
@@ -1357,32 +1387,34 @@ export default function HomePage({
 
             <div className="text-center space-y-1">
               <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider font-mono">
-                Official Receipt • TNeGA
+                {t.official_receipt_tnega || "Official Receipt • TNeGA"}
               </span>
               <h3 className="text-lg font-bold text-slate-900">
-                Application Successfully Submitted!
+                {t.app_submitted_title || "Application Successfully Submitted!"}
               </h3>
               <p className="text-xs text-slate-500">
-                Your application for <strong>{appliedScheme.name}</strong> ({appliedScheme.amount}) has been registered into the direct disbursement queue.
+                {isTa
+                  ? `உங்கள் ${appliedScheme.name} (${appliedScheme.amount}) விண்ணப்பம் நேரடி நிதி வழங்கல் வரிசையில் பதிவு செய்யப்பட்டுள்ளது.`
+                  : `Your application for ${appliedScheme.name} (${appliedScheme.amount}) has been registered into the direct disbursement queue.`}
               </p>
             </div>
 
             <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-500">Ack Reference No:</span>
+                <span className="text-slate-500">{t.ack_ref_no || "Ack Reference No:"}</span>
                 <strong className="font-mono text-emerald-800">{appliedScheme.refId}</strong>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Candidate Name:</span>
-                <span className="text-slate-800 font-semibold">{studentProfile.fullName}</span>
+                <span className="text-slate-500">{t.candidate_name || "Candidate Name:"}</span>
+                <span className="text-slate-800 font-semibold">{studentProfile.fullName || (isTa ? 'மாணவர்' : 'Student Candidate')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Sanction Category:</span>
-                <span className="text-slate-800">{studentProfile.community} Welfare & {studentProfile.isFirstGraduate ? 'First Graduate' : 'Merit'}</span>
+                <span className="text-slate-500">{t.sanction_category || "Sanction Category:"}</span>
+                <span className="text-slate-800">{studentProfile.community} Welfare & {studentProfile.isFirstGraduate ? (isTa ? 'முதல் பட்டதாரி' : 'First Graduate') : (isTa ? 'தகுதிப் பட்டியல்' : 'Merit')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Disbursement Mode:</span>
-                <span className="text-slate-800 font-medium">Direct Benefit Transfer (DBT)</span>
+                <span className="text-slate-500">{t.disbursement_mode || "Disbursement Mode:"}</span>
+                <span className="text-slate-800 font-medium">{isTa ? 'நேரடிப் பலன் பரிமாற்றம் (DBT)' : 'Direct Benefit Transfer (DBT)'}</span>
               </div>
             </div>
 
@@ -1391,7 +1423,7 @@ export default function HomePage({
                 onClick={() => setAppliedScheme(null)}
                 className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition cursor-pointer"
               >
-                Close
+                {t.modal_close_btn || "Close"}
               </button>
               <button
                 onClick={() => {
@@ -1401,7 +1433,7 @@ export default function HomePage({
                 className="flex-1 py-2 bg-[#006a4e] hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center space-x-1 cursor-pointer"
               >
                 <Clock size={13} />
-                <span>Track My Status</span>
+                <span>{t.track_my_status_btn || "Track My Status"}</span>
               </button>
             </div>
 
