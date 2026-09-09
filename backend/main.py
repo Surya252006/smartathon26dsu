@@ -257,8 +257,33 @@ class RegisterRequest(BaseModel):
     email: str
     password: str
     full_name: str
+    phone: Optional[str] = ""
+    gender: Optional[str] = "male"
+    dob: Optional[str] = "2006-05-14"
     community: Optional[str] = "BC"
     district: Optional[str] = "Chennai"
+    taluk: Optional[str] = ""
+    city: Optional[str] = ""
+    residence_type: Optional[str] = "Rural"
+    father_name: Optional[str] = ""
+
+    # Academic
+    degree: Optional[str] = "Undergraduate (UG)"
+    current_course: Optional[str] = "Engineering"
+    college_name: Optional[str] = ""
+    college_type: Optional[str] = "Government"
+    year_of_study: Optional[str] = "1st Year (Fresher)"
+    board_percentage: Optional[float] = 85.0
+    admission_mode: Optional[str] = "govt_counseling_single_window"
+
+    # Socio-Economic & Quota
+    annual_income: Optional[float] = 140000.0
+    is_first_graduate: Optional[bool] = True
+    schooling_type: Optional[str] = "tn_govt_school_6_to_12"
+    is_differently_abled: Optional[bool] = False
+    special_category: Optional[str] = "None"
+    avatar: Optional[str] = None
+    custom_profile: Optional[Dict[str, Any]] = None
 
 class LoginRequest(BaseModel):
     email: str
@@ -266,16 +291,48 @@ class LoginRequest(BaseModel):
 
 @app.post("/api/auth/register")
 def register_student(req: RegisterRequest):
-    """Registers a student account and creates initial profile in SQLite database."""
+    """Registers a student with complete bio-data and syncs directly into MongoDB Atlas cluster."""
     db = SessionLocal()
     try:
+        bio_profile = {
+            "full_name": req.full_name,
+            "email": req.email.lower().strip(),
+            "phone": req.phone or "",
+            "gender": req.gender or "male",
+            "dob": req.dob or "2006-05-14",
+            "community": req.community or "BC",
+            "district": req.district or "Chennai",
+            "taluk": req.taluk or "",
+            "city": req.city or req.district or "Chennai",
+            "residence_type": req.residence_type or "Rural",
+            "father_name": req.father_name or "",
+            "degree": req.degree or "Undergraduate (UG)",
+            "current_course": req.current_course or "Engineering",
+            "college_name": req.college_name or "",
+            "college_type": req.college_type or "Government",
+            "year_of_study": req.year_of_study or "1st Year (Fresher)",
+            "board_percentage": float(req.board_percentage if req.board_percentage is not None else 85.0),
+            "admission_mode": req.admission_mode or "govt_counseling_single_window",
+            "annual_income": float(req.annual_income if req.annual_income is not None else 140000.0),
+            "is_first_graduate": bool(req.is_first_graduate),
+            "schooling_type": req.schooling_type or "tn_govt_school_6_to_12",
+            "is_differently_abled": bool(req.is_differently_abled),
+            "special_category": req.special_category or "None",
+            "avatar": req.avatar,
+            "available_docs": ["income_certificate", "community_certificate", "marksheet", "bonafide_certificate", "aadhaar_bank"],
+            "verified_documents": []
+        }
+        if req.custom_profile:
+            bio_profile.update(req.custom_profile)
+
         user = register_user(
             db, 
             email=req.email, 
             password=req.password, 
             full_name=req.full_name,
             community=req.community or "BC",
-            district=req.district or "Chennai"
+            district=req.district or "Chennai",
+            custom_profile=bio_profile
         )
         auth_data = authenticate_user(db, req.email, req.password)
         return {"status": "success", "user": auth_data}

@@ -363,32 +363,51 @@ export default function ProfileForm({
 
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
         
-        {/* Verified Cluster Sync & e-Sevai Auto-fill Status Banner */}
+        {/* Verified Cluster Sync & e-Sevai Auto-fill Status Banner with Instant 1-Click Calculation */}
         {(currentUser || formData.full_name) && (
-          <div className="bg-emerald-50 border border-emerald-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-2xs">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold shrink-0 shadow-2xs">
-                <ShieldCheck size={18} />
+          <div className="bg-gradient-to-r from-[#0f2942] to-emerald-950 border-2 border-emerald-500/80 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs shadow-md text-white">
+            <div className="flex items-start sm:items-center space-x-3.5">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shrink-0 shadow-sm border border-emerald-400">
+                <ShieldCheck size={22} />
               </div>
-              <div>
-                <span className="font-bold text-slate-900 block text-xs">
-                  ✓ Profile Auto-filled from Verified e-Governance Cluster Record
-                </span>
-                <p className="text-[11px] text-slate-600">
-                  Applicant: <strong>{formData.full_name || currentUser?.email}</strong> • Community: <strong>{formData.community}</strong> • District: <strong>{formData.district}</strong>
+              <div className="space-y-0.5">
+                <div className="flex items-center space-x-2">
+                  <span className="font-bold text-white text-sm">
+                    ✓ Bio-Data Loaded from Verified Cloud Profile
+                  </span>
+                  <span className="bg-emerald-800 text-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-600">
+                    Zero Refill Needed
+                  </span>
+                </div>
+                <p className="text-xs text-emerald-200/90">
+                  Applicant: <strong className="text-white">{formData.full_name || currentUser?.email}</strong> • Community: <strong className="text-white">{formData.community}</strong> • Course: <strong className="text-white">{formData.current_course}</strong> • District: <strong className="text-white">{formData.district}</strong>
+                </p>
+                <p className="text-[11px] text-slate-300">
+                  All your registered credentials are ready. You do not need to click through 5 steps every time!
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 shrink-0">
+            <div className="flex items-center space-x-2 shrink-0 self-start md:self-auto">
+              <button
+                type="button"
+                onClick={() => onSubmit(formData)}
+                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg border border-emerald-300"
+                title="Run MWIS solver immediately with your saved credentials"
+              >
+                <Sparkles size={15} className="fill-slate-950" />
+                <span>⚡ Calculate Now with Saved Bio-Data</span>
+                <ArrowRight size={14} />
+              </button>
+
               <button
                 type="button"
                 onClick={onOpenScanner}
-                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-[11px] font-bold flex items-center space-x-1.5 transition cursor-pointer shadow-xs border border-emerald-600"
+                className="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer border border-slate-700"
                 title="Cross-verify Revenue and Education certificates with e-Sevai"
               >
-                <FileCheck2 size={13} className="text-amber-300" />
-                <span>Verify e-Sevai Docs</span>
+                <FileCheck2 size={14} className="text-amber-300" />
+                <span>Verify Docs</span>
               </button>
             </div>
           </div>

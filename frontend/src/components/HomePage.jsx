@@ -39,6 +39,7 @@ export default function HomePage({
   onNavigateTab = null,
   onOpenGrievance = null,
   onOpenAuth = null,
+  onOpenRegister = null,
   onOpenScanner = null
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
@@ -361,7 +362,12 @@ export default function HomePage({
                   onClick={onStartMatcher}
                   className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition flex items-center space-x-2 cursor-pointer border border-emerald-400"
                 >
-                  <span>Find My Scholarships</span>
+                  <Sparkles size={16} className="text-amber-300" />
+                  <span>
+                    {currentUser?.profile?.full_name || studentProfile.fullName
+                      ? '⚡ Find My Scholarships (Saved Bio-Data)'
+                      : '📝 Register Bio-Data & Find Scholarships'}
+                  </span>
                   <ArrowRight size={16} />
                 </button>
 
@@ -372,6 +378,16 @@ export default function HomePage({
                   <span>How It Works</span>
                 </a>
               </div>
+
+              {/* Saved bio-data confirmation pill */}
+              {(currentUser?.profile?.full_name || studentProfile.fullName) && (
+                <div className="flex items-center space-x-2 text-xs text-emerald-300 bg-emerald-950/70 px-3.5 py-1.5 rounded-lg border border-emerald-800/80 w-fit">
+                  <CheckCircle size={14} className="text-emerald-400 shrink-0" />
+                  <span>
+                    Saved Profile: <strong>{currentUser?.profile?.full_name || studentProfile.fullName}</strong> ({currentUser?.profile?.community || studentProfile.community} • {currentUser?.profile?.district || studentProfile.district}) — <em>Zero Repeated Form Filling</em>
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Right Column (5 cols): Visual Showcase Card with Temple Emblem & Campus Image */}
@@ -679,25 +695,25 @@ export default function HomePage({
 
               {/* Guest banner if not signed in and profile empty */}
               {(!currentUser && !studentProfile.fullName) && (
-                <div className="mb-4 p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs space-y-1.5">
-                  <div className="flex items-center space-x-1.5 font-bold text-emerald-900 text-[11px]">
-                    <Sparkles size={13} className="text-emerald-600 shrink-0" />
-                    <span>Fresh Session • பொது அணுகல் (Guest)</span>
+                <div className="mb-4 p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-xl text-xs space-y-2 shadow-2xs">
+                  <div className="flex items-center space-x-1.5 font-bold text-emerald-900 text-xs">
+                    <Sparkles size={14} className="text-emerald-600 shrink-0" />
+                    <span>New Student Registration • 1-Time Bio-Data Setup</span>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-snug">
-                    Enter your academic credentials below to discover eligible scholarships, or sign in to load your saved profile.
+                    Register your complete bio-data once. All scholarships will automatically pull from your saved profile without needing to fill the form again.
                   </p>
-                  <div className="flex items-center gap-1.5 pt-1">
+                  <div className="flex items-center gap-2 pt-0.5">
                     <button
-                      onClick={onStartMatcher}
-                      className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded text-[10px] transition cursor-pointer"
+                      onClick={onOpenRegister || onStartMatcher}
+                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition cursor-pointer shadow-xs flex items-center space-x-1"
                     >
-                      Start Assessment
+                      <span>📝 Register Bio-Data</span>
                     </button>
                     {onOpenAuth && (
                       <button
                         onClick={onOpenAuth}
-                        className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 font-bold rounded text-[10px] border border-slate-200 transition cursor-pointer"
+                        className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-lg text-xs border border-slate-200 transition cursor-pointer"
                       >
                         Sign In / உள்நுழைவு
                       </button>
@@ -893,14 +909,29 @@ export default function HomePage({
               </div>
 
               {/* Quick Action to Check Different Profile */}
-              <div className="mt-4 pt-3 border-t border-slate-100">
+              <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
                 <button
                   onClick={onStartMatcher}
-                  className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold rounded-lg transition flex items-center justify-center space-x-2 cursor-pointer shadow-xs border border-emerald-600"
                 >
-                  <span>Edit Academic Profile / Retest</span>
+                  <Sparkles size={14} className="text-amber-300" />
+                  <span>
+                    {currentUser || studentProfile.fullName
+                      ? '⚡ Run Instant Calculation (Saved Bio-Data)'
+                      : '📝 Register Bio-Data & Check Eligibility'}
+                  </span>
                   <ArrowRight size={13} />
                 </button>
+
+                {(currentUser || studentProfile.fullName) && (
+                  <button
+                    onClick={() => onNavigateTab ? onNavigateTab('matcher') : onStartMatcher()}
+                    className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold rounded-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                  >
+                    <Edit3 size={11} />
+                    <span>View / Edit Multi-Step Profile Wizard</span>
+                  </button>
+                )}
               </div>
 
             </div>

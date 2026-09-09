@@ -262,6 +262,14 @@ def register_user(
         except Exception as me:
             print(f"[MongoDB Sync Notice] User sync failed: {me}")
 
+    # 3. Store in dedicated 'profiles' and 'profile' cluster folders
+    try:
+        create_user_profile(db, user_id, profile_data)
+        if user_id != cleaned_email:
+            create_user_profile(db, cleaned_email, profile_data)
+    except Exception as cpe:
+        print(f"[MongoDB Profile Cluster Notice] {cpe}")
+
     return user
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[Dict[str, Any]]:
@@ -336,8 +344,13 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[Dict[s
     if user.password_hash != hash_password(password):
         return None
     
-    profile = db.query(Profile).filter(Profile.user_id == user.id).first()
-    profile_dict = profile.profile_data if profile else {}
+    # Fetch richest bio-data profile from MongoDB Atlas cluster or SQLite
+    cluster_prof = get_user_profile(db, cleaned_email) or get_user_profile(db, user.id)
+    if cluster_prof:
+        profile_dict = cluster_prof
+    else:
+        profile = db.query(Profile).filter(Profile.user_id == user.id).first()
+        profile_dict = profile.profile_data if profile else {}
 
     # Determine role: admin vs student
     is_admin = cleaned_email.startswith("admin") or "admin" in cleaned_email or profile_dict.get("role") == "admin"

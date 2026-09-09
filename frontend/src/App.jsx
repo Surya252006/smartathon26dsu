@@ -28,6 +28,17 @@ function App() {
   // Authentication state
   const [currentUser, setCurrentUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login');
+
+  const openLogin = () => {
+    setAuthModalMode('login');
+    setShowAuthModal(true);
+  };
+
+  const openRegister = () => {
+    setAuthModalMode('register');
+    setShowAuthModal(true);
+  };
 
   // e-Sevai Document Scanner Modal State
   const [showScannerModal, setShowScannerModal] = useState(false);
@@ -124,6 +135,13 @@ function App() {
       window.dispatchEvent(new Event('profileUpdated'));
       window.dispatchEvent(new Event('avatarUpdated'));
     } catch (e) {}
+
+    // Seamless UX: If user registered or logged in with bio-data, immediately evaluate without asking to refill!
+    if (resolvedUser.profile && (resolvedUser.profile.full_name || resolvedUser.profile.fullName || resolvedUser.profile.annual_income || resolvedUser.profile.annualIncome)) {
+      setTimeout(() => {
+        handleEvaluate(resolvedUser.profile);
+      }, 350);
+    }
 
     // Background cloud check from MongoDB Atlas 'profiles' & 'profile' collections
     getProfileFromCluster(lookupId).then((remoteData) => {
@@ -241,6 +259,19 @@ function App() {
     }
   };
 
+  const handleStartMatcher = (overrideProfile = null) => {
+    const activeProfile = overrideProfile || currentUser?.profile || currentProfile;
+    // If student already has bio-data, directly calculate with saved profile - zero repeated filling!
+    if (activeProfile && (activeProfile.full_name || activeProfile.fullName || activeProfile.annual_income || activeProfile.annualIncome || activeProfile.community)) {
+      handleEvaluate(activeProfile);
+    } else if (currentUser) {
+      setCurrentTab('matcher');
+    } else {
+      // Direct guest to 1-time bio-data registration
+      openRegister();
+    }
+  };
+
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
 
   return (
@@ -251,7 +282,7 @@ function App() {
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         currentUser={currentUser}
-        onOpenAuth={() => setShowAuthModal(true)}
+        onOpenAuth={() => openLogin()}
         onLogout={handleLogout}
         onToggleChat={() => setIsChatOpen(prev => !prev)}
         isChatOpen={isChatOpen}
@@ -276,10 +307,11 @@ function App() {
         {/* VIEW A: Official TN e-Vidya Dashboard (Home Page) */}
         {currentTab === 'home' && (
           <HomePage
-            onStartMatcher={() => setCurrentTab('matcher')}
+            onStartMatcher={() => handleStartMatcher()}
             onInjectPersona={injectPersona}
             onViewSchemes={() => setCurrentTab('schemes')}
-            onOpenAuth={() => setShowAuthModal(true)}
+            onOpenAuth={() => openLogin()}
+            onOpenRegister={() => openRegister()}
             currentLang={currentLang}
             currentUser={currentUser}
             onNavigateTab={setCurrentTab}
@@ -454,6 +486,7 @@ function App() {
       {/* 4. Student Auth Modal (Login / Register) */}
       <AuthModal
         isOpen={showAuthModal}
+        initialMode={authModalMode}
         onClose={() => setShowAuthModal(false)}
         onAuthSuccess={handleAuthSuccess}
       />
