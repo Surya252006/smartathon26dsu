@@ -15,7 +15,7 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { TN_DISTRICTS } from './ProfileForm';
-import { saveProfileToCluster } from '../utils/cloudSync';
+import { saveProfileToCluster, getProfileFromCluster } from '../utils/cloudSync';
 
 // Client-side authentication fallback for production / offline environments
 function authenticateLocally(mode, payload) {
@@ -177,7 +177,27 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
   if (!isOpen) return null;
 
-  const completeAuth = (userData) => {
+  const completeAuth = async (userData) => {
+    // 1. Fetch previously saved profile & avatar from Cloud Cluster & MongoDB Atlas!
+    const lookupId = userData.email || userData.user_id;
+    try {
+      const remoteData = await getProfileFromCluster(lookupId);
+      if (remoteData) {
+        userData.profile = userData.profile || {};
+        if (remoteData.avatar) {
+          userData.profile.avatar = remoteData.avatar;
+        }
+        if (remoteData.full_name) userData.profile.full_name = remoteData.full_name;
+        if (remoteData.annual_income) userData.profile.annual_income = remoteData.annual_income;
+        if (remoteData.board_percentage) userData.profile.board_percentage = remoteData.board_percentage;
+        if (remoteData.current_course) userData.profile.current_course = remoteData.current_course;
+        if (remoteData.is_first_graduate !== undefined) userData.profile.is_first_graduate = remoteData.is_first_graduate;
+        if (remoteData.district) userData.profile.district = remoteData.district;
+      }
+    } catch (e) {
+      console.warn("Cluster lookup notice:", e);
+    }
+
     // Save to user storage (sessionStorage ensures fresh link for new visitors and auto-signout on tab close)
     try {
       sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userData));
@@ -194,14 +214,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         currentCourse: prof.current_course || 'B.E CSE',
         isFirstGraduate: prof.is_first_graduate !== undefined ? prof.is_first_graduate : true,
         schoolingType: prof.schooling_type || 'tn_govt_school_6_to_12',
-        avatar: prof.avatar || null
+        avatar: prof.avatar || null,
+        isGuest: false
       };
       sessionStorage.setItem('tn_student_profile', JSON.stringify(profileToSave));
       if (profileToSave.avatar) {
         sessionStorage.setItem('tn_student_avatar', profileToSave.avatar);
       }
 
-      // Persist profile into Cloud Firestore Cluster
+      // Persist profile into Cloud Firestore Cluster and MongoDB
       saveProfileToCluster(profileToSave, userData).catch(err =>
         console.warn("[AuthModal] Cluster profile write notice:", err)
       );
@@ -259,7 +280,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
       if (!authenticatedUser) {
         authenticatedUser = authenticateLocally(mode, payload);
       }
-      completeAuth(authenticatedUser);
+      await completeAuth(authenticatedUser);
     } catch (err) {
       setErrorMsg(err.message || "Authentication failed. Please verify credentials.");
     } finally {
@@ -267,7 +288,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     }
   };
 
-  const handleInstantDemoLogin = (type) => {
+  const handleInstantDemoLogin = async (type) => {
     setIsLoading(true);
     setErrorMsg(null);
 
@@ -284,7 +305,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
     try {
       const userObj = authenticateLocally('login', payload);
-      completeAuth(userObj);
+      await completeAuth(userObj);
     } catch (err) {
       setErrorMsg(err.message);
     } finally {

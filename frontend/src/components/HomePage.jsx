@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 import EditProfileModal from './EditProfileModal';
+import { saveAvatarToCluster, saveProfileToCluster } from '../utils/cloudSync';
 
 export default function HomePage({ 
   onStartMatcher, 
@@ -178,21 +179,26 @@ export default function HomePage({
           
           // Also update studentProfile avatar
           const savedProfile = sessionStorage.getItem('tn_student_profile');
-          if (savedProfile) {
-            const p = JSON.parse(savedProfile);
-            p.avatar = base64Data;
-            sessionStorage.setItem('tn_student_profile', JSON.stringify(p));
-            setStudentProfile(p);
-          }
+          const p = savedProfile ? JSON.parse(savedProfile) : { ...studentProfile };
+          p.avatar = base64Data;
+          p.isGuest = false;
+          sessionStorage.setItem('tn_student_profile', JSON.stringify(p));
+          setStudentProfile(p);
           
           window.dispatchEvent(new Event('avatarUpdated'));
           
           const savedUser = sessionStorage.getItem('tn_scholarship_user');
+          let userObj = currentUser;
           if (savedUser) {
-            const userObj = JSON.parse(savedUser);
+            userObj = JSON.parse(savedUser);
             userObj.profile = { ...(userObj.profile || {}), avatar: base64Data };
             sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
           }
+
+          // Persist directly to MongoDB and Cloud Firestore cluster so signout -> signin preserves photo!
+          const clusterId = userObj?.email || userObj?.user_id || p.fullName || 'student_avatar';
+          saveAvatarToCluster(clusterId, base64Data);
+          saveProfileToCluster({ ...p, avatar: base64Data }, userObj);
         } catch (err) {
           console.warn("Storage quota note", err);
         }
@@ -207,19 +213,23 @@ export default function HomePage({
     try {
       sessionStorage.removeItem('tn_student_avatar');
       const savedProfile = sessionStorage.getItem('tn_student_profile');
+      let p = { ...studentProfile };
       if (savedProfile) {
-        const p = JSON.parse(savedProfile);
+        p = JSON.parse(savedProfile);
         p.avatar = null;
         sessionStorage.setItem('tn_student_profile', JSON.stringify(p));
         setStudentProfile(p);
       }
       window.dispatchEvent(new Event('avatarUpdated'));
       const savedUser = sessionStorage.getItem('tn_scholarship_user');
+      let userObj = currentUser;
       if (savedUser) {
-        const userObj = JSON.parse(savedUser);
+        userObj = JSON.parse(savedUser);
         if (userObj.profile) delete userObj.profile.avatar;
         sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
       }
+      const clusterId = userObj?.email || userObj?.user_id || p.fullName || 'student_avatar';
+      saveAvatarToCluster(clusterId, null);
     } catch (err) {}
   };
 

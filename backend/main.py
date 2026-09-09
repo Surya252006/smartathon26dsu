@@ -312,6 +312,18 @@ def save_student_profile(req: ProfileUpdateRequest):
     finally:
         db.close()
 
+@app.get("/api/auth/profile/{user_id}")
+def get_student_profile_endpoint(user_id: str):
+    """Retrieves saved student profile and avatar from SQLite and MongoDB."""
+    db = SessionLocal()
+    try:
+        data = get_user_profile(db, user_id)
+        if not data:
+            raise HTTPException(status_code=404, detail="Profile not found in database")
+        return {"status": "success", "profile": data}
+    finally:
+        db.close()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)

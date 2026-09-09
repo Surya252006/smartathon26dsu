@@ -322,10 +322,20 @@ def create_user_profile(db: Session, user_id: str, profile_data: Dict[str, Any])
     return profile
 
 def get_user_profile(db: Session, user_id: str) -> Optional[Dict[str, Any]]:
-    """Retrieves a user profile as a dictionary."""
+    """Retrieves a user profile as a dictionary from SQLite and MongoDB Atlas."""
     profile = db.query(Profile).filter(Profile.user_id == user_id).first()
-    if profile:
+    if profile and profile.profile_data:
         return profile.profile_data
+
+    # Fallback to MongoDB Atlas
+    mongo_profiles = get_mongo_collection("profiles")
+    if mongo_profiles is not None:
+        try:
+            doc = mongo_profiles.find_one({"_id": user_id})
+            if doc and "profile_data" in doc:
+                return doc["profile_data"]
+        except Exception:
+            pass
     return None
 
 def log_evaluation_to_db(user_id: Optional[str], profile_data: Dict[str, Any], evaluation_result: Dict[str, Any]):

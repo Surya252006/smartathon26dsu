@@ -16,7 +16,7 @@ import AdminDashboard from './components/AdminDashboard';
 import { evaluateProfileIntelligently } from './utils/decisionEngine';
 import { DEMO_PERSONAS } from './data/demoPersonas';
 import { TRANSLATIONS } from './utils/translations';
-import { saveProfileToCluster, saveEvaluationToCluster } from './utils/cloudSync';
+import { saveProfileToCluster, saveEvaluationToCluster, getProfileFromCluster } from './utils/cloudSync';
 
 function App() {
   const [currentTab, setCurrentTab] = useState('home'); // 'home', 'matcher', 'results', 'schemes'
@@ -86,17 +86,31 @@ function App() {
   };
 
   const handleAuthSuccess = async (user) => {
-    setCurrentUser(user);
+    let resolvedUser = { ...user };
+    try {
+      const lookupId = user.email || user.user_id;
+      const remoteData = await getProfileFromCluster(lookupId);
+      if (remoteData?.avatar) {
+        resolvedUser.profile = { ...(resolvedUser.profile || {}), avatar: remoteData.avatar };
+        sessionStorage.setItem('tn_student_avatar', remoteData.avatar);
+        window.dispatchEvent(new Event('avatarUpdated'));
+      }
+    } catch (e) {
+      console.warn("Cluster lookup notice on login:", e);
+    }
+
+    setCurrentUser(resolvedUser);
     try {
       // Session Storage: Automatically clears when browser/tab is closed
-      sessionStorage.setItem('tn_scholarship_user', JSON.stringify(user));
+      sessionStorage.setItem('tn_scholarship_user', JSON.stringify(resolvedUser));
       
       // Sync user profile to Firestore Cloud Cluster
-      if (user.profile) {
-        saveProfileToCluster(user.profile, user).catch(err => 
+      if (resolvedUser.profile) {
+        saveProfileToCluster(resolvedUser.profile, resolvedUser).catch(err => 
           console.warn("[App] Cloud sync notice on login:", err)
         );
       }
+      window.dispatchEvent(new Event('profileUpdated'));
     } catch (e) {}
   };
 
