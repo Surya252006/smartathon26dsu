@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, Sparkles, Building2, PhoneCall, ShieldCheck } from 'lucide-react';
+import { 
+  Loader2, 
+  Sparkles, 
+  Building2, 
+  PhoneCall, 
+  ShieldCheck, 
+  FileText, 
+  ArrowRight,
+  CheckCircle2,
+  Database
+} from 'lucide-react';
 import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import ProfileForm from './components/ProfileForm';
