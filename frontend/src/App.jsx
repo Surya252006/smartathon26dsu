@@ -21,7 +21,17 @@ import { saveProfileToCluster, saveEvaluationToCluster, getProfileFromCluster } 
 import { fetchLiveDbStatus } from './utils/apiConfig';
 
 function App() {
-  const [currentTab, setCurrentTab] = useState('home'); // 'home', 'matcher', 'results', 'schemes'
+  const [currentTab, setCurrentTab] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab && ['matcher', 'results', 'profile', 'schemes', 'tracker', 'admin', 'home'].includes(tab)) {
+        return tab;
+      }
+    } catch (e) {}
+    return 'matcher'; // Default to Eligibility Checker as requested
+  });
+  const [matcherMode, setMatcherMode] = useState('results'); // 'results' (Optimal MWIS) or 'wizard' (5-step form)
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [result, setResult] = useState(null);
   const [currentProfile, setCurrentProfile] = useState(null);
@@ -91,6 +101,11 @@ function App() {
     fetchLiveDbStatus()
       .then(data => setDbStatus(data))
       .catch(err => console.warn("Database status check notice", err));
+
+    // Auto-evaluate immediately so Eligibility Checker is instantly open and active
+    setTimeout(() => {
+      handleOpenEligibilityChecker();
+    }, 50);
   }, []);
 
   const handleSelectLang = (lang) => {
@@ -259,15 +274,47 @@ function App() {
     }
   };
 
-  const handleOpenEligibilityChecker = () => {
-    const activeProfile = currentProfile || currentUser?.profile;
-    if (activeProfile && (activeProfile.full_name || activeProfile.fullName || activeProfile.annual_income || activeProfile.annualIncome || activeProfile.community)) {
-      handleEvaluate(activeProfile);
-    } else if (result) {
-      setCurrentTab('results');
-    } else {
-      setCurrentTab('matcher');
+  const handleOpenEligibilityChecker = (overrideProfile = null) => {
+    let activeProfile = overrideProfile || currentProfile || currentUser?.profile;
+    if (!activeProfile) {
+      try {
+        const saved = sessionStorage.getItem('tn_student_profile');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && (parsed.full_name || parsed.fullName || parsed.community || parsed.annualIncome)) {
+            activeProfile = parsed;
+          }
+        }
+      } catch (e) {}
     }
+    if (!activeProfile) {
+      activeProfile = {
+        fullName: 'Surya Suresh',
+        full_name: 'Surya Suresh',
+        gender: 'male',
+        community: 'BC',
+        district: 'Pudukkottai',
+        annualIncome: 140000,
+        annual_income: 140000,
+        currentCourse: 'Engineering',
+        current_course: 'Engineering',
+        boardPercentage: 88.5,
+        board_percentage: 88.5,
+        isFirstGraduate: true,
+        is_first_graduate: true,
+        schoolingType: 'tn_govt_school_6_to_12',
+        schooling_type: 'tn_govt_school_6_to_12',
+        taluk: 'Aranthangi',
+        collegeName: 'Government College of Engineering, Bodinayakkanur',
+        collegeType: 'Government'
+      };
+      try {
+        sessionStorage.setItem('tn_student_profile', JSON.stringify(activeProfile));
+      } catch (e) {}
+    }
+    setCurrentProfile(activeProfile);
+    setMatcherMode('results');
+    handleEvaluate(activeProfile);
   };
 
   const handleStartMatcher = (overrideProfile = null) => {
@@ -338,7 +385,75 @@ function App() {
             
             {/* VIEW B & C: Eligibility Matcher & Results (Directly Evaluated from Saved Bio-Data Profile) */}
             {(currentTab === 'matcher' || currentTab === 'results') && (
-              <div className="animate-in fade-in duration-300">
+              <div className="animate-in fade-in duration-300 space-y-4">
+                
+                {/* Eligibility Checker Header Toolbar */}
+                <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setCurrentTab('home')}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition flex items-center space-x-1 cursor-pointer"
+                    >
+                      <span>← {t.nav_home || 'Back to Home'}</span>
+                    </button>
+                    <span className="text-slate-300">•</span>
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      Eligibility Checker • MWIS Optimization Engine
+                    </span>
+                  </div>
+
+                  {/* Mode Toggle: Optimal Results vs 5-Step Wizard */}
+                  <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
+                    <button
+                      onClick={() => setMatcherMode('results')}
+                      className={`px-3 py-1 rounded-lg transition cursor-pointer ${
+                        matcherMode === 'results'
+                          ? 'bg-white text-emerald-900 font-bold shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      📊 Optimal Benefit Package
+                    </button>
+                    <button
+                      onClick={() => setMatcherMode('wizard')}
+                      className={`px-3 py-1 rounded-lg transition cursor-pointer ${
+                        matcherMode === 'wizard'
+                          ? 'bg-white text-emerald-900 font-bold shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      📝 5-Step Assessment Wizard
+                    </button>
+                  </div>
+
+                  {/* Quick Persona Evaluator */}
+                  <div className="flex items-center space-x-1.5 text-xs">
+                    <span className="text-slate-400 font-medium text-[11px] hidden md:inline">Quick Test:</span>
+                    <button
+                      onClick={() => injectPersona('surya')}
+                      className="px-2.5 py-1 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 font-semibold rounded-lg border border-slate-200 text-[11px] transition cursor-pointer"
+                      title="Evaluate Surya Suresh (BC • Pudukkottai • Engineering • First Graduate)"
+                    >
+                      Surya (BC)
+                    </button>
+                    <button
+                      onClick={() => injectPersona('priya')}
+                      className="px-2.5 py-1 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 font-semibold rounded-lg border border-slate-200 text-[11px] transition cursor-pointer"
+                      title="Evaluate Priya M (SC • Madurai • Pudhumai Penn • Post-Matric)"
+                    >
+                      Priya (SC)
+                    </button>
+                    <button
+                      onClick={() => injectPersona('karthik')}
+                      className="px-2.5 py-1 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 font-semibold rounded-lg border border-slate-200 text-[11px] transition cursor-pointer"
+                      title="Evaluate Karthikeyan (OC • Chennai • Merit)"
+                    >
+                      Karthik (OC)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Sub-view A: Loading State */}
                 {isEvaluating ? (
                   <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-xs border border-slate-200">
                     <div className="relative mb-4">
@@ -351,19 +466,22 @@ function App() {
                       Evaluating candidate community, income ceiling, 12th board marks, and mutual exclusivity matrices from your saved profile...
                     </p>
                   </div>
+                ) : matcherMode === 'wizard' ? (
+                  /* Sub-view B: 5-Step Assessment Wizard */
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-200">
+                    <ProfileForm
+                      onSubmit={(formData) => {
+                        setMatcherMode('results');
+                        handleEvaluate(formData);
+                      }}
+                      initialData={currentProfile || currentUser?.profile || {}}
+                      onCancel={() => setMatcherMode('results')}
+                      currentLang={currentLang}
+                    />
+                  </div>
                 ) : result ? (
+                  /* Sub-view C: Optimal Results Dashboard */
                   <div>
-                    <div className="mb-4 flex items-center justify-between">
-                      <button
-                        onClick={() => setCurrentTab('home')}
-                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition flex items-center space-x-1 cursor-pointer"
-                      >
-                        <span>← Back to Portal Home</span>
-                      </button>
-                      <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                        Official Result • Policy Compliant
-                      </span>
-                    </div>
                     <ResultsDashboard 
                       result={result} 
                       profile={currentProfile || currentUser?.profile} 
@@ -374,7 +492,7 @@ function App() {
                     />
                   </div>
                 ) : (
-                  /* If no result and no bio-data filled yet */
+                  /* Sub-view D: If not evaluated yet, auto-trigger button & bio-data link */
                   <div className="max-w-2xl mx-auto bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-5 shadow-xs">
                     <div className="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
                       <ShieldCheck size={36} />
@@ -384,27 +502,26 @@ function App() {
                         Tamil Nadu Higher Education Welfare Decision Engine
                       </span>
                       <h3 className="text-2xl font-black text-slate-900">
-                        No Student Bio-Data Found
+                        Ready to Check Your Scholarship Entitlements
                       </h3>
                       <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                        Our intelligent MWIS optimization solver evaluates scholarship entitlements directly from your saved student bio-data. Please enter your credentials once in the Bio-Data Form.
+                        Calculate which valid combination gives you the maximum possible financial benefit without legal claim collisions.
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                       <button
-                        onClick={() => setCurrentTab('profile')}
+                        onClick={() => handleOpenEligibilityChecker()}
                         className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs transition cursor-pointer flex items-center space-x-2 shadow-sm"
                       >
-                        <FileText size={15} />
-                        <span>Open Student Bio-Data Form</span>
-                        <ArrowRight size={15} />
+                        <Sparkles size={15} className="text-amber-300" />
+                        <span>⚡ Run Eligibility Check Now</span>
                       </button>
                       <button
-                        onClick={() => injectPersona('surya')}
+                        onClick={() => setCurrentTab('profile')}
                         className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer flex items-center space-x-1.5"
                       >
-                        <Sparkles size={14} className="text-emerald-600" />
-                        <span>Test with Demo Profile (Surya Suresh • BC)</span>
+                        <FileText size={14} className="text-slate-600" />
+                        <span>Open Student Bio-Data Form</span>
                       </button>
                     </div>
                   </div>
