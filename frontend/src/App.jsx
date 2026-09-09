@@ -9,6 +9,9 @@ import ProfilePage from './components/ProfilePage';
 import AuthModal from './components/AuthModal';
 import SideAiChat from './components/SideAiChat';
 import DbConfigModal from './components/DbConfigModal';
+import ApplicationTracker from './components/ApplicationTracker';
+import NoticeBoardModal from './components/NoticeBoardModal';
+import GrievanceModal from './components/GrievanceModal';
 import { DEMO_PERSONAS } from './data/demoPersonas';
 import { TRANSLATIONS } from './utils/translations';
 
@@ -34,6 +37,12 @@ function App() {
 
   // Persistent AI Side Assistant state
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Official Government Gazette & Notice Board Modal State
+  const [showNoticeModal, setShowNoticeModal] = useState(false);
+
+  // Citizen Grievance & Student Helpdesk Modal State
+  const [showGrievanceModal, setShowGrievanceModal] = useState(false);
 
   // Load saved student session and database status on startup
   useEffect(() => {
@@ -163,6 +172,8 @@ function App() {
         }}
         dbStatus={dbStatus}
         onOpenDbConfig={() => setShowDbModal(true)}
+        onOpenNotices={() => setShowNoticeModal(true)}
+        onOpenGrievance={() => setShowGrievanceModal(true)}
       />
 
       {/* 2. Main Content Container */}
@@ -265,15 +276,30 @@ function App() {
           />
         )}
 
+        {/* VIEW F: Application & DBT Status Tracker */}
+        {currentTab === 'tracker' && (
+          <ApplicationTracker
+            currentUser={currentUser}
+            currentProfile={currentProfile || currentUser?.profile}
+            currentLang={currentLang}
+            onBackToHome={() => setCurrentTab('home')}
+            onOpenGrievance={() => setShowGrievanceModal(true)}
+          />
+        )}
+
       </main>
 
-      {/* 3. Persistent Side AI Chatbox with Voice Chat & Reply */}
+      {/* 3. Persistent Side AI Chatbox with Live Counselor Streaming & Voice */}
       <SideAiChat
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(prev => !prev)}
         currentProfile={currentProfile}
         currentResult={result}
         currentLang={currentLang}
+        currentUser={currentUser}
+        onNavigateTab={setCurrentTab}
+        onOpenGrievance={() => setShowGrievanceModal(true)}
+        onOpenNotices={() => setShowNoticeModal(true)}
       />
 
       {/* 4. Student Auth Modal (Login / Register) */}
@@ -289,6 +315,22 @@ function App() {
         onClose={() => setShowDbModal(false)}
         dbStatus={dbStatus}
         onUpdateStatus={(newStatus) => setDbStatus(newStatus)}
+      />
+
+      {/* 6. Official Government Orders & Notice Board Drawer Modal */}
+      <NoticeBoardModal
+        isOpen={showNoticeModal}
+        onClose={() => setShowNoticeModal(false)}
+        currentLang={currentLang}
+      />
+
+      {/* 7. Citizen Grievance & Student Helpdesk Petition Modal */}
+      <GrievanceModal
+        isOpen={showGrievanceModal}
+        onClose={() => setShowGrievanceModal(false)}
+        currentUser={currentUser}
+        currentProfile={currentProfile || currentUser?.profile}
+        currentLang={currentLang}
       />
 
       {/* 6. Official Civic Portal Footer */}
@@ -311,12 +353,13 @@ function App() {
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Quick Portals</h4>
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Quick Portals & Services</h4>
               <ul className="space-y-1.5 text-[11px]">
+                <li><button onClick={() => setCurrentTab('tracker')} className="hover:text-white transition cursor-pointer text-left">Track DBT & Application Status</button></li>
+                <li><button onClick={() => setShowNoticeModal(true)} className="hover:text-white transition cursor-pointer text-left">Official Government Orders (G.O.)</button></li>
+                <li><button onClick={() => setShowGrievanceModal(true)} className="hover:text-white transition cursor-pointer text-left">Citizen Grievance & Helpdesk</button></li>
                 <li><a href="https://www.pudhumaipenn.tn.gov.in" target="_blank" rel="noreferrer" className="hover:text-white transition">Penkalvi (Pudhumai Penn)</a></li>
-                <li><a href="https://www.tneaonline.org" target="_blank" rel="noreferrer" className="hover:text-white transition">TNEA First Graduate</a></li>
-                <li><a href="https://ssp.tn.gov.in" target="_blank" rel="noreferrer" className="hover:text-white transition">TN SSP Post-Matric</a></li>
-                <li><a href="https://scholarships.gov.in" target="_blank" rel="noreferrer" className="hover:text-white transition">National Scholarship Portal (NSP)</a></li>
+                <li><a href="https://ssp.tn.gov.in" target="_blank" rel="noreferrer" className="hover:text-white transition">TN SSP Post-Matric Portal</a></li>
               </ul>
             </div>
 

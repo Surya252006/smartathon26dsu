@@ -15,17 +15,37 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-export default function SideAiChat({ isOpen, onClose, currentProfile, currentResult, currentLang = 'en' }) {
+export default function SideAiChat({ 
+  isOpen, 
+  onClose, 
+  currentProfile, 
+  currentResult, 
+  currentLang = 'en',
+  currentUser = null,
+  onNavigateTab = null,
+  onOpenGrievance = null,
+  onOpenNotices = null
+}) {
+  const studentName = currentProfile?.full_name || currentUser?.profile?.full_name || (currentUser?.email ? currentUser.email.split('@')[0] : null);
+
+  const defaultGreeting = currentLang === 'ta'
+    ? (studentName 
+        ? `வணக்கம் ${studentName}! 🙏 நான் உங்கள் தமிழ்நாடு உயர்கல்வி இ-வித்யா அரசு ஆலோசகர் (AI Counselor). உங்கள் படிப்பு, குடும்ப வருமானம் மற்றும் சான்றிதழ்களை அடிப்படையாகக் கொண்டு உங்களுக்கு தகுதியான நலத்திட்டங்கள் (புதுமைப் பெண், தமிழ் புதல்வன், முதல் பட்டதாரி சலுகை, மடிக்கணினி) குறித்து ஒரு மனித ஆலோசகரைப் போல கனிவுடன் வழிகாட்ட காத்திருக்கிறேன். உங்களுக்கு எதில் உதவி தேவை?`
+        : `வணக்கம்! 🙏 நான் உங்கள் தமிழ்நாடு உயர்கல்வி இ-வித்யா அரசு ஆலோசகர் (AI Counselor). உதவித்தொகை தகுதி, வட்டாட்சியர் இ-சேவை சான்றிதழ்கள், புதுமைப் பெண் அல்லது மத்திய திட்டங்கள் பற்றி என்னிடம் நேரடியாக கேட்கலாம்.`)
+    : (studentName
+        ? `Vanakkam ${studentName}! 🙏 I am your Tamil Nadu e-Governance Higher Education AI Advisor. I am here to personally guide you on all 47+ welfare schemes, Tahsildar e-Sevai certificates, fee concessions, and maximizing your legal benefits. How can I help you today?`
+        : `Vanakkam! 🙏 I am your Tamil Nadu Higher Education Welfare AI Advisor. You can ask me any questions about scholarship eligibility, Tahsildar documents, fee waivers, or tracking your application in Tamil, Tanglish, or English.`);
+
   const [messages, setMessages] = useState([
     {
       role: 'model',
-      content: currentLang === 'ta'
-        ? 'வணக்கம்! நான் உங்கள் தமிழ்நாடு உயர்கல்வி இ-வித்யா AI ஆலோசகர். உதவித்தொகை தகுதி, வட்டாட்சியர் சான்றிதழ்கள், புதுமைப் பெண் அல்லது மத்திய திட்டங்கள் பற்றி தமிழில் கேட்கலாம்.'
-        : 'Vanakkam! I am your Tamil Nadu e-Governance Higher Education Advisor. You can ask me questions about scholarship eligibility, Tahsildar documents, or mutual exclusivity rules in Tamil, Tanglish, or English.\n\nவணக்கம்! உதவித்தொகை மற்றும் அரசு சலுகைகள் குறித்த உங்கள் சந்தேகங்களை தமிழில் கேட்கலாம்.'
+      content: defaultGreeting,
+      isStreaming: false
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTypingStream, setIsTypingStream] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
   
   // Voice Input (Speech-to-Text) State
@@ -228,9 +248,41 @@ export default function SideAiChat({ isOpen, onClose, currentProfile, currentRes
     }
   };
 
+  const streamBotResponse = (fullText, onFinish) => {
+    setIsTypingStream(true);
+    const words = fullText.split(' ');
+    let wordIndex = 0;
+
+    // Append placeholder streaming message
+    setMessages(prev => [...prev, { role: 'model', content: '', isStreaming: true }]);
+
+    const stepInterval = setInterval(() => {
+      wordIndex += 2; // Stream 2 words per tick for smooth human-like speed
+      const currentContent = words.slice(0, wordIndex).join(' ');
+
+      setMessages(prev => {
+        const copy = [...prev];
+        const last = copy[copy.length - 1];
+        if (last && last.role === 'model') {
+          last.content = currentContent;
+          if (wordIndex >= words.length) {
+            last.isStreaming = false;
+          }
+        }
+        return copy;
+      });
+
+      if (wordIndex >= words.length) {
+        clearInterval(stepInterval);
+        setIsTypingStream(false);
+        if (onFinish) onFinish();
+      }
+    }, 28);
+  };
+
   const handleSend = async (customText = null) => {
     const text = customText || inputMessage;
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading || isTypingStream) return;
 
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop();
@@ -248,34 +300,34 @@ export default function SideAiChat({ isOpen, onClose, currentProfile, currentRes
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          profile_context: currentProfile || {},
+          profile_context: currentProfile || currentUser?.profile || {},
           evaluation_context: currentResult || {},
-          chat_history: newHistory.slice(-6)
+          chat_history: newHistory.slice(-6).map(m => ({ role: m.role, content: m.content }))
         })
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || "Advisory API error");
 
-      const replyMsg = { role: 'model', content: data.reply };
-      setMessages(prev => {
-        const nextMsgs = [...prev, replyMsg];
+      setIsLoading(false);
+      streamBotResponse(data.reply, () => {
         if (autoSpeak) {
-          setTimeout(() => speakText(data.reply, nextMsgs.length - 1), 300);
+          setTimeout(() => speakText(data.reply, messages.length), 200);
         }
-        return nextMsgs;
       });
     } catch (err) {
       console.error(err);
+      setIsLoading(false);
       setMessages(prev => [
         ...prev, 
         { 
           role: 'model', 
-          content: "I am temporarily offline. Please ensure the backend is running at http://localhost:8000." 
+          content: currentLang === 'ta'
+            ? "மன்னிக்கவும்! சர்வர் தற்காலிகமாக பதிலளிக்க முடியவில்லை. உங்கள் பேக்எண்ட் (http://localhost:8000) இயங்குகிறதா என்பதை சரிபார்க்கவும்."
+            : "I am temporarily experiencing connection latency. Please ensure backend is running at http://localhost:8000.",
+          isStreaming: false
         }
       ]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -375,32 +427,54 @@ export default function SideAiChat({ isOpen, onClose, currentProfile, currentRes
         </label>
       </div>
 
-      {/* 3. SUGGESTED QUICK QUESTIONS */}
-      <div className="bg-slate-50 border-b border-slate-200 px-4 py-2 overflow-x-auto text-[11px] whitespace-nowrap flex items-center gap-1.5 scrollbar-none">
-        <span className="text-slate-400 font-bold shrink-0">Quick:</span>
+      {/* 3. SUGGESTED QUICK QUESTIONS & ACTIONS */}
+      <div className="bg-slate-50 border-b border-slate-200 px-3 py-2 overflow-x-auto text-[11px] whitespace-nowrap flex items-center gap-1.5 scrollbar-none">
+        <span className="text-slate-400 font-bold shrink-0">Quick Action:</span>
+        
+        {onNavigateTab && (
+          <button
+            onClick={() => { onNavigateTab('tracker'); onClose(); }}
+            className="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-lg border border-emerald-300 font-bold transition cursor-pointer flex items-center space-x-1"
+          >
+            <span>📍 Track Application</span>
+          </button>
+        )}
+
+        {onOpenNotices && (
+          <button
+            onClick={() => onOpenNotices()}
+            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 rounded-lg border border-blue-200 font-bold transition cursor-pointer"
+          >
+            <span>📜 Official G.O. Circulars</span>
+          </button>
+        )}
+
+        {onOpenGrievance && (
+          <button
+            onClick={() => onOpenGrievance()}
+            className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-lg border border-amber-200 font-bold transition cursor-pointer"
+          >
+            <span>📝 File Grievance</span>
+          </button>
+        )}
+
         <button
-          onClick={() => handleSend("Why was CSSS rejected?")}
+          onClick={() => handleSend("புதுமைப் பெண் + முதல் பட்டதாரி ஒன்றாக கிடைக்குமா?")}
           className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 font-medium transition cursor-pointer"
         >
-          Why CSSS rejected?
+          புதுமைப் பெண் + முதல் பட்டதாரி?
         </button>
         <button
-          onClick={() => handleSend("ஏன் எனக்கு CSSS கிடைக்கவில்லை?")}
+          onClick={() => handleSend("வட்டாட்சியர் வருமானச் சான்றிதழ் பெறுவது எப்படி?")}
           className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 font-medium transition cursor-pointer"
         >
-          ஏன் CSSS கிடைக்கவில்லை?
+          இ-சேவை வருமானச் சான்றிதழ்
         </button>
         <button
-          onClick={() => handleSend("How to get Vetri Free Laptop?")}
+          onClick={() => handleSend("Vetri Free Laptop Scheme eligibility criteria")}
           className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 font-medium transition cursor-pointer"
         >
           Vetri Laptop Scheme
-        </button>
-        <button
-          onClick={() => handleSend("How to apply for Pudhumai Penn?")}
-          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 font-medium transition cursor-pointer"
-        >
-          Pudhumai Penn Apply
         </button>
       </div>
 
@@ -448,16 +522,21 @@ export default function SideAiChat({ isOpen, onClose, currentProfile, currentRes
                   </div>
                 </div>
               )}
-              <p className="whitespace-pre-line text-xs">{msg.content}</p>
+              <p className="whitespace-pre-line text-xs">
+                {msg.content}
+                {msg.isStreaming && (
+                  <span className="inline-block w-1.5 h-3.5 ml-1 bg-emerald-600 animate-pulse align-middle"></span>
+                )}
+              </p>
             </div>
           </div>
         ))}
 
         {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-white p-3 rounded-2xl border border-slate-200 rounded-bl-xs text-xs text-slate-500 flex items-center space-x-2">
-              <Loader2 size={15} className="animate-spin text-emerald-600" />
-              <span>Analyzing scholarship rules with Gemini 2.5...</span>
+          <div className="flex justify-start animate-in fade-in">
+            <div className="bg-white p-3 rounded-2xl border border-slate-200 rounded-bl-xs text-xs text-slate-500 flex items-center space-x-2 shadow-xs">
+              <div className="w-2 h-2 rounded-full bg-[#006a4e] animate-ping"></div>
+              <span>அரசு ஆலோசகர் பதில் தயாரிக்கிறார் (Counselor is composing advice)...</span>
             </div>
           </div>
         )}

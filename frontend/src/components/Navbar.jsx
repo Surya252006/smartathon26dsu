@@ -13,7 +13,11 @@ import {
   Database,
   CheckCircle2,
   AlertCircle,
-  X
+  X,
+  Bell,
+  Clock,
+  HelpCircle,
+  ShieldCheck
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
 
@@ -30,7 +34,9 @@ export default function Navbar({
   onSearch,
   searchQuery,
   dbStatus,
-  onOpenDbConfig
+  onOpenDbConfig,
+  onOpenNotices,
+  onOpenGrievance
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [showLangMenu, setShowLangMenu] = useState(false);
@@ -87,6 +93,26 @@ export default function Navbar({
               <span>{t.student_helpline}: <strong className="text-white">14417</strong></span>
             </a>
 
+            {/* Official G.O. & Helpdesk Quick Links */}
+            <button
+              onClick={onOpenNotices}
+              className="hidden md:flex items-center space-x-1.5 hover:text-white transition px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] cursor-pointer"
+              title="Official Circulars & Government Orders"
+            >
+              <Bell size={11} className="text-amber-400" />
+              <span>G.O. Circulars</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            </button>
+
+            <button
+              onClick={onOpenGrievance}
+              className="hidden sm:flex items-center space-x-1.5 hover:text-white transition px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] cursor-pointer"
+              title="Citizen Grievance & Student Helpdesk"
+            >
+              <HelpCircle size={11} className="text-emerald-400" />
+              <span>Helpdesk</span>
+            </button>
+
             {/* Regional Language Switcher Dropdown */}
             <div className="relative">
               <button
@@ -123,6 +149,37 @@ export default function Navbar({
 
           </div>
 
+        </div>
+      </div>
+
+      {/* Official Urgent Announcement Ticker Banner */}
+      <div className="bg-amber-500/10 border-b border-amber-500/20 text-slate-800 text-[11px] py-1.5 px-4 shadow-2xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center space-x-2 truncate">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-600 text-white uppercase tracking-wider shrink-0 animate-pulse">
+              Active G.O.
+            </span>
+            <span className="truncate font-medium text-slate-800">
+              {currentLang === 'ta' 
+                ? 'அரசாணை எண் 47/2026: முதல் பட்டதாரி & புதுமைப் பெண் மூன்றாம் கட்ட விண்ணப்பங்கள் துவக்கம்! கடைசி தேதி: அக் 31.' 
+                : 'G.O. (Ms) 47/2026: Pudhumai Penn Phase-III & First Graduate fee waiver portal active. Application window open.'}
+            </span>
+          </div>
+          <div className="flex items-center space-x-3 shrink-0 text-[11px]">
+            <button
+              onClick={onOpenNotices}
+              className="font-bold text-emerald-800 hover:text-emerald-950 underline underline-offset-2 flex items-center space-x-1 cursor-pointer"
+            >
+              <span>{currentLang === 'ta' ? 'அறிவிப்பை காண்க' : 'View Circulars'}</span>
+            </button>
+            <span className="text-slate-300 hidden xs:inline">|</span>
+            <button
+              onClick={() => setCurrentTab('tracker')}
+              className="font-bold text-slate-700 hover:text-slate-950 underline underline-offset-2 hidden xs:inline cursor-pointer"
+            >
+              <span>{currentLang === 'ta' ? 'விண்ணப்ப நிலை' : 'Track Status'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -217,6 +274,37 @@ export default function Navbar({
             <span>{t.nav_schemes}</span>
           </button>
 
+          <button
+            onClick={() => setCurrentTab('tracker')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1.5 ${
+              currentTab === 'tracker' 
+                ? 'bg-emerald-50 text-emerald-800 font-bold' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            }`}
+          >
+            <Clock size={14} />
+            <span>{t.nav_tracker}</span>
+          </button>
+
+          <button
+            onClick={onOpenNotices}
+            className="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-600 hover:text-slate-900 hover:bg-slate-50 relative cursor-pointer"
+            title="Official Government Orders & Circulars"
+          >
+            <Bell size={14} className="text-amber-600" />
+            <span>{t.nav_notices}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 absolute top-1 right-1"></span>
+          </button>
+
+          <button
+            onClick={onOpenGrievance}
+            className="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-600 hover:text-slate-900 hover:bg-slate-50 cursor-pointer"
+            title="Citizen Grievance & Student Helpdesk"
+          >
+            <HelpCircle size={14} className="text-emerald-600" />
+            <span>{t.nav_grievance}</span>
+          </button>
+
           {currentUser && (
             <button
               onClick={() => setCurrentTab('profile')}
@@ -291,8 +379,8 @@ export default function Navbar({
 
       </div>
 
-      {/* Mobile Search Input (Visible on small screens) */}
-      <div className="md:hidden px-4 pb-2.5 pt-1">
+      {/* Mobile Search Input & Quick Action Pills */}
+      <div className="md:hidden px-4 pb-2.5 pt-1 space-y-2">
         <div className="relative">
           <Search size={14} className="absolute left-3 top-2.5 text-slate-400 pointer-events-none" />
           <input
@@ -305,6 +393,31 @@ export default function Navbar({
             placeholder={t.search_placeholder}
             className="w-full pl-8 pr-4 py-1.5 bg-slate-100 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] scrollbar-none">
+          <button
+            onClick={() => setCurrentTab('tracker')}
+            className={`px-2.5 py-1 rounded-full whitespace-nowrap font-medium flex items-center space-x-1 border cursor-pointer ${
+              currentTab === 'tracker' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-slate-100 text-slate-700 border-slate-200'
+            }`}
+          >
+            <Clock size={12} />
+            <span>{t.nav_tracker}</span>
+          </button>
+          <button
+            onClick={onOpenNotices}
+            className="px-2.5 py-1 rounded-full whitespace-nowrap font-medium flex items-center space-x-1 bg-amber-50 text-amber-900 border border-amber-200 cursor-pointer"
+          >
+            <Bell size={12} className="text-amber-600" />
+            <span>{t.nav_notices}</span>
+          </button>
+          <button
+            onClick={onOpenGrievance}
+            className="px-2.5 py-1 rounded-full whitespace-nowrap font-medium flex items-center space-x-1 bg-emerald-50 text-emerald-900 border border-emerald-200 cursor-pointer"
+          >
+            <HelpCircle size={12} className="text-emerald-600" />
+            <span>{t.nav_grievance}</span>
+          </button>
         </div>
       </div>
 
