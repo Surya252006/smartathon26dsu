@@ -1,0 +1,2236 @@
+[
+  {
+    "id": "tn-post-matric-sc-st",
+    "name": "Post-Matric Scholarship for SC Students",
+    "name_ta": "ஆதிதிராவிடர் நல போஸ்ட்-மெட்ரிக் கல்வி உதவித்தொகை (SC)",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "60:40",
+    "funding_verdict": "CSS — matched",
+    "department": "Adi Dravidar and Tribal Welfare Department",
+    "target_beneficiaries": "SC/SCC students, Class 11–Ph.D, annual family income ≤ ₹2.5 Lakhs",
+    "financial_value": 50000,
+    "benefit_breakdown": {
+      "tuition_waiver": 38000,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "SC",
+        "SCC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "pm-usp-csss",
+      "aicte-pragati"
+    ],
+    "portal_name": "NSP + TNSSP",
+    "portal_url": "https://ssp.tn.gov.in",
+    "required_docs": [
+      "Community Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Aadhaar Card",
+      "Bank Passbook",
+      "Admission/Fee Receipt"
+    ],
+    "source_notes": "Centrally Sponsored Scheme (Centre:State 60:40). Implemented by ADW Dept via NSP & TNSSP."
+  },
+  {
+    "id": "pre-matric-sc",
+    "name": "Pre-Matric Scholarship for SC Students",
+    "name_ta": "ஆதிதிராவிடர் நல பிரீ-மெட்ரிக் கல்வி உதவித்தொகை (வகுப்பு 9–10)",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "60:40",
+    "funding_verdict": "CSS — matched",
+    "department": "Adi Dravidar and Tribal Welfare Department",
+    "target_beneficiaries": "SC students studying in Class 9–10 in recognized schools, annual family income ≤ ₹2.5 Lakhs",
+    "financial_value": 4000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 3500,
+      "book_allowance": 500
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "SC",
+        "SCC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 9-10",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "NSP (National Scholarship Portal)",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "Community Certificate",
+      "Income Certificate",
+      "Aadhaar Card",
+      "School Bonafide"
+    ],
+    "source_notes": "Centrally Sponsored Scheme. Maintenance allowance + annual ad-hoc grant."
+  },
+  {
+    "id": "pms-st",
+    "name": "Post-Matric Scholarship for ST Students",
+    "name_ta": "பழங்குடியினர் நல போஸ்ட்-மெட்ரிக் கல்வி உதவித்தொகை (ST)",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "75:25",
+    "funding_verdict": "CSS — matched",
+    "department": "Adi Dravidar and Tribal Welfare Department (Tribal Wing)",
+    "target_beneficiaries": "ST students, Class 11–Ph.D, annual family income ≤ ₹2.5 Lakhs",
+    "financial_value": 50000,
+    "benefit_breakdown": {
+      "tuition_waiver": 38000,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "ST"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "pm-usp-csss",
+      "aicte-pragati"
+    ],
+    "portal_name": "NSP + TNSSP",
+    "portal_url": "https://ssp.tn.gov.in",
+    "required_docs": [
+      "ST Community Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Aadhaar Card",
+      "Bank Passbook"
+    ],
+    "source_notes": "Centrally Sponsored Scheme with 75:25 Central-State ratio (MoTA + TN Tribal Welfare Wing)."
+  },
+  {
+    "id": "pre-matric-st",
+    "name": "Pre-Matric Scholarship for ST Students",
+    "name_ta": "பழங்குடியினர் நல பிரீ-மெட்ரிக் கல்வி உதவித்தொகை (வகுப்பு 9–10)",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "75:25",
+    "funding_verdict": "CSS — matched",
+    "department": "Adi Dravidar and Tribal Welfare Department",
+    "target_beneficiaries": "ST students studying in Class 9–10, annual family income ≤ ₹2.5 Lakhs",
+    "financial_value": 4000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 3500,
+      "book_allowance": 500
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "ST"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 9-10",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "ST Community Certificate",
+      "Income Certificate",
+      "Aadhaar Card"
+    ],
+    "source_notes": "Monthly maintenance allowance + annual ad-hoc grant under MoTA guidelines."
+  },
+  {
+    "id": "pm-yasasvi-pre-matric",
+    "name": "PM-YASASVI Pre-Matric Scholarship for OBC/EBC/DNT",
+    "name_ta": "பிஎம்-யசஸ்வி பிரீ-மெட்ரிக் கல்வி உதவித்தொகை (OBC/EBC/DNT)",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "60:40",
+    "funding_verdict": "CSS — matched",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department",
+    "target_beneficiaries": "OBC, EBC, and DNT students, Class 9–10, annual family income ≤ ₹2.5 Lakhs",
+    "financial_value": 4000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 4000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 9-10",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "Community Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Aadhaar Card",
+      "Bonafide"
+    ],
+    "source_notes": "Centrally Sponsored Scheme (Centre:State 60:40) disbursed via DBT."
+  },
+  {
+    "id": "tn-post-matric-bc-mbc",
+    "name": "PM-YASASVI Post-Matric Scholarship (Post-Matric for BC/MBC/DNC)",
+    "name_ta": "பிற்படுத்தப்பட்டோர் மற்றும் மிகவும் பிற்படுத்தப்பட்டோர் போஸ்ட்-மெட்ரிக் கல்வி உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "60:40",
+    "funding_verdict": "CSS — matched (state-level name for the same central scheme)",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department",
+    "target_beneficiaries": "OBC/EBC/DNT/BC/MBC students, Class 11+, annual family income ≤ ₹2.5 Lakhs",
+    "financial_value": 15000,
+    "benefit_breakdown": {
+      "tuition_waiver": 12000,
+      "maintenance_stipend": 3000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "pm-usp-csss",
+      "aicte-pragati",
+      "tn-first-graduate"
+    ],
+    "portal_name": "NSP / e-Sevai / TNSSP",
+    "portal_url": "https://ssp.tn.gov.in",
+    "required_docs": [
+      "BC/MBC Community Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Aadhaar Card",
+      "College Bonafide"
+    ],
+    "source_notes": "₹5,000–₹20,000/year based on course level and day scholar/hosteller category."
+  },
+  {
+    "id": "minority-pre-matric",
+    "name": "Minority Pre-Matric Scholarship Scheme",
+    "name_ta": "சிறுபான்மையினர் பிரீ-மெட்ரிக் கல்வி உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "CSS — matched",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department",
+    "target_beneficiaries": "Notified minority students (Muslim, Christian, Sikh, Buddhist, Jain, Parsi), Class 9–10, income ≤ ₹1 Lakh",
+    "financial_value": 4000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 4000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC",
+        "OC"
+      ],
+      "max_income": 100000,
+      "min_percentage": 50.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 9-10",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "Minority Self-Declaration Certificate",
+      "Income Certificate",
+      "Aadhaar Card",
+      "Marksheet"
+    ],
+    "source_notes": "Administered under Ministry of Minority Affairs guidelines, fully GoI-funded."
+  },
+  {
+    "id": "minority-post-matric",
+    "name": "Minority Post-Matric Scholarship Scheme",
+    "name_ta": "சிறுபான்மையினர் போஸ்ட்-மெட்ரிக் கல்வி உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "CSS — matched",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department",
+    "target_beneficiaries": "Minority students pursuing Class 11 to Ph.D, annual family income ≤ ₹2.0 Lakhs",
+    "financial_value": 15000,
+    "benefit_breakdown": {
+      "tuition_waiver": 10000,
+      "maintenance_stipend": 5000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC",
+        "OC"
+      ],
+      "max_income": 200000,
+      "min_percentage": 50.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "pm-usp-csss",
+      "aicte-pragati"
+    ],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "Minority Certificate",
+      "Income Certificate (≤ ₹2L)",
+      "Aadhaar Card",
+      "Previous Year Marksheet (≥50%)"
+    ],
+    "source_notes": "Fee + maintenance allowance funded by Ministry of Minority Affairs (GoI)."
+  },
+  {
+    "id": "minority-mcm",
+    "name": "Merit-cum-Means Scholarship for Professional & Technical Courses (Minorities)",
+    "name_ta": "தகுதி மற்றும் வருவாய் அடிப்படையிலான சிறுபான்மையினர் உயர்கல்வி உதவித்தொகை",
+    "category": "merit_cum_means",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "CSS — matched",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department",
+    "target_beneficiaries": "Minority students admitted to technical/professional UG/PG courses, income ≤ ₹2.5 Lakhs",
+    "financial_value": 30000,
+    "benefit_breakdown": {
+      "tuition_waiver": 20000,
+      "maintenance_stipend": 10000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC",
+        "OC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 50.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "aicte-pragati",
+      "pm-usp-csss"
+    ],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "Minority Community Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Competitive Exam / Allotment Order",
+      "Fee Receipt"
+    ],
+    "source_notes": "Course fee reimbursement up to ₹20,000 + maintenance allowance up to ₹10,000/yr."
+  },
+  {
+    "id": "pwd-pre-matric",
+    "name": "Pre-Matric Scholarship for Students with Disabilities",
+    "name_ta": "மாற்றுத்திறனாளி மாணவர்களுக்கான பிரீ-மெட்ரிக் உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "CSS — matched",
+    "department": "Commissionerate for Welfare of Differently Abled Persons",
+    "target_beneficiaries": "Differently-abled students (≥40% disability), studying up to Class 10, income ≤ ₹2.5 Lakhs",
+    "financial_value": 5000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 4000,
+      "book_allowance": 1000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": true,
+      "allowed_courses": [
+        "Class 1-8",
+        "Class 9-10",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "Disability Certificate (UDID / ≥40%)",
+      "Income Certificate",
+      "Aadhaar Card",
+      "Bonafide"
+    ],
+    "source_notes": "Administered under DEPwD guidelines. Maintenance allowance + book/study material grant."
+  },
+  {
+    "id": "pwd-post-matric",
+    "name": "Post-Matric Scholarship for Students with Disabilities (National Scholarship for PWD)",
+    "name_ta": "மாற்றுத்திறனாளி மாணவர்களுக்கான போஸ்ட்-மெட்ரிக் உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "CSS — matched",
+    "department": "Commissionerate for Welfare of Differently Abled Persons",
+    "target_beneficiaries": "Differently-abled students (≥40% disability), Class 11–Ph.D & professional courses, income ≤ ₹2.5 Lakhs",
+    "financial_value": 25000,
+    "benefit_breakdown": {
+      "tuition_waiver": 15000,
+      "maintenance_stipend": 10000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": true,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "UDID Card / Disability Certificate (≥40%)",
+      "Income Certificate",
+      "College Bonafide",
+      "Fee Receipts"
+    ],
+    "source_notes": "Fee reimbursement + monthly maintenance allowance + disability allowance via NSP."
+  },
+  {
+    "id": "samagra-shiksha",
+    "name": "Samagra Shiksha (School Infrastructure, CWSN Support & Girls' Hostels)",
+    "name_ta": "சமக்ர சிக்ஷா ஒருங்கிணைந்த பள்ளி கல்வி திட்டம்",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "60:40",
+    "funding_verdict": "CSS — matched",
+    "department": "School Education Department",
+    "target_beneficiaries": "All government and government-aided school students, pre-school to Class 12",
+    "financial_value": 6000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 2000,
+      "book_allowance": 4000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "Class 9-10",
+        "Higher Secondary",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (EMIS-based); no individual login",
+    "portal_url": "https://emis.tnschools.gov.in",
+    "required_docs": [
+      "EMIS Student ID",
+      "School Enrollment Record"
+    ],
+    "source_notes": "Comprehensive school entitlement covering CWSN stipend, uniforms, KGBV girls' hostels, digital classrooms (Centre:State 60:40)."
+  },
+  {
+    "id": "pm-poshan",
+    "name": "PM POSHAN (School Mid-Day Hot Cooked Meal Scheme)",
+    "name_ta": "பிஎம் போஷன் பள்ளி சத்துணவுத் திட்டம்",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "60:40",
+    "funding_verdict": "CSS — matched",
+    "department": "School Education Department / Nutritious Meal Programme Directorate",
+    "target_beneficiaries": "Students in Classes I–VIII in government and government-aided schools across Tamil Nadu",
+    "financial_value": 8000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 8000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental; no individual login",
+    "portal_url": "https://pmposhan.education.gov.in",
+    "required_docs": [
+      "School Attendance Record",
+      "EMIS ID"
+    ],
+    "source_notes": "Daily hot cooked meal with egg/banana (Centre:State 60:40). Tamil Nadu pioneered this program."
+  },
+  {
+    "id": "rte-25-reimbursement",
+    "name": "RTE 25% Reservation Reimbursement Scheme",
+    "name_ta": "இலவச மற்றும் கட்டாயக் கல்வி உரிமைச் சட்டம் (RTE 25% சேர்க்கை)",
+    "category": "entitlement",
+    "funding_type": "Centrally Sponsored (CSS)",
+    "funding_ratio": "60:40",
+    "funding_verdict": "CSS — matched",
+    "department": "School Education Department / Directorate of Private Schools",
+    "target_beneficiaries": "Economically weaker section (EWS) and disadvantaged group children applying for Entry Level (LKG/Class 1) in private unaided schools",
+    "financial_value": 15000,
+    "benefit_breakdown": {
+      "tuition_waiver": 15000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 200000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "tnschools.gov.in (RTE Portal)",
+    "portal_url": "https://rte.tnschools.gov.in",
+    "required_docs": [
+      "Birth Certificate",
+      "Income Certificate (< ₹2L)",
+      "Community Certificate",
+      "Address Proof"
+    ],
+    "source_notes": "100% free schooling in private unaided schools; state reimburses school per child via CSS funding."
+  },
+  {
+    "id": "nos-sc-dnt",
+    "name": "National Overseas Scholarship for SC/DNT/Landless Labourer Students",
+    "name_ta": "ஆதிதிராவிடர் மற்றும் சீர்மரபினர் தேசிய வெளிநாட்டுக் கல்வி உதவித்தொகை",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "Adi Dravidar and Tribal Welfare Department (facilitation)",
+    "target_beneficiaries": "SC, DNT-SNT, landless agricultural labourers, traditional artisans pursuing Master's or Ph.D abroad, family income ≤ ₹8.0 Lakhs",
+    "financial_value": 2000000,
+    "benefit_breakdown": {
+      "tuition_waiver": 1400000,
+      "maintenance_stipend": 500000,
+      "book_allowance": 100000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "SC",
+        "SCC"
+      ],
+      "max_income": 800000,
+      "min_percentage": 60.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "top-class-sc"
+    ],
+    "portal_name": "Ministry / Overseas Scholarship Portal",
+    "portal_url": "https://nosmsje.gov.in",
+    "required_docs": [
+      "Unconditional Offer Letter from Top 500 Global University",
+      "Caste Certificate",
+      "Income Certificate (≤ ₹8L)",
+      "Valid Passport & Visa"
+    ],
+    "source_notes": "Full funding: tuition fee, annual maintenance stipend in foreign currency, visa fees, and airfare. MoSJE."
+  },
+  {
+    "id": "nos-st",
+    "name": "National Overseas Scholarship for ST Students",
+    "name_ta": "பழங்குடியினர் தேசிய வெளிநாட்டுக் கல்வி உதவித்தொகை",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "Tribal Welfare Department (certification)",
+    "target_beneficiaries": "ST students pursuing Master's, Ph.D or Post-Doctoral studies abroad, family income ≤ ₹6.0 Lakhs",
+    "financial_value": 2000000,
+    "benefit_breakdown": {
+      "tuition_waiver": 1400000,
+      "maintenance_stipend": 500000,
+      "book_allowance": 100000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "ST"
+      ],
+      "max_income": 600000,
+      "min_percentage": 55.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "top-class-st"
+    ],
+    "portal_name": "overseas.tribal.gov.in",
+    "portal_url": "https://overseas.tribal.gov.in",
+    "required_docs": [
+      "ST Certificate",
+      "Offer Letter from Foreign University",
+      "Income Certificate",
+      "Passport"
+    ],
+    "source_notes": "100% GoI funded by Ministry of Tribal Affairs (MoTA). Full tuition, living expenses, contingency, economy air travel."
+  },
+  {
+    "id": "top-class-sc",
+    "name": "Top Class Education Scheme for SC Students",
+    "name_ta": "சிறந்த உயர்கல்வி நிறுவனங்களுக்கான ஆதிதிராவிடர் உதவித்தொகை",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "Adi Dravidar and Tribal Welfare Department (facilitation)",
+    "target_beneficiaries": "Meritorious SC students admitted to notified top institutions (IIT, NIT, IIM, AIIMS, NLU, etc.), income ≤ ₹8.0 Lakhs",
+    "financial_value": 200000,
+    "benefit_breakdown": {
+      "tuition_waiver": 150000,
+      "maintenance_stipend": 36000,
+      "book_allowance": 14000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "SC",
+        "SCC"
+      ],
+      "max_income": 800000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-post-matric-sc-st",
+      "pm-usp-csss"
+    ],
+    "portal_name": "NSP (National Scholarship Portal)",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "SC Certificate",
+      "Institute Allotment Order",
+      "Fee Structure",
+      "Income Certificate (≤ ₹8L)"
+    ],
+    "source_notes": "Full non-refundable tuition fee + living expenses of ₹3,000/mo + books/stationery ₹5,000/yr + computer grant ₹45,000 one-time."
+  },
+  {
+    "id": "top-class-st",
+    "name": "Top Class Education Scheme for ST Students",
+    "name_ta": "சிறந்த உயர்கல்வி நிறுவனங்களுக்கான பழங்குடியினர் உதவித்தொகை",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "Tribal Welfare Department (facilitation)",
+    "target_beneficiaries": "Meritorious ST students securing admission in notified premier institutions (IITs, NITs, IIMs, IISERs), family income ≤ ₹6.0 Lakhs",
+    "financial_value": 200000,
+    "benefit_breakdown": {
+      "tuition_waiver": 150000,
+      "maintenance_stipend": 36000,
+      "book_allowance": 14000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "ST"
+      ],
+      "max_income": 600000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "pms-st",
+      "pm-usp-csss"
+    ],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "ST Certificate",
+      "Admission Offer Letter from Notified Institute",
+      "Income Certificate"
+    ],
+    "source_notes": "100% Central Sector Scheme under Ministry of Tribal Affairs. Covers full tuition fee and living expenses."
+  },
+  {
+    "id": "pm-yasasvi-top-class",
+    "name": "PM-YASASVI Top Class Education Scheme for OBC/EBC/DNT",
+    "name_ta": "பிஎம்-யசஸ்வி சிறந்த கல்வி உதவித்தொகை (OBC/EBC/DNT)",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department (facilitation)",
+    "target_beneficiaries": "Meritorious OBC, EBC and DNT students studying in designated top-class schools (Classes 9–12) or notified colleges, income ≤ ₹2.5 Lakhs",
+    "financial_value": 125000,
+    "benefit_breakdown": {
+      "tuition_waiver": 90000,
+      "maintenance_stipend": 25000,
+      "book_allowance": 10000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 60.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-post-matric-bc-mbc",
+      "pm-usp-csss"
+    ],
+    "portal_name": "NSP",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "OBC/BC/MBC Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Admission Allotment",
+      "Bonafide"
+    ],
+    "source_notes": "Up to ₹1,25,000/year (school component) and full college fee support for empanelled institutions."
+  },
+  {
+    "id": "aicte-saksham",
+    "name": "AICTE Saksham Scholarship Scheme for Differently-Abled",
+    "name_ta": "ஏஐசிடிஇ சக்ஷம் மாற்றுத்திறனாளி தொழில்நுட்பக் கல்வி உதவித்தொகை",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "Directorate of Technical Education (facilitation)",
+    "target_beneficiaries": "Differently-abled students (≥40% disability) admitted to 1st year of Degree/Diploma in AICTE-approved institutions, income ≤ ₹8.0 Lakhs",
+    "financial_value": 74000,
+    "benefit_breakdown": {
+      "tuition_waiver": 50000,
+      "maintenance_stipend": 24000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 800000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": true,
+      "allowed_courses": [
+        "Engineering",
+        "Diploma"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "aicte-pragati",
+      "pm-usp-csss"
+    ],
+    "portal_name": "AICTE Portal / NSP",
+    "portal_url": "https://www.aicte-india.org",
+    "required_docs": [
+      "Disability Certificate (≥40%)",
+      "AICTE College Admission Letter",
+      "Tuition Fee Receipt",
+      "Income Certificate"
+    ],
+    "source_notes": "₹50,000 lump sum per annum towards college fee + ₹2,000/month stipend for 10 months."
+  },
+  {
+    "id": "aicte-pragati",
+    "name": "AICTE Pragati Scholarship for Girls",
+    "name_ta": "ஏஐசிடிஇ பிரகதி மகளிர் தொழில்நுட்பக் கல்வி உதவித்தொகை",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "Directorate of Technical Education (facilitation)",
+    "target_beneficiaries": "Girl students admitted to AICTE approved Degree/Diploma technical courses, annual family income ≤ ₹8.0 Lakhs",
+    "financial_value": 50000,
+    "benefit_breakdown": {
+      "tuition_waiver": 50000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "female",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 800000,
+      "min_percentage": 85.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Diploma"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-first-graduate",
+      "tn-post-matric-sc-st",
+      "tn-post-matric-bc-mbc",
+      "pm-usp-csss"
+    ],
+    "portal_name": "NSP / AICTE Portal",
+    "portal_url": "https://scholarships.gov.in",
+    "required_docs": [
+      "AICTE Admission Letter",
+      "Income Certificate (≤ ₹8L)",
+      "12th Marksheet",
+      "Aadhaar Card",
+      "Bonafide"
+    ],
+    "source_notes": "₹50,000 per annum for tuition/equipment. 100% GoI funded Central Sector Scheme."
+  },
+  {
+    "id": "nmms-scholarship",
+    "name": "National Means-cum-Merit Scholarship (NMMS)",
+    "name_ta": "தேசிய வருவாய் வழி மற்றும் திறன் படிப்புதவித் திட்டம் (NMMS)",
+    "category": "merit_cum_means",
+    "funding_type": "Central Sector (100% Centre)",
+    "funding_ratio": "100:0",
+    "funding_verdict": "Central Sector",
+    "department": "School Education Department / Directorate of Government Examinations (DGE-TN)",
+    "target_beneficiaries": "Class 8 students qualifying the state-level MAT/SAT exam, continuing in Class 9–12 in govt/aided schools, income ≤ ₹3.5 Lakhs",
+    "financial_value": 12000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 350000,
+      "min_percentage": 55.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 9-10",
+        "Higher Secondary",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Exam: dge.tn.gov.in; Scholarship: NSP",
+    "portal_url": "https://dge.tn.gov.in",
+    "required_docs": [
+      "NMMS Merit Rank Card",
+      "Income Certificate (≤ ₹3.5L)",
+      "Aadhaar Card",
+      "School Bonafide"
+    ],
+    "source_notes": "₹1,000 per month (₹12,000/year) DBT from Class 9 to Class 12. Exam conducted by DGE-TN."
+  },
+  {
+    "id": "tn-hostel-facilities",
+    "name": "Hostel Facilities for SC/ST/BC/MBC Students",
+    "name_ta": "ஆதிதிராவிடர் மற்றும் பிற்படுத்தப்பட்டோர் மாணவர் விடுதி வசதி",
+    "category": "welfare_inkind",
+    "funding_type": "Mixed / Flagged",
+    "funding_ratio": "Mixed",
+    "funding_verdict": "MIXED — administered as distinct state hostel programme, but with Central funding thread",
+    "department": "Adi Dravidar and Tribal Welfare Dept. / BC, MBC & Minorities Welfare Dept.",
+    "target_beneficiaries": "SC, ST, BC, MBC, DNC school and college students studying away from home (distance > 5-8 km)",
+    "financial_value": 30000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 22000,
+      "book_allowance": 8000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental / e-Sevai / TNSSP",
+    "portal_url": "https://ssp.tn.gov.in",
+    "required_docs": [
+      "Community Certificate",
+      "Income Certificate",
+      "Institution Admission Slip",
+      "Distance Certificate"
+    ],
+    "source_notes": "Free accommodation, 3 nutritious meals daily, amenities, free study materials. Overlaps with Samagra Shiksha & PMS hosteller grant."
+  },
+  {
+    "id": "free-textbooks-notebooks",
+    "name": "Free Textbooks & Notebook Assistance (Classes 1–8)",
+    "name_ta": "விலையில்லா பாடப்புத்தகங்கள் மற்றும் நோட்டுப் புத்தகங்கள் உதவி",
+    "category": "welfare_inkind",
+    "funding_type": "Mixed / Flagged",
+    "funding_ratio": "Mixed",
+    "funding_verdict": "MIXED — flagged, not confirmed line-item Central funding",
+    "department": "Adi Dravidar & Tribal Welfare Dept. / School Education Dept.",
+    "target_beneficiaries": "SC/ST and other eligible school students from Class 1 to Class 8 in government and aided schools",
+    "financial_value": 3000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 0,
+      "book_allowance": 3000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (Distribution through schools)",
+    "portal_url": "https://textbookcorp.tn.gov.in",
+    "required_docs": [
+      "EMIS School Enrollment ID"
+    ],
+    "source_notes": "Complete set of Tamil Nadu Textbook Corporation printed books, notebooks, and geometry boxes."
+  },
+  {
+    "id": "adw-scholarship-school-pg",
+    "name": "ADW Scholarship (School to Post-Graduate)",
+    "name_ta": "ஆதிதிராவிடர் நல சிறப்பு கல்வி உதவித்தொகை (பள்ளி முதல் முதுகலை வரை)",
+    "category": "entitlement",
+    "funding_type": "Mixed / Flagged",
+    "funding_ratio": "Mixed",
+    "funding_verdict": "Flagged — needs verification against ADW GO; treated as state top-up",
+    "department": "Adi Dravidar and Tribal Welfare Department",
+    "target_beneficiaries": "SC, ST, and converted Christian students studying from higher secondary to PG, income ≤ ₹2.5 Lakhs",
+    "financial_value": 50000,
+    "benefit_breakdown": {
+      "tuition_waiver": 38000,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-post-matric-sc-st"
+    ],
+    "portal_name": "TNSSP",
+    "portal_url": "https://ssp.tn.gov.in",
+    "required_docs": [
+      "ADW Community Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Fee Receipts",
+      "Aadhaar Card"
+    ],
+    "source_notes": "Up to ₹50,000 depending on course level. State top-up and fee reimbursement mechanism."
+  },
+  {
+    "id": "free-education-bc-mbc-dnc",
+    "name": "Free Education Scheme for BC, MBC & DNC Students",
+    "name_ta": "பிசி, எம்பிசி மற்றும் டிஎன்சி மாணவர்களுக்கான இலவசக் கல்வித் திட்டம்",
+    "category": "entitlement",
+    "funding_type": "Mixed / Flagged",
+    "funding_ratio": "0:100",
+    "funding_verdict": "Flagged — treated as STATE pending confirmation",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department",
+    "target_beneficiaries": "BC, MBC, and DNC students admitted to 3-year degree / polytechnic diploma courses, parent annual income ≤ ₹2.5 Lakhs",
+    "financial_value": 20000,
+    "benefit_breakdown": {
+      "tuition_waiver": 20000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "BC",
+        "MBC"
+      ],
+      "max_income": 250000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Arts & Science",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-first-graduate",
+      "tn-post-matric-bc-mbc"
+    ],
+    "portal_name": "e-Sevai / Departmental",
+    "portal_url": "https://bcmbcmw.tn.gov.in",
+    "required_docs": [
+      "Community Certificate",
+      "Income Certificate (≤ ₹2.5L)",
+      "Admission Receipt",
+      "College Bonafide"
+    ],
+    "source_notes": "Special tuition fee and special fee waiver directly credited to college for BC/MBC students."
+  },
+  {
+    "id": "tn-pudhumai-penn",
+    "name": "Pudhumai Penn Scheme (Moovalur Ramamirtham Ammaiyar Higher Education Assurance)",
+    "name_ta": "புதுமைப் பெண் திட்டம் (மூவலூர் ராமாமிர்தம் அம்மையார் திட்டம்)",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Social Welfare and Women Empowerment Department",
+    "target_beneficiaries": "Girl students who studied Classes 6 to 12 in Tamil Nadu Government or aided Tamil-medium schools, now enrolled in UG/Diploma/ITI",
+    "financial_value": 12000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "female",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Penkalvi Portal",
+    "portal_url": "https://www.pudhumaipenn.tn.gov.in",
+    "required_docs": [
+      "Bonafide Certificate (Classes 6–12 TN Govt School)",
+      "Aadhaar Card",
+      "Bank Account Passbook",
+      "College ID"
+    ],
+    "source_notes": "₹1,000/month direct bank transfer (DBT) directly into girl student's account until course completion. Fully stackable with First Graduate concession."
+  },
+  {
+    "id": "tn-tamil-pudhalvan",
+    "name": "Tamil Pudhalvan Scheme",
+    "name_ta": "தமிழ் புதல்வன் திட்டம்",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Social Welfare and Women Empowerment Department",
+    "target_beneficiaries": "Boy students who studied Classes 6 to 12 in Tamil Nadu Government or aided Tamil-medium schools, now pursuing UG/Diploma/ITI",
+    "financial_value": 12000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 12000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "male",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Tamil Pudhalvan Portal",
+    "portal_url": "https://tamilpudhalvan.tn.gov.in",
+    "required_docs": [
+      "Bonafide Certificate (6th–12th Govt School)",
+      "Aadhaar Card",
+      "Active Bank Passbook",
+      "College Admission Slip"
+    ],
+    "source_notes": "₹1,000/month direct benefit transfer (DBT) into bank account every month until completion of degree/diploma."
+  },
+  {
+    "id": "cm-breakfast-scheme",
+    "name": "Chief Minister's Breakfast Scheme",
+    "name_ta": "முதலமைச்சரின் காலை உணவுத் திட்டம்",
+    "category": "welfare_inkind",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "School Education Department",
+    "target_beneficiaries": "All primary school students in Classes 1 to 5 in government schools across all districts and corporations of Tamil Nadu",
+    "financial_value": 6000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 6000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (Primary Schools)",
+    "portal_url": "https://tnschools.gov.in",
+    "required_docs": [
+      "School Attendance Record",
+      "EMIS ID"
+    ],
+    "source_notes": "Free daily cooked hot nutritious breakfast (Rava Pongal, Kichadi, Upma with Sambar) served before school hours."
+  },
+  {
+    "id": "kalaignar-sports-kit",
+    "name": "Kalaignar Sports Kit Scheme",
+    "name_ta": "கலைஞர் விளையாட்டு உபகரணங்கள் வழங்கும் திட்டம்",
+    "category": "welfare_inkind",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "School Education Department",
+    "target_beneficiaries": "Government school students across rural and urban schools in Tamil Nadu",
+    "financial_value": 2500,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 0,
+      "book_allowance": 2500
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "Class 9-10",
+        "Higher Secondary",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (School distribution)",
+    "portal_url": "https://tnschools.gov.in",
+    "required_docs": [
+      "School Student ID"
+    ],
+    "source_notes": "Annual provision of 33 sports item kits (Cricket, Football, Volleyball, Carrom, Chess, Throwball) to empower student-athletes."
+  },
+  {
+    "id": "mims-sports",
+    "name": "Mission International Medal Scheme (MIMS)",
+    "name_ta": "சர்வதேச பதக்கங்கள் வெல்லும் திட்டம் (MIMS)",
+    "category": "merit_cum_means",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Youth Welfare & Sports Development Dept. (with School Education)",
+    "target_beneficiaries": "Selected school and college student-athletes representing Tamil Nadu in national and international sporting competitions",
+    "financial_value": 100000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 75000,
+      "book_allowance": 25000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "SDAT Portal",
+    "portal_url": "https://sdat.tn.gov.in",
+    "required_docs": [
+      "National/State Sports Federation Achievement Certificate",
+      "Birth Certificate",
+      "Coach Endorsement"
+    ],
+    "source_notes": "Elite sports coaching, international training camps, nutritional allowance, and modern sports infrastructure access via SDAT."
+  },
+  {
+    "id": "free-guides-question-banks",
+    "name": "Free Guides & Question Banks (Class 10 & 12)",
+    "name_ta": "பத்தாம் மற்றும் பன்னிரண்டாம் வகுப்பு மாணவர்களுக்கான இலவச வினா வங்கி",
+    "category": "welfare_inkind",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Adi Dravidar and Tribal Welfare Department",
+    "target_beneficiaries": "SC and ST students appearing for Class 10 SSLC and Class 12 Higher Secondary public examinations",
+    "financial_value": 2000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 0,
+      "book_allowance": 2000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 9-10",
+        "Higher Secondary",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (ADW Schools)",
+    "portal_url": "https://adwelfare.tn.gov.in",
+    "required_docs": [
+      "School Bonafide",
+      "Community Certificate"
+    ],
+    "source_notes": "Comprehensive board exam question banks, model answer booklets, and special remedial study material distributed free of cost."
+  },
+  {
+    "id": "free-bicycle-scheme",
+    "name": "Free Bicycle Scheme for Higher Secondary Students",
+    "name_ta": "விலையில்லா மிதிவண்டி வழங்கும் திட்டம்",
+    "category": "welfare_inkind",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Adi Dravidar & Tribal Welfare Dept. / BC, MBC & Minorities Welfare Dept.",
+    "target_beneficiaries": "Class 11 students in government and government-aided higher secondary schools commuting to school",
+    "financial_value": 5000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 0,
+      "book_allowance": 5000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (School distribution)",
+    "portal_url": "https://tnschools.gov.in",
+    "required_docs": [
+      "School Attendance Record",
+      "EMIS ID",
+      "Class 11 Enrollment"
+    ],
+    "source_notes": "Sturdy brand-new bicycle distributed to reduce school dropouts among rural and peri-urban secondary students."
+  },
+  {
+    "id": "rural-girls-scholarship",
+    "name": "Rural Girls' Scholarship (MBC/DNC, Class 3–6)",
+    "name_ta": "கிராமப்புற பெண் குழந்தைகள் கல்வி ஊக்குவிப்பு உதவித்தொகை (MBC/DNC)",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Backward Classes, Most Backward Classes & Minorities Welfare Department",
+    "target_beneficiaries": "Rural MBC/DNC girl students studying in Classes 3 to 6, parent annual income ≤ ₹25,000",
+    "financial_value": 1500,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 1500,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "female",
+      "eligible_communities": [
+        "MBC"
+      ],
+      "max_income": 25000,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "District Welfare Office / School Headmaster",
+    "portal_url": "https://bcmbcmw.tn.gov.in",
+    "required_docs": [
+      "MBC Community Certificate",
+      "Rural Residence Certificate",
+      "Income Certificate (≤ ₹25k)"
+    ],
+    "source_notes": "Incentive stipend to retain rural MBC/DNC girl children in primary and upper primary education."
+  },
+  {
+    "id": "tn-spark",
+    "name": "TN Spark (Emerging Technologies Labs in Schools)",
+    "name_ta": "டிஎன் ஸ்பார்க் எதிர்கால தொழில்நுட்பப் பயிற்சி",
+    "category": "welfare_inkind",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "School Education Department",
+    "target_beneficiaries": "Government school students in Classes 6 to 12 across Tamil Nadu",
+    "financial_value": 5000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 0,
+      "book_allowance": 5000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "Class 9-10",
+        "Higher Secondary",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (School Tech Labs)",
+    "portal_url": "https://tnschools.gov.in",
+    "required_docs": [
+      "EMIS Student ID"
+    ],
+    "source_notes": "Hands-on AI, robotics, virtual technology, 3D printing, and internet of things (IoT) practical lab modules."
+  },
+  {
+    "id": "thiran-next",
+    "name": "Thiran Next (Remedial & Foundational Learning Programme)",
+    "name_ta": "திறன் நெக்ஸ்ட் கற்றல் மேம்பாட்டுத் திட்டம்",
+    "category": "welfare_inkind",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "School Education Department",
+    "target_beneficiaries": "Students in Classes 2 to 9 in government schools needing foundational literacy and numeracy boost",
+    "financial_value": 3000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 0,
+      "book_allowance": 3000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "Class 9-10",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (Samagra / EMIS)",
+    "portal_url": "https://tnschools.gov.in",
+    "required_docs": [
+      "EMIS Student Record"
+    ],
+    "source_notes": "₹12 Crore state budgetary outlay for activity-based peer learning and bridge courses."
+  },
+  {
+    "id": "vetri-paadhai",
+    "name": "Vetri Paadhai (Premier National Institution Entrance Coaching)",
+    "name_ta": "வெற்றிப் பாதை நுழைவுத்தேர்வு சிறப்புப் பயிற்சித் திட்டம்",
+    "category": "merit_cum_means",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "School Education Department",
+    "target_beneficiaries": "Selected meritorious students from 172 identified government schools across Tamil Nadu",
+    "financial_value": 25000,
+    "benefit_breakdown": {
+      "tuition_waiver": 25000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 75.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "School Education"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Departmental (Hub Centers)",
+    "portal_url": "https://tnschools.gov.in",
+    "required_docs": [
+      "School Recommendation",
+      "Class 10 Marksheet (≥75%)"
+    ],
+    "source_notes": "Rigorous residential coaching by top faculties for JEE, NEET, CUET, CLAT, NIFT, and NDA examinations."
+  },
+  {
+    "id": "vetri-laptop-scheme",
+    "name": "Vetri Laptop Scheme (Free Student Laptops)",
+    "name_ta": "வெற்றி மடிக்கணினி வழங்கும் திட்டம்",
+    "category": "welfare_inkind",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Directorate of Collegiate Education / Higher Education Dept.",
+    "target_beneficiaries": "Government and aided college students across Tamil Nadu (priority: technical & professional streams)",
+    "financial_value": 25000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 0,
+      "book_allowance": 25000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "ELCOT / Higher Education Dept.",
+    "portal_url": "https://elcot.in",
+    "required_docs": [
+      "College Student Identity Card",
+      "Aadhaar Card",
+      "Enrollment Certificate"
+    ],
+    "source_notes": "Free high-performance laptop provided to 20 lakh students over 2 years by ELCOT to foster digital fluency."
+  },
+  {
+    "id": "naan-mudhalvan",
+    "name": "Naan Mudhalvan Scheme (Skill Training, Certifications & Internships)",
+    "name_ta": "நான் முதல்வன் திறன் மேம்பாட்டு மற்றும் வேலைவாய்ப்புத் திட்டம்",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Naan Mudhalvan Directorate, Higher Education Dept.",
+    "target_beneficiaries": "School (Class 9–12) and college/university students across engineering, arts, science, and polytechnic institutions",
+    "financial_value": 18000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 12000,
+      "book_allowance": 6000
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Higher Secondary",
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Naan Mudhalvan Portal",
+    "portal_url": "https://naanmudhalvan.tn.gov.in",
+    "required_docs": [
+      "Student Registration Number",
+      "College/School Bonafide",
+      "Aadhaar Card"
+    ],
+    "source_notes": "Free industry certifications (AWS, IBM, Google, Microsoft), NEET/JEE test coaching, and monthly paid internships (₹1,000–₹3,000/mo)."
+  },
+  {
+    "id": "tn-7.5-percent-reservation",
+    "name": "7.5% Horizontal Reservation for Government School Students",
+    "name_ta": "அரசுப் பள்ளி மாணவர்களுக்கான 7.5% முன்னுரிமை இடஒதுக்கீடு & முழுக் கல்விக் கட்டண விலக்கு",
+    "category": "reservation",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Higher Education Dept. / Health & Family Welfare Dept.",
+    "target_beneficiaries": "Students who studied continuously from Classes 6 to 12 in Tamil Nadu Government schools seeking professional courses",
+    "financial_value": 75000,
+    "benefit_breakdown": {
+      "tuition_waiver": 55000,
+      "maintenance_stipend": 20000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": true,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Medical",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-first-graduate"
+    ],
+    "portal_name": "TNEA / DME Counseling",
+    "portal_url": "https://www.tneaonline.org",
+    "required_docs": [
+      "Chief Educational Officer (CEO) Bonafide Certificate (6th–12th Govt School)",
+      "NEET/TNEA Rank Card"
+    ],
+    "source_notes": "7.5% preferential reservation in Engineering, MBBS, BDS, Agriculture, Veterinary, and Law courses with 100% tuition, development, and hostel fees borne by the state."
+  },
+  {
+    "id": "tn-first-graduate",
+    "name": "Tamil Nadu First Graduate Tuition Fee Concession",
+    "name_ta": "முதல் தலைமுறை பட்டதாரி கல்விக் கட்டணச் சலுகை",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Directorate of Collegiate Education / Higher Education Dept.",
+    "target_beneficiaries": "First person to graduate in the immediate family admitted to professional courses via government single-window counseling",
+    "financial_value": 25000,
+    "benefit_breakdown": {
+      "tuition_waiver": 25000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": true,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "aicte-pragati",
+      "tn-post-matric-bc-mbc",
+      "pm-usp-csss"
+    ],
+    "portal_name": "TNEA Online / e-Sevai",
+    "portal_url": "https://www.tneaonline.org",
+    "required_docs": [
+      "First Graduate Certificate (issued by Tahsildar)",
+      "No-Graduate Certificate for family members",
+      "Ration Card",
+      "10th/12th Marksheets"
+    ],
+    "source_notes": "Full annual tuition fee reimbursement (₹25,000/year) regardless of community or family income level."
+  },
+  {
+    "id": "stipend-tamil-medium",
+    "name": "Stipend for Tamil-Medium Students",
+    "name_ta": "தமிழ் வழி பயிலும் கல்லூரி மாணவர்களுக்கான கல்வி உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Directorate of Collegiate Education",
+    "target_beneficiaries": "Students pursuing Undergraduate or Postgraduate degrees in Tamil medium in government and government-aided colleges",
+    "financial_value": 400,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 400,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Arts & Science",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Directorate of Collegiate Education",
+    "portal_url": "https://tndce.tn.gov.in",
+    "required_docs": [
+      "College Tamil Medium Bonafide Certificate",
+      "Aadhaar Card",
+      "Bank Passbook"
+    ],
+    "source_notes": "₹400 per annum token incentive disbursed through college principals."
+  },
+  {
+    "id": "periyar-evr-nagammai-ug",
+    "name": "Periyar EVR Nagammai Free Education Scheme (UG)",
+    "name_ta": "பெரியார் ஈ.வே.ரா நாகம்மையார் இலவசக் கல்வித் திட்டம் (இளங்கலை)",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Directorate of Collegiate Education",
+    "target_beneficiaries": "Women students admitted to undergraduate degree courses in arts and science colleges whose parental income ≤ ₹24,000/year",
+    "financial_value": 10000,
+    "benefit_breakdown": {
+      "tuition_waiver": 10000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "female",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 24000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Arts & Science",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [
+      "tn-first-graduate"
+    ],
+    "portal_name": "Directorate of Collegiate Education",
+    "portal_url": "https://tndce.tn.gov.in",
+    "required_docs": [
+      "Income Certificate (≤ ₹24,000)",
+      "Admission Receipt",
+      "12th Marksheet",
+      "Aadhaar Card"
+    ],
+    "source_notes": "100% tuition-fee exemption for women undergraduates from ultra-poor households."
+  },
+  {
+    "id": "evr-nagammai-pg",
+    "name": "EVR Nagammai Scholarship for Post-Graduate Girl Students",
+    "name_ta": "ஈ.வே.ரா நாகம்மையார் முதுகலை கல்வி உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Directorate of Collegiate Education",
+    "target_beneficiaries": "Girl post-graduate (M.A., M.Sc., M.Com.) students in government and aided colleges, annual parental income ≤ ₹50,000",
+    "financial_value": 15000,
+    "benefit_breakdown": {
+      "tuition_waiver": 15000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "female",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": 50000,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Arts & Science",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Directorate of Collegiate Education",
+    "portal_url": "https://tndce.tn.gov.in",
+    "required_docs": [
+      "UG Degree Certificate",
+      "Income Certificate (≤ ₹50,000)",
+      "College Bonafide"
+    ],
+    "source_notes": "Complete fee waiver & tuition reimbursement for girl students pursuing post-graduation."
+  },
+  {
+    "id": "cm-research-fellowship",
+    "name": "Chief Minister's Research Fellowship (CMRF)",
+    "name_ta": "முதலமைச்சரின் ஆராய்ச்சி உதவித்தொகைத் திட்டம் (CMRF)",
+    "category": "fellowship",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Higher Education Dept. / Directorate of Collegiate Education",
+    "target_beneficiaries": "Full-time Ph.D research scholars registered in government arts & science and engineering colleges in Tamil Nadu",
+    "financial_value": 300000,
+    "benefit_breakdown": {
+      "tuition_waiver": 0,
+      "maintenance_stipend": 300000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 60.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "DCE Research Fellowship Portal",
+    "portal_url": "https://tndce.tn.gov.in",
+    "required_docs": [
+      "Ph.D Registration Order",
+      "Synopsis / Proposal",
+      "Guide Endorsement",
+      "PG Marksheet"
+    ],
+    "source_notes": "Prestigious monthly research stipend of ₹25,000/month for up to 3 years plus ₹10,000/year contingency."
+  },
+  {
+    "id": "deceased-govt-servants-scholarship",
+    "name": "Scholarship for Children of Deceased Government Servants",
+    "name_ta": "பணியின் போது காலமான அரசு ஊழியர்களின் குழந்தைகளுக்கான உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Directorate of Collegiate Education",
+    "target_beneficiaries": "Children of Tamil Nadu Government employees who died while in active government service",
+    "financial_value": 20000,
+    "benefit_breakdown": {
+      "tuition_waiver": 15000,
+      "maintenance_stipend": 5000,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Engineering",
+        "Arts & Science",
+        "Medical",
+        "Diploma",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Directorate of Collegiate Education",
+    "portal_url": "https://tndce.tn.gov.in",
+    "required_docs": [
+      "Death Certificate of Deceased Govt Servant",
+      "Department Service Certificate",
+      "Legal Heir Certificate",
+      "College Bonafide"
+    ],
+    "source_notes": "Tuition fees, special fees and hostel fees paid for collegiate studies until degree completion."
+  },
+  {
+    "id": "rimc-dehradun-scholarship",
+    "name": "Scholarship for Tamil Nadu Cadets at RIMC Dehradun",
+    "name_ta": "டேராடூன் ஆர்.ஐ.எம்.சி பயிலும் தமிழக மாணவர்களுக்கான உதவித்தொகை",
+    "category": "entitlement",
+    "funding_type": "Tamil Nadu-Only (State-Funded)",
+    "funding_ratio": "0:100",
+    "funding_verdict": "STATE — no match to Central list",
+    "department": "Directorate of Collegiate Education",
+    "target_beneficiaries": "Cadets from Tamil Nadu studying at the prestigious Rashtriya Indian Military College (RIMC), Dehradun",
+    "financial_value": 10000,
+    "benefit_breakdown": {
+      "tuition_waiver": 10000,
+      "maintenance_stipend": 0,
+      "book_allowance": 0
+    },
+    "criteria": {
+      "gender": "any",
+      "eligible_communities": [
+        "OC",
+        "BC",
+        "MBC",
+        "SC",
+        "ST",
+        "SCC"
+      ],
+      "max_income": null,
+      "min_percentage": 0.0,
+      "govt_school_only": false,
+      "first_graduate_only": false,
+      "differently_abled_only": false,
+      "allowed_courses": [
+        "Class 1-8",
+        "Class 9-10",
+        "Higher Secondary",
+        "School Education",
+        "All"
+      ]
+    },
+    "mutually_exclusive_with": [],
+    "portal_name": "Directorate of Collegiate Education",
+    "portal_url": "https://tndce.tn.gov.in",
+    "required_docs": [
+      "RIMC Cadet ID & Admission Certificate",
+      "Tamil Nadu Nativity Certificate"
+    ],
+    "source_notes": "Annual scholarship from ₹10,000 (refundable if cadet voluntarily exits the armed forces training before 5 years)."
+  }
+]

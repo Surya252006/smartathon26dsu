@@ -23,6 +23,7 @@ import {
   Check
 } from 'lucide-react';
 import { TRANSLATIONS } from '../utils/translations';
+import defaultSchemesCatalog from '../data/allSchemesCatalog.json';
 
 export default function SchemesDirectory({ 
   onBackToHome, 
@@ -32,13 +33,14 @@ export default function SchemesDirectory({
   currentLang = 'en'
 }) {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
-  const [schemes, setSchemes] = useState([]);
+  // Initialize with bundled 50+ official Tamil Nadu schemes so public link works 100% offline & online
+  const [schemes, setSchemes] = useState(defaultSchemesCatalog || []);
   const [searchQuery, setSearchQuery] = useState(externalSearchQuery);
   const [fundingTab, setFundingTab] = useState('all'); // 'all' | 'css' | 'central_sector' | 'state_only' | 'mixed'
   const [selectedDept, setSelectedDept] = useState('all');
   const [selectedCommunity, setSelectedCommunity] = useState('all');
   const [selectedLevel, setSelectedLevel] = useState('all');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Sync external search query from navbar if changed
   useEffect(() => {
@@ -48,15 +50,21 @@ export default function SchemesDirectory({
   }, [externalSearchQuery]);
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/schemes?reload=true')
+    // Attempt local backend refresh with timeout; fallback is already active
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+    fetch('http://localhost:8000/api/schemes?reload=true', { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
-        setSchemes(data);
-        setIsLoading(false);
+        clearTimeout(timeoutId);
+        if (Array.isArray(data) && data.length > 0) {
+          setSchemes(data);
+        }
       })
-      .catch(err => {
-        console.error("Failed to fetch schemes", err);
-        setIsLoading(false);
+      .catch(() => {
+        clearTimeout(timeoutId);
+        // Default schemes catalog is already active!
       });
   }, []);
 

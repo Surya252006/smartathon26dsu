@@ -44,57 +44,99 @@ export default function HomePage({
   // Edit Profile Modal State
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // Student Profile State (Persisted in localStorage)
+  // Student Profile State (Persisted in sessionStorage for fresh sessions & auto-signout on tab close)
   const [studentProfile, setStudentProfile] = useState(() => {
     try {
-      const saved = localStorage.getItem('tn_student_profile');
-      if (saved) return JSON.parse(saved);
-      const userSaved = localStorage.getItem('tn_scholarship_user');
-      if (userSaved) {
-        const u = JSON.parse(userSaved);
-        if (u?.profile) {
-          return {
-            fullName: u.profile.full_name || 'Surya Suresh',
-            gender: u.profile.gender || 'male',
-            community: u.profile.community || 'BC',
-            annualIncome: u.profile.annual_income || 140000,
-            boardPercentage: u.profile.board_percentage || 88.5,
-            currentCourse: u.profile.current_course || 'B.E CSE',
-            isFirstGraduate: u.profile.is_first_graduate !== undefined ? u.profile.is_first_graduate : true,
-            schoolingType: u.profile.schooling_type || 'tn_govt_school_6_to_12',
-            avatar: u.profile.avatar || null
-          };
-        }
+      if (currentUser?.profile) {
+        const u = currentUser;
+        return {
+          fullName: u.profile.full_name || u.full_name || '',
+          gender: u.profile.gender || 'male',
+          community: u.profile.community || 'BC',
+          district: u.profile.district || 'Chennai',
+          annualIncome: u.profile.annual_income || '',
+          boardPercentage: u.profile.board_percentage || '',
+          currentCourse: u.profile.current_course || '',
+          isFirstGraduate: u.profile.is_first_graduate !== undefined ? u.profile.is_first_graduate : false,
+          schoolingType: u.profile.schooling_type || 'tn_govt_school_6_to_12',
+          avatar: u.profile.avatar || null,
+          isGuest: false
+        };
       }
+      const saved = sessionStorage.getItem('tn_student_profile');
+      if (saved) return JSON.parse(saved);
     } catch (e) {}
     return {
-      fullName: 'Surya Suresh',
+      fullName: '',
       gender: 'male',
       community: 'BC',
-      annualIncome: 140000,
-      boardPercentage: 88.5,
-      currentCourse: 'B.E CSE',
-      isFirstGraduate: true,
+      district: 'Chennai',
+      annualIncome: '',
+      boardPercentage: '',
+      currentCourse: '',
+      isFirstGraduate: false,
       schoolingType: 'tn_govt_school_6_to_12',
-      avatar: null
+      avatar: null,
+      isGuest: true
     };
   });
 
-  // Student Profile Image State (Persisted in localStorage)
+  // Student Profile Image State (Persisted in sessionStorage)
   const fileInputRef = useRef(null);
   const [profileImage, setProfileImage] = useState(() => {
     try {
-      return localStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null;
+      return sessionStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null;
     } catch (e) {
       return null;
     }
   });
 
-  // Keep state synced across tabs / edits
+  // Sync state when currentUser changes (e.g. login, switch, or logout)
+  useEffect(() => {
+    if (currentUser?.profile) {
+      const up = currentUser.profile;
+      setStudentProfile({
+        fullName: up.full_name || currentUser.full_name || '',
+        gender: up.gender || 'male',
+        community: up.community || 'BC',
+        district: up.district || 'Chennai',
+        annualIncome: up.annual_income || '',
+        boardPercentage: up.board_percentage || '',
+        currentCourse: up.current_course || '',
+        isFirstGraduate: up.is_first_graduate !== undefined ? up.is_first_graduate : false,
+        schoolingType: up.schooling_type || 'tn_govt_school_6_to_12',
+        avatar: up.avatar || null,
+        isGuest: false
+      });
+      if (up.avatar) setProfileImage(up.avatar);
+    } else {
+      const sessionSaved = sessionStorage.getItem('tn_student_profile');
+      if (sessionSaved) {
+        setStudentProfile(JSON.parse(sessionSaved));
+      } else {
+        setStudentProfile({
+          fullName: '',
+          gender: 'male',
+          community: 'BC',
+          district: 'Chennai',
+          annualIncome: '',
+          boardPercentage: '',
+          currentCourse: '',
+          isFirstGraduate: false,
+          schoolingType: 'tn_govt_school_6_to_12',
+          avatar: null,
+          isGuest: true
+        });
+        setProfileImage(null);
+      }
+    }
+  }, [currentUser]);
+
+  // Keep state synced across edits and modal updates
   useEffect(() => {
     const handleProfileUpdate = () => {
       try {
-        const saved = localStorage.getItem('tn_student_profile');
+        const saved = sessionStorage.getItem('tn_student_profile');
         if (saved) {
           const parsed = JSON.parse(saved);
           setStudentProfile(parsed);
@@ -107,7 +149,7 @@ export default function HomePage({
 
     const handleAvatarUpdate = () => {
       try {
-        const av = localStorage.getItem('tn_student_avatar');
+        const av = sessionStorage.getItem('tn_student_avatar');
         setProfileImage(av || null);
       } catch (e) {}
     };
@@ -132,24 +174,24 @@ export default function HomePage({
         const base64Data = reader.result;
         setProfileImage(base64Data);
         try {
-          localStorage.setItem('tn_student_avatar', base64Data);
+          sessionStorage.setItem('tn_student_avatar', base64Data);
           
           // Also update studentProfile avatar
-          const savedProfile = localStorage.getItem('tn_student_profile');
+          const savedProfile = sessionStorage.getItem('tn_student_profile');
           if (savedProfile) {
             const p = JSON.parse(savedProfile);
             p.avatar = base64Data;
-            localStorage.setItem('tn_student_profile', JSON.stringify(p));
+            sessionStorage.setItem('tn_student_profile', JSON.stringify(p));
             setStudentProfile(p);
           }
           
           window.dispatchEvent(new Event('avatarUpdated'));
           
-          const savedUser = localStorage.getItem('tn_scholarship_user');
+          const savedUser = sessionStorage.getItem('tn_scholarship_user');
           if (savedUser) {
             const userObj = JSON.parse(savedUser);
             userObj.profile = { ...(userObj.profile || {}), avatar: base64Data };
-            localStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
+            sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
           }
         } catch (err) {
           console.warn("Storage quota note", err);
@@ -163,20 +205,20 @@ export default function HomePage({
     e.stopPropagation();
     setProfileImage(null);
     try {
-      localStorage.removeItem('tn_student_avatar');
-      const savedProfile = localStorage.getItem('tn_student_profile');
+      sessionStorage.removeItem('tn_student_avatar');
+      const savedProfile = sessionStorage.getItem('tn_student_profile');
       if (savedProfile) {
         const p = JSON.parse(savedProfile);
         p.avatar = null;
-        localStorage.setItem('tn_student_profile', JSON.stringify(p));
+        sessionStorage.setItem('tn_student_profile', JSON.stringify(p));
         setStudentProfile(p);
       }
       window.dispatchEvent(new Event('avatarUpdated'));
-      const savedUser = localStorage.getItem('tn_scholarship_user');
+      const savedUser = sessionStorage.getItem('tn_scholarship_user');
       if (savedUser) {
         const userObj = JSON.parse(savedUser);
         if (userObj.profile) delete userObj.profile.avatar;
-        localStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
+        sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
       }
     } catch (err) {}
   };
@@ -614,11 +656,44 @@ export default function HomePage({
                       <span>{currentUser ? 'Switch' : 'Sign In'}</span>
                     </button>
                   )}
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    Verified
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${
+                    currentUser || studentProfile.fullName
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                      : 'bg-amber-100 text-amber-800 border-amber-200'
+                  }`}>
+                    {currentUser || studentProfile.fullName ? 'Verified' : 'Guest Mode'}
                   </span>
                 </div>
               </div>
+
+              {/* Guest banner if not signed in and profile empty */}
+              {(!currentUser && !studentProfile.fullName) && (
+                <div className="mb-4 p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs space-y-1.5">
+                  <div className="flex items-center space-x-1.5 font-bold text-emerald-900 text-[11px]">
+                    <Sparkles size={13} className="text-emerald-600 shrink-0" />
+                    <span>Fresh Session • பொது அணுகல் (Guest)</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-snug">
+                    Enter your academic credentials below to discover eligible scholarships, or sign in to load your saved profile.
+                  </p>
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <button
+                      onClick={onStartMatcher}
+                      className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded text-[10px] transition cursor-pointer"
+                    >
+                      Start Assessment
+                    </button>
+                    {onOpenAuth && (
+                      <button
+                        onClick={onOpenAuth}
+                        className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 font-bold rounded text-[10px] border border-slate-200 transition cursor-pointer"
+                      >
+                        Sign In / உள்நுழைவு
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Profile section: square photo placeholder on left, compact list on right */}
               <div className="flex items-start space-x-4">
@@ -634,7 +709,7 @@ export default function HomePage({
                       {profileImage ? (
                         <img 
                           src={profileImage} 
-                          alt={studentProfile.fullName} 
+                          alt={studentProfile.fullName || 'Student'} 
                           className="w-full h-full object-cover" 
                         />
                       ) : (
@@ -653,7 +728,7 @@ export default function HomePage({
                       </div>
 
                       <div className="absolute bottom-0 inset-x-0 bg-slate-900/85 text-[8px] font-mono text-center text-white py-0.5">
-                        ID: 849204
+                        {currentUser?.user_id ? `ID: ${currentUser.user_id.slice(-6)}` : (studentProfile.fullName ? 'ID: 849204' : 'GUEST-TN')}
                       </div>
                     </div>
 
@@ -706,27 +781,39 @@ export default function HomePage({
                 <div className="flex-1 min-w-0 space-y-1 text-xs">
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Name</span>
-                    <strong className="text-slate-900 font-semibold truncate ml-2">{studentProfile.fullName}</strong>
+                    <strong className="text-slate-900 font-semibold truncate ml-2">
+                      {studentProfile.fullName || 'Guest Student (விருந்தினர்)'}
+                    </strong>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Gender</span>
-                    <span className="text-slate-800 font-medium capitalize">{studentProfile.gender}</span>
+                    <span className="text-slate-800 font-medium capitalize">
+                      {studentProfile.gender || 'Not specified'}
+                    </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Community</span>
-                    <span className="text-slate-800 font-semibold bg-slate-100 px-1.5 py-0.2 rounded font-mono uppercase">{studentProfile.community}</span>
+                    <span className="text-slate-800 font-semibold bg-slate-100 px-1.5 py-0.2 rounded font-mono uppercase">
+                      {studentProfile.community || 'BC'}
+                    </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Income</span>
-                    <span className="text-slate-900 font-semibold font-mono">₹{Number(studentProfile.annualIncome || 140000).toLocaleString('en-IN')}</span>
+                    <span className="text-slate-900 font-semibold font-mono">
+                      {studentProfile.annualIncome ? `₹${Number(studentProfile.annualIncome).toLocaleString('en-IN')}` : '-- (Not Set)'}
+                    </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">12th Marks</span>
-                    <span className="text-emerald-700 font-bold font-mono">{studentProfile.boardPercentage || 88.5}%</span>
+                    <span className="text-emerald-700 font-bold font-mono">
+                      {studentProfile.boardPercentage ? `${studentProfile.boardPercentage}%` : '--'}
+                    </span>
                   </div>
                   <div className="flex justify-between items-baseline border-b border-slate-100 pb-1">
                     <span className="text-slate-500 font-medium">Course</span>
-                    <span className="text-slate-800 font-medium truncate ml-2" title={studentProfile.currentCourse}>{studentProfile.currentCourse || 'B.E CSE'}</span>
+                    <span className="text-slate-800 font-medium truncate ml-2" title={studentProfile.currentCourse}>
+                      {studentProfile.currentCourse || '-- (Select Course)'}
+                    </span>
                   </div>
                   <div className="flex justify-between items-baseline">
                     <span className="text-slate-500 font-medium">FG</span>
@@ -755,7 +842,7 @@ export default function HomePage({
                       <span className="font-semibold text-slate-800">Aadhaar</span>
                     </div>
                     <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                      UIDAI e-KYC Verified
+                      {currentUser || studentProfile.fullName ? 'UIDAI e-KYC Verified' : 'Aadhaar e-KYC Ready'}
                     </span>
                   </li>
 
@@ -765,7 +852,7 @@ export default function HomePage({
                       <span className="font-semibold text-slate-800">Income Cert</span>
                     </div>
                     <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
-                      REV-INC-01 Verified
+                      {currentUser || studentProfile.annualIncome ? 'REV-INC-01 Verified' : 'e-Sevai Linked'}
                     </span>
                   </li>
 
@@ -775,7 +862,7 @@ export default function HomePage({
                       <span className="font-semibold text-slate-800">Community Cert</span>
                     </div>
                     <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
-                      REV-COM-02 Verified
+                      {currentUser || studentProfile.fullName ? 'REV-COM-02 Verified' : 'Revenue Department'}
                     </span>
                   </li>
                 </ul>

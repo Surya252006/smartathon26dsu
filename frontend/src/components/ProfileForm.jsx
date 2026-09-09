@@ -25,62 +25,97 @@ import {
 import VoiceAssistModal from './VoiceAssistModal';
 import { TRANSLATIONS } from '../utils/translations';
 
+export const TN_DISTRICTS = [
+  { id: 'Ariyalur', name_en: 'Ariyalur', name_ta: 'அரியலூர்' },
+  { id: 'Chengalpattu', name_en: 'Chengalpattu', name_ta: 'செங்கல்பட்டு' },
+  { id: 'Chennai', name_en: 'Chennai', name_ta: 'சென்னை' },
+  { id: 'Coimbatore', name_en: 'Coimbatore', name_ta: 'கோயம்புத்தூர்' },
+  { id: 'Cuddalore', name_en: 'Cuddalore', name_ta: 'கடலூர்' },
+  { id: 'Dharmapuri', name_en: 'Dharmapuri', name_ta: 'தருமபுரி' },
+  { id: 'Dindigul', name_en: 'Dindigul', name_ta: 'திண்டுக்கல்' },
+  { id: 'Erode', name_en: 'Erode', name_ta: 'ஈரோடு' },
+  { id: 'Kallakurichi', name_en: 'Kallakurichi', name_ta: 'கள்ளக்குறிச்சி' },
+  { id: 'Kanchipuram', name_en: 'Kanchipuram', name_ta: 'காஞ்சிபுரம்' },
+  { id: 'Kanyakumari', name_en: 'Kanyakumari', name_ta: 'கன்னியாகுமரி' },
+  { id: 'Karur', name_en: 'Karur', name_ta: 'கரூர்' },
+  { id: 'Krishnagiri', name_en: 'Krishnagiri', name_ta: 'கிருஷ்ணகிரி' },
+  { id: 'Madurai', name_en: 'Madurai', name_ta: 'மதுரை' },
+  { id: 'Mayiladuthurai', name_en: 'Mayiladuthurai', name_ta: 'மயிலாடுதுறை' },
+  { id: 'Nagapattinam', name_en: 'Nagapattinam', name_ta: 'நாகப்பட்டினம்' },
+  { id: 'Namakkal', name_en: 'Namakkal', name_ta: 'நாமக்கல்' },
+  { id: 'Nilgiris', name_en: 'Nilgiris (Udhagamandalam)', name_ta: 'நீலகிரி' },
+  { id: 'Perambalur', name_en: 'Perambalur', name_ta: 'பெரம்பலூர்' },
+  { id: 'Pudukkottai', name_en: 'Pudukkottai', name_ta: 'புதுக்கோட்டை' },
+  { id: 'Ramanathapuram', name_en: 'Ramanathapuram', name_ta: 'ராமநாதபுரம்' },
+  { id: 'Ranipet', name_en: 'Ranipet', name_ta: 'ராணிப்பேட்டை' },
+  { id: 'Salem', name_en: 'Salem', name_ta: 'சேலம்' },
+  { id: 'Sivaganga', name_en: 'Sivaganga', name_ta: 'சிவகங்கை' },
+  { id: 'Tenkasi', name_en: 'Tenkasi', name_ta: 'தென்காசி' },
+  { id: 'Thanjavur', name_en: 'Thanjavur', name_ta: 'தஞ்சாவூர்' },
+  { id: 'Theni', name_en: 'Theni', name_ta: 'தேனி' },
+  { id: 'Thoothukudi', name_en: 'Thoothukudi (Tuticorin)', name_ta: 'தூத்துக்குடி' },
+  { id: 'Tiruchirappalli', name_en: 'Tiruchirappalli (Trichy)', name_ta: 'திருச்சிராப்பள்ளி' },
+  { id: 'Tirunelveli', name_en: 'Tirunelveli', name_ta: 'திருநெல்வேலி' },
+  { id: 'Tirupathur', name_en: 'Tirupathur', name_ta: 'திருப்பத்தூர்' },
+  { id: 'Tiruppur', name_en: 'Tiruppur', name_ta: 'திருப்பூர்' },
+  { id: 'Tiruvallur', name_en: 'Tiruvallur', name_ta: 'திருவள்ளூர்' },
+  { id: 'Tiruvannamalai', name_en: 'Tiruvannamalai', name_ta: 'திருவண்ணாமலை' },
+  { id: 'Tiruvarur', name_en: 'Tiruvarur', name_ta: 'திருவாரூர்' },
+  { id: 'Vellore', name_en: 'Vellore', name_ta: 'வேலூர்' },
+  { id: 'Viluppuram', name_en: 'Viluppuram', name_ta: 'விழுப்புரம்' },
+  { id: 'Virudhunagar', name_en: 'Virudhunagar', name_ta: 'விருதுநகர்' }
+];
+
 const extractFormData = (user, profile) => {
-  // 0. Check localStorage tn_student_profile edited by student
-  try {
-    const savedProfile = localStorage.getItem('tn_student_profile');
-    if (savedProfile) {
-      const sp = JSON.parse(savedProfile);
-      if (sp.fullName) {
-        return {
-          full_name: sp.fullName,
-          age: sp.age ? String(sp.age) : '18',
-          gender: sp.gender || 'male',
-          community: sp.community || 'BC',
-          state: 'Tamil Nadu',
-          district: sp.district || 'Pudukkottai',
-          residence_type: sp.residence_type || 'Rural',
+  // 0. If authenticated user has existing profile in session/state
+  if (user?.profile && user.profile.full_name) {
+    const up = user.profile;
+    return {
+      full_name: up.full_name || '',
+      age: up.age ? String(up.age) : '18',
+      gender: up.gender || 'male',
+      community: up.community || 'BC',
+      state: 'Tamil Nadu',
+      district: up.district || 'Chennai',
+      residence_type: up.residence_type || 'Rural',
 
-          degree: sp.degree || 'Undergraduate (UG)',
-          current_course: (sp.currentCourse && sp.currentCourse.includes('Engineering')) ? 'Engineering' : (sp.currentCourse || 'Engineering'),
-          college_name: sp.college_name || 'Anna University Affiliated Engineering College',
-          college_type: sp.college_type || 'Government Aided',
-          year_of_study: sp.year_of_study || '1st Year (Fresher)',
-          board_percentage: sp.boardPercentage ? String(sp.boardPercentage) : '88.5',
-          admission_mode: 'govt_counseling_single_window',
+      degree: up.degree || 'Undergraduate (UG)',
+      current_course: up.current_course || 'Engineering',
+      college_name: up.college_name || '',
+      college_type: up.college_type || 'Government',
+      year_of_study: up.year_of_study || '1st Year (Fresher)',
+      board_percentage: up.board_percentage ? String(up.board_percentage) : '',
+      admission_mode: up.admission_mode || 'govt_counseling_single_window',
 
-          annual_income: sp.annualIncome ? String(sp.annualIncome) : '140000',
-          has_income_certificate: 'yes',
-          is_first_graduate: sp.isFirstGraduate !== undefined ? sp.isFirstGraduate : true,
-          siblings_in_college: 'None',
+      annual_income: up.annual_income ? String(up.annual_income) : '',
+      has_income_certificate: 'yes',
+      is_first_graduate: up.is_first_graduate !== undefined ? up.is_first_graduate : false,
+      siblings_in_college: 'None',
 
-          schooling_type: sp.schoolingType || 'tn_govt_school_6_to_12',
-          is_differently_abled: false,
-          disability_percentage: '',
-          special_category: '7.5% Govt School Quota',
-          available_docs: [
-            'income_certificate', 
-            'community_certificate', 
-            'first_graduate_certificate', 
-            'bonafide_certificate', 
-            'marksheet', 
-            'aadhaar_bank'
-          ]
-        };
-      }
-    }
-  } catch (e) {}
+      schooling_type: up.schooling_type || 'tn_govt_school_6_to_12',
+      is_differently_abled: Boolean(up.is_differently_abled),
+      disability_percentage: '',
+      special_category: up.special_category || 'None',
+      available_docs: [
+        'income_certificate', 
+        'community_certificate', 
+        'bonafide_certificate', 
+        'marksheet', 
+        'aadhaar_bank'
+      ]
+    };
+  }
 
-  // 1. If profile was already evaluated in current session
+  // 1. If profile was evaluated in current session
   if (profile && (profile.full_name || profile.community)) {
     return {
       full_name: profile.full_name || '',
       age: profile.age ? String(profile.age) : '18',
-      gender: profile.gender || 'female',
+      gender: profile.gender || 'male',
       community: profile.community || 'BC',
       state: profile.state || 'Tamil Nadu',
       district: profile.district || 'Chennai',
-      residence_type: profile.residence_type || 'Urban',
+      residence_type: profile.residence_type || 'Rural',
 
       degree: profile.degree || 'Undergraduate (UG)',
       current_course: profile.current_course || 'Engineering',
@@ -92,7 +127,7 @@ const extractFormData = (user, profile) => {
 
       annual_income: profile.annual_income ? String(profile.annual_income) : '',
       has_income_certificate: 'yes',
-      is_first_graduate: profile.is_first_graduate !== undefined ? profile.is_first_graduate : true,
+      is_first_graduate: profile.is_first_graduate !== undefined ? profile.is_first_graduate : false,
       siblings_in_college: 'None',
 
       schooling_type: profile.schooling_type || 'tn_govt_school_6_to_12',
@@ -102,7 +137,6 @@ const extractFormData = (user, profile) => {
       available_docs: profile.available_docs || [
         'income_certificate', 
         'community_certificate', 
-        'first_graduate_certificate', 
         'bonafide_certificate', 
         'marksheet', 
         'aadhaar_bank'
@@ -110,37 +144,36 @@ const extractFormData = (user, profile) => {
     };
   }
 
-  // 2. Default clean student profile
+  // 2. Default Fresh Empty State for Guest Visitors on Shared Public Link
   return {
-    full_name: 'Surya Suresh',
+    full_name: '',
     age: '18',
     gender: 'male',
     community: 'BC',
     state: 'Tamil Nadu',
-    district: 'Pudukkottai',
+    district: 'Chennai',
     residence_type: 'Rural',
 
     degree: 'Undergraduate (UG)',
     current_course: 'Engineering',
-    college_name: 'Govt College of Technology / Engineering',
+    college_name: '',
     college_type: 'Government',
     year_of_study: '1st Year (Fresher)',
-    board_percentage: '88.5',
+    board_percentage: '',
     admission_mode: 'govt_counseling_single_window',
 
-    annual_income: '140000',
+    annual_income: '',
     has_income_certificate: 'yes',
-    is_first_graduate: true,
+    is_first_graduate: false,
     siblings_in_college: 'None',
 
     schooling_type: 'tn_govt_school_6_to_12',
     is_differently_abled: false,
     disability_percentage: '',
-    special_category: '7.5% Govt School Quota',
+    special_category: 'None',
     available_docs: [
       'income_certificate', 
       'community_certificate', 
-      'first_graduate_certificate', 
       'bonafide_certificate', 
       'marksheet', 
       'aadhaar_bank'
@@ -329,6 +362,108 @@ export default function ProfileForm({
               </p>
             </div>
 
+            {/* Quick Demo Pre-fill Toolbar */}
+            <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="font-bold text-slate-700 text-[11px] flex items-center space-x-1">
+                <Sparkles size={12} className="text-emerald-600" />
+                <span>Quick Demo Fill (Optional):</span>
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    full_name: 'Surya Suresh',
+                    age: '18',
+                    gender: 'male',
+                    community: 'BC',
+                    district: 'Pudukkottai',
+                    degree: 'Undergraduate (UG)',
+                    current_course: 'Engineering',
+                    board_percentage: '88.5',
+                    annual_income: '140000',
+                    is_first_graduate: true,
+                    schooling_type: 'tn_govt_school_6_to_12'
+                  }))}
+                  className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 text-[10px] font-bold transition cursor-pointer"
+                >
+                  Surya S. (BC Male • FG)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    full_name: 'Priya M.',
+                    age: '19',
+                    gender: 'female',
+                    community: 'BC',
+                    district: 'Madurai',
+                    degree: 'Undergraduate (UG)',
+                    current_course: 'Engineering',
+                    board_percentage: '91.2',
+                    annual_income: '120000',
+                    is_first_graduate: false,
+                    schooling_type: 'tn_govt_school_6_to_12'
+                  }))}
+                  className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 text-[10px] font-bold transition cursor-pointer"
+                >
+                  Priya M. (Pudhumai Penn)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    full_name: 'Karthik R.',
+                    age: '19',
+                    gender: 'male',
+                    community: 'OC',
+                    district: 'Coimbatore',
+                    degree: 'Undergraduate (UG)',
+                    current_course: 'Engineering',
+                    board_percentage: '94.0',
+                    annual_income: '350000',
+                    is_first_graduate: false,
+                    schooling_type: 'cbse_or_matriculation'
+                  }))}
+                  className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 text-[10px] font-bold transition cursor-pointer"
+                >
+                  Karthik R. (NSP CSSS)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({
+                    full_name: '',
+                    age: '18',
+                    gender: 'male',
+                    community: 'BC',
+                    state: 'Tamil Nadu',
+                    district: 'Chennai',
+                    residence_type: 'Rural',
+                    degree: 'Undergraduate (UG)',
+                    current_course: 'Engineering',
+                    college_name: '',
+                    college_type: 'Government',
+                    year_of_study: '1st Year (Fresher)',
+                    board_percentage: '',
+                    admission_mode: 'govt_counseling_single_window',
+                    annual_income: '',
+                    has_income_certificate: 'yes',
+                    is_first_graduate: false,
+                    siblings_in_college: 'None',
+                    schooling_type: 'tn_govt_school_6_to_12',
+                    is_differently_abled: false,
+                    disability_percentage: '',
+                    special_category: 'None',
+                    available_docs: ['income_certificate', 'community_certificate', 'bonafide_certificate', 'marksheet', 'aadhaar_bank']
+                  })}
+                  className="px-2 py-1 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 rounded-lg border border-slate-200 text-[10px] font-bold transition cursor-pointer"
+                  title="Clear form to enter your own fresh details"
+                >
+                  Clear Form
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               
               {/* Full Name */}
@@ -414,19 +549,11 @@ export default function ProfileForm({
                   onChange={handleChange}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                  <option value="Chennai">Chennai</option>
-                  <option value="Coimbatore">Coimbatore</option>
-                  <option value="Madurai">Madurai</option>
-                  <option value="Tiruchirappalli">Tiruchirappalli</option>
-                  <option value="Salem">Salem</option>
-                  <option value="Pudukkottai">Pudukkottai</option>
-                  <option value="Thanjavur">Thanjavur</option>
-                  <option value="Tirunelveli">Tirunelveli</option>
-                  <option value="Vellore">Vellore</option>
-                  <option value="Erode">Erode</option>
-                  <option value="Dindigul">Dindigul</option>
-                  <option value="Kanchipuram">Kanchipuram</option>
-                  <option value="Other TN District">Other Tamil Nadu District</option>
+                  {TN_DISTRICTS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name_en} ({d.name_ta})
+                    </option>
+                  ))}
                 </select>
               </div>
 

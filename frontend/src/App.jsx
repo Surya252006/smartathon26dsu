@@ -16,6 +16,7 @@ import AdminDashboard from './components/AdminDashboard';
 import { evaluateProfileIntelligently } from './utils/decisionEngine';
 import { DEMO_PERSONAS } from './data/demoPersonas';
 import { TRANSLATIONS } from './utils/translations';
+import { saveProfileToCluster, saveEvaluationToCluster } from './utils/cloudSync';
 
 function App() {
   const [currentTab, setCurrentTab] = useState('home'); // 'home', 'matcher', 'results', 'schemes'
@@ -46,13 +47,22 @@ function App() {
   // Citizen Grievance & Student Helpdesk Modal State
   const [showGrievanceModal, setShowGrievanceModal] = useState(false);
 
-  // Load saved student session and database status on startup
+  // Load saved student session from sessionStorage (Fresh per browser session / auto-signout on tab close)
   useEffect(() => {
     try {
-      const savedUser = localStorage.getItem('tn_scholarship_user');
-      if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
+      // Clean up legacy localStorage if any exists so fresh shared links never default to Surya
+      localStorage.removeItem('tn_scholarship_user');
+      localStorage.removeItem('tn_student_profile');
+      localStorage.removeItem('tn_student_avatar');
+
+      // Check sessionStorage for current session
+      const sessionUser = sessionStorage.getItem('tn_scholarship_user');
+      if (sessionUser) {
+        setCurrentUser(JSON.parse(sessionUser));
+      } else {
+        setCurrentUser(null);
       }
+
       const savedLang = localStorage.getItem('tn_portal_lang');
       if (savedLang) {
         setCurrentLang(savedLang);
@@ -75,17 +85,32 @@ function App() {
     } catch (e) {}
   };
 
-  const handleAuthSuccess = (user) => {
+  const handleAuthSuccess = async (user) => {
     setCurrentUser(user);
     try {
-      localStorage.setItem('tn_scholarship_user', JSON.stringify(user));
+      // Session Storage: Automatically clears when browser/tab is closed
+      sessionStorage.setItem('tn_scholarship_user', JSON.stringify(user));
+      
+      // Sync user profile to Firestore Cloud Cluster
+      if (user.profile) {
+        saveProfileToCluster(user.profile, user).catch(err => 
+          console.warn("[App] Cloud sync notice on login:", err)
+        );
+      }
     } catch (e) {}
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
     try {
+      sessionStorage.removeItem('tn_scholarship_user');
+      sessionStorage.removeItem('tn_student_profile');
+      sessionStorage.removeItem('tn_student_avatar');
       localStorage.removeItem('tn_scholarship_user');
+      localStorage.removeItem('tn_student_profile');
+      localStorage.removeItem('tn_student_avatar');
+      window.dispatchEvent(new Event('profileUpdated'));
+      window.dispatchEvent(new Event('avatarUpdated'));
     } catch (e) {}
   };
 
@@ -94,7 +119,12 @@ function App() {
     setIsEvaluating(true);
     setCurrentTab('matcher');
 
-    // Persist to currentUser and backend if student is authenticated
+    // 1. Sync student profile to Cloud Cluster (Firestore & MongoDB)
+    saveProfileToCluster(formData, currentUser).catch(err =>
+      console.warn("[App] Cloud cluster profile sync notice:", err)
+    );
+
+    // Persist to currentUser and session storage
     if (currentUser) {
       const updatedUser = {
         ...currentUser,
@@ -105,7 +135,7 @@ function App() {
       };
       setCurrentUser(updatedUser);
       try {
-        localStorage.setItem('tn_scholarship_user', JSON.stringify(updatedUser));
+        sessionStorage.setItem('tn_scholarship_user', JSON.stringify(updatedUser));
         if (currentUser.user_id) {
           fetch('http://localhost:8000/api/auth/profile', {
             method: 'POST',
@@ -129,13 +159,24 @@ function App() {
       if (!response.ok) throw new Error('API Error');
       const data = await response.json();
       const localEnriched = evaluateProfileIntelligently(formData);
-      setResult({ ...localEnriched, ...data });
+      const combinedResult = { ...localEnriched, ...data };
+      setResult(combinedResult);
       setCurrentTab('results');
+
+      // 2. Persist evaluation audit to Cloud Cluster
+      saveEvaluationToCluster(combinedResult, formData).catch(err =>
+        console.warn("[App] Cloud cluster evaluation log notice:", err)
+      );
     } catch (err) {
       console.warn("Backend API not reachable (running in client-mode / Firebase Hosting). Using intelligent decision engine.", err);
       const data = evaluateProfileIntelligently(formData);
       setResult(data);
       setCurrentTab('results');
+
+      // Persist client evaluation result to Cloud Cluster
+      saveEvaluationToCluster(data, formData).catch(err =>
+        console.warn("[App] Cloud cluster evaluation log notice:", err)
+      );
     } finally {
       setIsEvaluating(false);
     }
@@ -301,12 +342,43 @@ function App() {
               />
             )}
 
-            {/* VIEW G: Future-Ready Admin & Scholarship Rule Builder */}
+            {/* VIEW G: Future-Ready Admin & Scholarship Rule Builder (Strictly Admin Access Only) */}
             {currentTab === 'admin' && (
-              <AdminDashboard
-                onBackToHome={() => setCurrentTab('home')}
-                currentLang={currentLang}
-              />
+              currentUser?.role === 'admin' ? (
+                <AdminDashboard
+                  onBackToHome={() => setCurrentTab('home')}
+                  currentLang={currentLang}
+                />
+              ) : (
+                <div className="max-w-lg mx-auto my-12 bg-white rounded-2xl border border-red-200 p-8 text-center shadow-xs space-y-4">
+                  <div className="w-14 h-14 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto border border-red-100">
+                    <ShieldCheck size={30} />
+                  </div>
+                  <span className="text-[11px] font-bold text-red-700 uppercase tracking-widest block">
+                    Access Prohibited • நிர்வாகி அனுமதி தேவை
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-900">
+                    Nodal Administrator Access Only
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    The Rule Builder and Scheme Matrix configurations are strictly reserved for verified Government of Tamil Nadu Welfare Administrators. Normal students cannot access or modify state allocation rules.
+                  </p>
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
+                    <button
+                      onClick={() => setCurrentTab('home')}
+                      className="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer"
+                    >
+                      Return to Portal Home
+                    </button>
+                    <button
+                      onClick={() => setShowAuthModal(true)}
+                      className="w-full sm:w-auto px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition cursor-pointer"
+                    >
+                      Sign In as Admin
+                    </button>
+                  </div>
+                </div>
+              )
             )}
 
           </div>

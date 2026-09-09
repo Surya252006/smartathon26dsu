@@ -9,11 +9,13 @@ import {
   ArrowRight, 
   Loader2, 
   Sparkles, 
-  CheckCircle2,
-  LogIn,
-  UserPlus,
-  ShieldCheck
+  CheckCircle2, 
+  LogIn, 
+  UserPlus, 
+  ShieldCheck 
 } from 'lucide-react';
+import { TN_DISTRICTS } from './ProfileForm';
+import { saveProfileToCluster } from '../utils/cloudSync';
 
 // Client-side authentication fallback for production / offline environments
 function authenticateLocally(mode, payload) {
@@ -176,9 +178,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   if (!isOpen) return null;
 
   const completeAuth = (userData) => {
-    // Save to user storage
+    // Save to user storage (sessionStorage ensures fresh link for new visitors and auto-signout on tab close)
     try {
-      localStorage.setItem('tn_scholarship_user', JSON.stringify(userData));
+      sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userData));
 
       // Synchronize tn_student_profile so Candidate Snapshot & Form immediately match the profile
       const prof = userData.profile || {};
@@ -186,6 +188,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         fullName: prof.full_name || userData.full_name || 'Tamil Nadu Student',
         gender: prof.gender || 'male',
         community: prof.community || community || 'BC',
+        district: prof.district || district || 'Chennai',
         annualIncome: prof.annual_income || 140000,
         boardPercentage: prof.board_percentage || 88.5,
         currentCourse: prof.current_course || 'B.E CSE',
@@ -193,10 +196,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         schoolingType: prof.schooling_type || 'tn_govt_school_6_to_12',
         avatar: prof.avatar || null
       };
-      localStorage.setItem('tn_student_profile', JSON.stringify(profileToSave));
+      sessionStorage.setItem('tn_student_profile', JSON.stringify(profileToSave));
       if (profileToSave.avatar) {
-        localStorage.setItem('tn_student_avatar', profileToSave.avatar);
+        sessionStorage.setItem('tn_student_avatar', profileToSave.avatar);
       }
+
+      // Persist profile into Cloud Firestore Cluster
+      saveProfileToCluster(profileToSave, userData).catch(err =>
+        console.warn("[AuthModal] Cluster profile write notice:", err)
+      );
 
       window.dispatchEvent(new Event('profileUpdated'));
       window.dispatchEvent(new Event('avatarUpdated'));
@@ -493,15 +501,11 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
                   onChange={(e) => setDistrict(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                  <option value="Chennai">Chennai</option>
-                  <option value="Coimbatore">Coimbatore</option>
-                  <option value="Madurai">Madurai</option>
-                  <option value="Tiruchirappalli">Tiruchirappalli</option>
-                  <option value="Salem">Salem</option>
-                  <option value="Pudukkottai">Pudukkottai</option>
-                  <option value="Thanjavur">Thanjavur</option>
-                  <option value="Tirunelveli">Tirunelveli</option>
-                  <option value="Other">Other Districts (TN)</option>
+                  {TN_DISTRICTS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name_en}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

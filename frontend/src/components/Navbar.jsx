@@ -50,22 +50,22 @@ export default function Navbar({
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
   const [showSearch, setShowSearch] = useState(false);
 
-  // Student name dynamically reactive to localStorage and user edits
+  // Student name dynamically reactive to sessionStorage and user edits
   const [profileName, setProfileName] = useState(() => {
     try {
-      const saved = localStorage.getItem('tn_student_profile');
+      const saved = sessionStorage.getItem('tn_student_profile');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.fullName) return parsed.fullName;
       }
     } catch (e) {}
-    return currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || "Surya Suresh";
+    return currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || "";
   });
 
   // Real-time Student Profile Photo State
   const [avatarImage, setAvatarImage] = useState(() => {
     try {
-      return localStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null;
+      return sessionStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null;
     } catch (e) {
       return null;
     }
@@ -74,12 +74,14 @@ export default function Navbar({
   useEffect(() => {
     const updateProfile = () => {
       try {
-        const saved = localStorage.getItem('tn_student_profile');
+        const saved = sessionStorage.getItem('tn_student_profile');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed.fullName) setProfileName(parsed.fullName);
+        } else {
+          setProfileName(currentUser?.profile?.full_name || currentUser?.email?.split('@')[0] || "");
         }
-        setAvatarImage(localStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null);
+        setAvatarImage(sessionStorage.getItem('tn_student_avatar') || currentUser?.profile?.avatar || null);
       } catch (e) {}
     };
     window.addEventListener('profileUpdated', updateProfile);
@@ -301,19 +303,21 @@ export default function Navbar({
               <span>{t.nav_grievance || 'Helpdesk'}</span>
             </button>
 
-            {/* 7. Admin & Rule Builder (Sections 14 & 15) */}
-            <button
-              onClick={onOpenAdmin || (() => setCurrentTab('admin'))}
-              className={`px-3 py-1.5 rounded-md flex items-center space-x-1.5 transition cursor-pointer ${
-                currentTab === 'admin'
-                  ? 'bg-emerald-800 text-white font-bold shadow-inner ring-1 ring-emerald-600'
-                  : 'text-amber-200 hover:text-white hover:bg-emerald-600/70'
-              }`}
-              title="Government Administrator Rule Builder & Scheme Configuration"
-            >
-              <Sliders size={15} className="text-amber-300" />
-              <span>Admin Rules</span>
-            </button>
+            {/* 7. Admin & Rule Builder (Restricted to Government Admins Only) */}
+            {currentUser?.role === 'admin' && (
+              <button
+                onClick={onOpenAdmin || (() => setCurrentTab('admin'))}
+                className={`px-3 py-1.5 rounded-md flex items-center space-x-1.5 transition cursor-pointer ${
+                  currentTab === 'admin'
+                    ? 'bg-emerald-800 text-white font-bold shadow-inner ring-1 ring-emerald-600'
+                    : 'text-amber-200 hover:text-white hover:bg-emerald-600/70'
+                }`}
+                title="Government Administrator Rule Builder & Scheme Configuration"
+              >
+                <Sliders size={15} className="text-amber-300" />
+                <span>Admin Rules</span>
+              </button>
+            )}
 
             {/* If not logged in, also show Sign In in secondary nav */}
             {!currentUser && (

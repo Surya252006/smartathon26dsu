@@ -43,7 +43,7 @@ export default function ProfilePage({
 
   const [localProfile, setLocalProfile] = useState(() => {
     try {
-      const saved = localStorage.getItem('tn_student_profile');
+      const saved = sessionStorage.getItem('tn_student_profile');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return null;
@@ -51,7 +51,7 @@ export default function ProfilePage({
 
   const [avatarImage, setAvatarImage] = useState(() => {
     try {
-      return localStorage.getItem('tn_student_avatar') || user?.profile?.avatar || null;
+      return sessionStorage.getItem('tn_student_avatar') || user?.profile?.avatar || null;
     } catch (e) {}
     return null;
   });
@@ -59,9 +59,9 @@ export default function ProfilePage({
   useEffect(() => {
     const handleProfileUpdate = () => {
       try {
-        const saved = localStorage.getItem('tn_student_profile');
+        const saved = sessionStorage.getItem('tn_student_profile');
         if (saved) setLocalProfile(JSON.parse(saved));
-        const av = localStorage.getItem('tn_student_avatar');
+        const av = sessionStorage.getItem('tn_student_avatar');
         setAvatarImage(av || null);
       } catch (e) {}
     };
@@ -75,19 +75,19 @@ export default function ProfilePage({
 
   // Derive display values from user account or profile form
   const studentData = {
-    fullName: localProfile?.fullName || profile?.full_name || user?.profile?.full_name || user?.email?.split('@')[0] || 'Surya Suresh',
-    email: user?.email || profile?.email || 'surya.suresh@tnega.gov.in',
+    fullName: localProfile?.fullName || profile?.full_name || user?.profile?.full_name || (user ? user.email?.split('@')[0] : 'Guest Candidate (விருந்தினர்)'),
+    email: user?.email || profile?.email || 'guest@tnevidya.tn.gov.in',
     gender: localProfile?.gender || profile?.gender || user?.profile?.gender || 'male',
     community: localProfile?.community || profile?.community || user?.profile?.community || 'BC',
-    district: profile?.district || user?.profile?.district || 'Pudukkottai',
-    annualIncome: localProfile?.annualIncome || profile?.annual_income || user?.profile?.annual_income || 140000,
-    boardPercentage: localProfile?.boardPercentage || profile?.board_percentage || user?.profile?.board_percentage || 88.5,
+    district: localProfile?.district || profile?.district || user?.profile?.district || 'Chennai',
+    annualIncome: localProfile?.annualIncome || profile?.annual_income || user?.profile?.annual_income || 0,
+    boardPercentage: localProfile?.boardPercentage || profile?.board_percentage || user?.profile?.board_percentage || 0,
     schoolingType: localProfile?.schoolingType || profile?.schooling_type || user?.profile?.schooling_type || 'tn_govt_school_6_to_12',
-    isFirstGraduate: localProfile?.isFirstGraduate !== undefined ? localProfile.isFirstGraduate : (profile?.is_first_graduate !== undefined ? profile.is_first_graduate : true),
+    isFirstGraduate: localProfile?.isFirstGraduate !== undefined ? localProfile.isFirstGraduate : (profile?.is_first_graduate !== undefined ? profile.is_first_graduate : false),
     admissionMode: profile?.admission_mode || 'govt_counseling_single_window',
-    currentCourse: localProfile?.currentCourse || profile?.current_course || 'B.E. Computer Science & Engineering (B.E CSE)',
+    currentCourse: localProfile?.currentCourse || profile?.current_course || 'Higher Education (Not Enrolled)',
     role: user?.role || (user?.email?.includes('admin') ? 'admin' : 'student'),
-    userId: user?.user_id || 'TN-849204',
+    userId: user?.user_id || (localProfile?.fullName ? 'TN-STUDENT' : 'GUEST-SESSION'),
     avatar: avatarImage
   };
 

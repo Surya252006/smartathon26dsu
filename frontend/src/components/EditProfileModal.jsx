@@ -9,8 +9,11 @@ import {
   ShieldCheck, 
   Upload, 
   Trash2,
-  Sparkles
+  Sparkles,
+  MapPin
 } from 'lucide-react';
+import { TN_DISTRICTS } from './ProfileForm';
+import { saveProfileToCluster } from '../utils/cloudSync';
 
 export default function EditProfileModal({ 
   isOpen, 
@@ -22,9 +25,10 @@ export default function EditProfileModal({
   const fileInputRef = useRef(null);
 
   // Form states initialized with existing profile values
-  const [fullName, setFullName] = useState(profile?.fullName || 'Surya Suresh');
+  const [fullName, setFullName] = useState(profile?.fullName || '');
   const [gender, setGender] = useState(profile?.gender || 'male');
   const [community, setCommunity] = useState(profile?.community || 'BC');
+  const [district, setDistrict] = useState(profile?.district || 'Chennai');
   const [annualIncome, setAnnualIncome] = useState(profile?.annualIncome || 140000);
   const [boardPercentage, setBoardPercentage] = useState(profile?.boardPercentage || 88.5);
   const [currentCourse, setCurrentCourse] = useState(profile?.currentCourse || 'B.E. Computer Science & Engineering (B.E CSE)');
@@ -59,35 +63,39 @@ export default function EditProfileModal({
     e.preventDefault();
     
     const updated = {
-      fullName: fullName.trim() || 'Surya Suresh',
+      fullName: fullName.trim() || 'Student Candidate',
       gender,
       community,
+      district,
       annualIncome: parseFloat(annualIncome) || 140000,
       boardPercentage: parseFloat(boardPercentage) || 88.5,
       currentCourse,
       isFirstGraduate: Boolean(isFirstGraduate),
       schoolingType,
-      avatar
+      avatar,
+      isGuest: false
     };
 
-    // Save to local storage for persistence across the entire app
+    // Save to session storage for fresh per-session persistence and auto-signout on tab close
     try {
-      localStorage.setItem('tn_student_profile', JSON.stringify(updated));
+      sessionStorage.setItem('tn_student_profile', JSON.stringify(updated));
       if (avatar) {
-        localStorage.setItem('tn_student_avatar', avatar);
+        sessionStorage.setItem('tn_student_avatar', avatar);
       } else {
-        localStorage.removeItem('tn_student_avatar');
+        sessionStorage.removeItem('tn_student_avatar');
       }
 
-      // Also update currentUser object if present in localStorage
-      const savedUser = localStorage.getItem('tn_scholarship_user');
+      // Also update currentUser object if present in sessionStorage
+      let userObj = null;
+      const savedUser = sessionStorage.getItem('tn_scholarship_user');
       if (savedUser) {
-        const userObj = JSON.parse(savedUser);
+        userObj = JSON.parse(savedUser);
         userObj.profile = {
           ...(userObj.profile || {}),
           full_name: updated.fullName,
           gender: updated.gender,
           community: updated.community,
+          district: updated.district,
           annual_income: updated.annualIncome,
           board_percentage: updated.boardPercentage,
           current_course: updated.currentCourse,
@@ -95,8 +103,13 @@ export default function EditProfileModal({
           schooling_type: updated.schoolingType,
           avatar: updated.avatar
         };
-        localStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
+        sessionStorage.setItem('tn_scholarship_user', JSON.stringify(userObj));
       }
+
+      // Persist profile to Cloud Firestore Cluster
+      saveProfileToCluster(updated, userObj).catch(err =>
+        console.warn("[EditProfileModal] Cloud sync notice:", err)
+      );
 
       // Broadcast events so Navbar & other components re-render immediately
       window.dispatchEvent(new Event('avatarUpdated'));
@@ -266,6 +279,24 @@ export default function EditProfileModal({
                 <option value="SCA">SCA (Scheduled Caste Arunthathiyar)</option>
                 <option value="ST">ST (Scheduled Tribe)</option>
                 <option value="OC">OC / General (Open Competition)</option>
+              </select>
+            </div>
+
+            {/* Home District (Tamil Nadu - All 38 Districts) */}
+            <div>
+              <label className="block text-slate-800 font-semibold mb-1">
+                Home District (சொந்த மாவட்டம்) <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 font-medium"
+              >
+                {TN_DISTRICTS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name_en} ({d.name_ta})
+                  </option>
+                ))}
               </select>
             </div>
 

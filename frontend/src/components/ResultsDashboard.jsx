@@ -31,6 +31,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { generateRoadmapPdf } from '../utils/generateRoadmapPdf';
+import { saveApplicationToCluster } from '../utils/cloudSync';
 
 export default function ResultsDashboard({ result, profile, onReset, currentUser = null, currentLang = 'en' }) {
   if (!result) return null;
@@ -589,6 +590,16 @@ export default function ResultsDashboard({ result, profile, onReset, currentUser
                               href={scheme.portal_url}
                               target="_blank"
                               rel="noopener noreferrer"
+                              onClick={() => {
+                                saveApplicationToCluster({
+                                  scheme_name: scheme.name,
+                                  amount: scheme.financial_value,
+                                  applicant_name: profile?.full_name || currentUser?.profile?.full_name || 'Student Candidate',
+                                  district: profile?.district || currentUser?.profile?.district || 'Chennai',
+                                  portal_name: scheme.portal_name
+                                }).catch(err => console.warn("App cluster write notice:", err));
+                                showToast(`Application initiated for ${scheme.name}. Saved to Cloud Cluster!`);
+                              }}
                               className="text-xs font-bold text-[#006a4e] hover:underline flex items-center shrink-0 ml-2"
                             >
                               <span>Apply</span>
