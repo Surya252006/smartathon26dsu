@@ -1,6 +1,7 @@
+import os
 import json
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Response, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -20,6 +21,7 @@ from backend.database import (
 )
 from backend.chat_service import get_ai_advisory
 from backend.ocr_service import verify_student_document, VerificationResult
+from backend.whatsapp_service import send_whatsapp_message
 
 app = FastAPI(
     title="AI Scholarship & Government Scheme Eligibility Matcher",
@@ -406,6 +408,94 @@ def get_student_profile_endpoint(user_id: str):
         return {"status": "success", "profile": data}
     finally:
         db.close()
+
+class WhatsAppRequest(BaseModel):
+    phone_number: str = Field(..., description="Recipient phone number with country code")
+    message: str = Field(..., description="Message body to send")
+
+@app.post("/api/whatsapp/send")
+async def api_send_whatsapp(req: WhatsAppRequest):
+    """
+    Dispatches a WhatsApp message to a student (e.g., for matching alerts).
+    If credentials are missing in .env, this falls back to a Mock Demo mode.
+    """
+    try:
+        result = await send_whatsapp_message(req.phone_number, req.message)
+        if result.get("status") == "error":
+            raise HTTPException(status_code=400, detail=result.get("error"))
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"WhatsApp Service Error: {str(e)}")
+
+# =====================================================================
+# WHATSAPP WEBHOOK (INCOMING MESSAGES & AI LLM BOT)
+# =====================================================================
+
+@app.get("/api/whatsapp/webhook")
+async def verify_whatsapp_webhook(request: Request):
+    """
+    Meta Webhook Verification Challenge.
+    Meta sends a GET request here to verify the endpoint.
+    """
+    mode = request.query_params.get("hub.mode")
+    token = request.query_params.get("hub.verify_token")
+    challenge = request.query_params.get("hub.challenge")
+    
+    VERIFY_TOKEN = os.getenv("WHATSAPP_WEBHOOK_VERIFY_TOKEN", "smartathon_webhook_secret_2026")
+    
+    if mode and token:
+        if mode == "subscribe" and token == VERIFY_TOKEN:
+            return Response(content=challenge, media_type="text/plain", status_code=200)
+        else:
+            raise HTTPException(status_code=403, detail="Verification token mismatch")
+    raise HTTPException(status_code=400, detail="Missing parameters")
+
+async def process_whatsapp_message(phone_number: str, message_text: str):
+    """Background task to process the message via LLM and reply"""
+    try:
+        # Pass to the AI logic (get_ai_advisory)
+        # We pass empty contexts since WhatsApp users don't have active frontend sessions
+        reply_text = await get_ai_advisory(
+            message=message_text,
+            profile_context={"full_name": "Student"},
+            evaluation_context={},
+            history=[]
+        )
+        
+        # Dispatch reply back to WhatsApp
+        await send_whatsapp_message(phone_number, reply_text)
+    except Exception as e:
+        print(f"Error processing WhatsApp AI reply: {e}")
+        # Send fallback message
+        await send_whatsapp_message(phone_number, "Sorry, I am facing a technical issue right now. Please try again later.")
+
+@app.post("/api/whatsapp/webhook")
+async def handle_whatsapp_webhook(request: Request, background_tasks: BackgroundTasks):
+    """
+    Receives incoming WhatsApp messages from Meta.
+    Extracts the text and queues it for LLM processing.
+    """
+    try:
+        data = await request.json()
+        
+        # Meta payload structure parsing
+        if data.get("object") == "whatsapp_business_account":
+            for entry in data.get("entry", []):
+                for change in entry.get("changes", []):
+                    value = change.get("value", {})
+                    if "messages" in value:
+                        for message in value["messages"]:
+                            if message.get("type") == "text":
+                                phone_number = message.get("from")
+                                message_text = message.get("text", {}).get("body", "")
+                                
+                                # Process asynchronously so webhook responds 200 OK immediately
+                                background_tasks.add_task(process_whatsapp_message, phone_number, message_text)
+                                
+        return Response(content="EVENT_RECEIVED", status_code=200)
+    except Exception as e:
+        print(f"Webhook Error: {e}")
+        return Response(content="ERROR", status_code=500)
 
 if __name__ == "__main__":
     import uvicorn

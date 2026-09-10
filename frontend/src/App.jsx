@@ -29,13 +29,15 @@ import { DEMO_PERSONAS } from './data/demoPersonas';
 import { TRANSLATIONS } from './utils/translations';
 import { saveProfileToCluster, saveEvaluationToCluster, getProfileFromCluster } from './utils/cloudSync';
 import { fetchLiveDbStatus } from './utils/apiConfig';
+import WhatsAppFloatingButton from './components/WhatsAppFloatingButton';
+import HackathonDemoFeatures from './components/HackathonDemoFeatures';
 
 function App() {
   const [currentTab, setCurrentTab] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get('tab');
-      if (tab && ['matcher', 'results', 'profile', 'schemes', 'tracker', 'admin', 'home'].includes(tab)) {
+      if (tab && ['matcher', 'results', 'profile', 'schemes', 'tracker', 'admin', 'home', 'demo'].includes(tab)) {
         return tab;
       }
     } catch (e) {}
@@ -142,6 +144,20 @@ function App() {
     } catch (e) {}
 
     setCurrentUser(resolvedUser);
+
+    // ── Admin: skip all student profile logic, redirect to admin dashboard ──
+    const isAdminUser = resolvedUser.role === 'admin' ||
+      String(resolvedUser.email || '').toLowerCase().includes('admin');
+    if (isAdminUser) {
+      try {
+        sessionStorage.setItem('tn_scholarship_user', JSON.stringify(resolvedUser));
+        window.dispatchEvent(new Event('profileUpdated'));
+      } catch (e) {}
+      setCurrentTab('admin');
+      return; // Don't evaluate or load student profile for admins
+    }
+
+    // ── Student: normal profile load flow ──
     if (resolvedUser.profile) {
       setCurrentProfile(resolvedUser.profile);
       try {
@@ -186,6 +202,9 @@ function App() {
   };
 
   const handleLogout = () => {
+    // If admin was logged in, go back to home on logout
+    const wasAdmin = currentUser?.role === 'admin' ||
+      String(currentUser?.email || '').toLowerCase().includes('admin');
     setCurrentUser(null);
     setCurrentProfile(null);
     try {
@@ -198,6 +217,7 @@ function App() {
       window.dispatchEvent(new Event('profileUpdated'));
       window.dispatchEvent(new Event('avatarUpdated'));
     } catch (e) {}
+    if (wasAdmin) setCurrentTab('home');
   };
 
   const handleEvaluate = async (formData) => {
@@ -369,7 +389,7 @@ function App() {
         {/* VIEW A: Official Portal Homepage */}
         {currentTab === 'home' && (
           <HomePage
-            onOpenEligibilityChecker={handleOpenEligibilityChecker}
+            onStartMatcher={handleOpenEligibilityChecker}
             onSelectPersona={injectPersona}
             currentLang={currentLang}
             currentUser={currentUser}
@@ -576,12 +596,13 @@ function App() {
               />
             )}
 
-            {/* VIEW G: Future-Ready Admin & Scholarship Rule Builder (Strictly Admin Access Only) */}
+            {/* VIEW G: Admin Dashboard (Strictly Admin Access Only) */}
             {currentTab === 'admin' && (
               currentUser?.role === 'admin' ? (
                 <AdminDashboard
                   onBackToHome={() => setCurrentTab('home')}
                   currentLang={currentLang}
+                  currentUser={currentUser}
                 />
               ) : (
                 <div className="max-w-lg mx-auto my-12 bg-white rounded-2xl border border-red-200 p-8 text-center shadow-xs space-y-4">
@@ -613,6 +634,11 @@ function App() {
                   </div>
                 </div>
               )
+            )}
+
+            {/* VIEW H: Hackathon Demo Page */}
+            {currentTab === 'demo' && (
+              <HackathonDemoFeatures />
             )}
 
           </div>
@@ -756,6 +782,8 @@ function App() {
         </div>
       </footer>
 
+      {/* 7. WhatsApp Floating Chat Support */}
+      <WhatsAppFloatingButton phoneNumber="916379890773" defaultMessage={isTa ? "வணக்கம்! எனக்கு கல்வி உதவித்தொகை பற்றி சில விவரங்கள் தேவை." : "Hi, I need help finding the right government schemes for my profile."} />
     </div>
   );
 }

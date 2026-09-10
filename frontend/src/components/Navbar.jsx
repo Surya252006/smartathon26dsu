@@ -373,6 +373,21 @@ export default function Navbar({
               </button>
             )}
 
+            {/* 8. Hackathon Demo Features Tab */}
+            <button
+              onClick={() => setCurrentTab('demo')}
+              className={`px-3 py-1.5 rounded-md flex items-center space-x-1.5 font-bold transition cursor-pointer ${
+                currentTab === 'demo'
+                  ? 'bg-amber-500 text-slate-900 shadow-inner ring-1 ring-amber-400'
+                  : 'bg-emerald-950/80 text-amber-300 hover:text-amber-100 hover:bg-emerald-800 border border-amber-500/50'
+              }`}
+              title="View Hackathon Demo Features (DigiLocker, DBT, Tracker)"
+            >
+              <ShieldCheck size={15} className={currentTab === 'demo' ? 'text-slate-900' : 'text-amber-400'} />
+              <span>{currentLang === 'ta' ? 'டெமோ அம்சங்கள்' : 'Demo Features'}</span>
+              <span className="bg-amber-400 text-slate-900 text-[9px] px-1 py-0.2 rounded font-mono ml-1">NEW</span>
+            </button>
+
           </div>
 
           {/* Right Side in Secondary Nav: Quick e-Sevai Scanner & Circulars */}

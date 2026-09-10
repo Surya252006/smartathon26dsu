@@ -519,7 +519,7 @@ export default function HomePage({
             {/* Left Column (7 cols): Text, Subtitle, CTAs */}
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center space-x-2 bg-emerald-950/90 text-emerald-300 text-xs font-bold px-3.5 py-1.5 rounded-full border border-emerald-700/80 shadow-xs">
-                <Sparkles size={14} className="text-emerald-400" />
+                
                 <span>{t.hero_decision_system || "AI-Powered Decision System • Government of Tamil Nadu"}</span>
               </div>
 
@@ -537,10 +537,10 @@ export default function HomePage({
                   onClick={onStartMatcher}
                   className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition flex items-center space-x-2 cursor-pointer border border-emerald-400"
                 >
-                  <Sparkles size={16} className="text-amber-300" />
+                  
                   <span>
                     {currentUser?.profile?.full_name || studentProfile.fullName
-                      ? (t.btn_find_saved || '⚡ Find My Scholarships (Saved Bio-Data)')
+                      ? (t.btn_find_saved || ' Find My Scholarships (Saved Bio-Data)')
                       : (t.btn_register_find || '📝 Register Bio-Data & Find Scholarships')}
                   </span>
                   <ArrowRight size={16} />
@@ -732,36 +732,46 @@ export default function HomePage({
               step: "01",
               title: isTa ? "சுயவிவரத்தை உள்ளிடுங்கள்" : "Build Your Profile",
               desc: isTa ? "உங்கள் கல்வி, வருமானம், சமூகப் பிரிவு விவரங்களை எளிதாக ஒருமுறை உள்ளிடுங்கள்." : "Tell us about your education, income, category, and eligibility once in a clean 5-step wizard.",
-              badge: t.step1_badge || "Single Input"
+              badge: t.step1_badge || "Single Input",
+              image: "/step1_profile_1788992692082.jpg"
             },
             {
               step: "02",
               title: isTa ? "தகுதி விதிகள் சரிபார்ப்பு" : "Match Criteria",
               desc: isTa ? "சமூக இடஒதுக்கீடு, குடும்ப வருமான வரம்பு மற்றும் கல்வித் தகுதிகளை எங்கள் விதித் தொகுப்பு சரிபார்க்கிறது." : "The rule engine checks community quota, family income caps, and academic criteria.",
-              badge: t.step2_badge || "Smart Filtering"
+              badge: t.step2_badge || "Smart Filtering",
+              image: "/step2_match_1788992705717.jpg"
             },
             {
               step: "03",
               title: isTa ? "சட்டபூர்வ சலுகையை உகப்பாக்குதல்" : "Optimize Legitimate Benefit",
               desc: isTa ? "ஒன்றையொன்று முரண்படும் திட்டங்கள் நீக்கப்பட்டு, அதிகபட்ச பலனளிக்கும் சேர்க்கை கணக்கிடப்படுகிறது." : "Conflicting schemes are removed and the highest-benefit valid combination is mathematically calculated.",
-              badge: t.step3_badge || "Conflict Free"
+              badge: t.step3_badge || "Conflict Free",
+              image: "/step3_max_benefit_1788992729886.jpg"
             },
             {
               step: "04",
               title: isTa ? "வழிகாட்டியுடன் விண்ணப்பிக்கவும்" : "Apply with Roadmap",
               desc: isTa ? "அதிகாரப்பூர்வ அரசு இணையதளங்களுக்கான ஆவண சரிபார்ப்பு பட்டியல் மற்றும் 7-படி வழிகாட்டியைப் பெறுங்கள்." : "Get a personalized document checklist and 7-step roadmap pointing to official government gateways.",
-              badge: t.step4_badge || "Ready Checklist"
+              badge: t.step4_badge || "Ready Checklist",
+              image: "/step4_roadmap_1788992744115.jpg"
             }
           ].map((card, cIdx) => (
-            <div key={cIdx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:shadow-md transition">
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-black text-[#006a4e] font-mono">{card.step}</span>
-                <span className="text-[10px] font-bold bg-emerald-50 text-[#006a4e] px-2 py-0.5 rounded-full border border-emerald-200">
-                  {card.badge}
-                </span>
+            <div key={cIdx} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:bg-emerald-50/50 hover:border-emerald-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-in-out group space-y-3 overflow-hidden flex flex-col">
+              <div className="-mx-5 -mt-5 mb-3 h-40 overflow-hidden relative">
+                <img src={card.image} alt={card.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
+                  <span className="text-2xl font-black text-white font-mono drop-shadow-md">{card.step}</span>
+                  <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full border border-emerald-400 shadow-sm shadow-emerald-900/50">
+                    {card.badge}
+                  </span>
+                </div>
               </div>
-              <h3 className="text-sm font-bold text-slate-900">{card.title}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{card.desc}</p>
+              <div className="space-y-1">
+                <h3 className="font-bold text-slate-900 text-sm">{card.title}</h3>
+                <p className="text-[11px] text-slate-500 leading-relaxed">{card.desc}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -785,6 +795,65 @@ export default function HomePage({
           >
             {t.launch_checker_btn || "Launch Eligibility Checker →"}
           </button>
+        </div>
+      </section>
+
+      {/* SECTION 21.5: VIDEO TUTORIAL SECTION */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
+        <div className="relative rounded-3xl p-1 bg-gradient-to-r from-emerald-400 via-teal-500 to-blue-500 animate-gradient-x shadow-2xl">
+          <div className="bg-slate-900 rounded-[22px] overflow-hidden flex flex-col md:flex-row relative">
+            
+            {/* Animated Glow Effect inside */}
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+
+            <div className="p-8 md:p-10 flex flex-col justify-center w-full md:w-5/12 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider w-max mb-4 border border-emerald-500/20">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                {isTa ? 'வீடியோ வழிகாட்டி' : 'Video Guide'}
+              </span>
+              <h2 className="text-3xl font-black text-white tracking-tight mb-4 leading-tight">
+                {isTa ? 'உங்கள் உதவித்தொகையை எப்படிப் பெறுவது?' : 'Watch How To Claim Your Scholarship'}
+              </h2>
+              <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                {isTa 
+                  ? 'எங்கள் தளம் எவ்வாறு செயல்படுகிறது மற்றும் உங்கள் ஆவணங்களைச் சமர்ப்பிப்பதற்கான சரியான வழிமுறைகளை இந்த அனிமேஷன் வீடியோவில் காணுங்கள்.' 
+                  : 'See exactly how our intelligent engine matches you with the right schemes, resolves conflicts, and prepares you for the final application process.'}
+              </p>
+              
+              <ul className="space-y-3 mb-8 text-sm text-slate-300 font-medium">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 size={18} className="text-emerald-400" />
+                  <span>{isTa ? 'படி-படியான விளக்கம்' : 'Step-by-step visual explanation'}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 size={18} className="text-emerald-400" />
+                  <span>{isTa ? 'எளிய தமிழ் ஆடியோ' : 'Clear & easy to understand'}</span>
+                </li>
+              </ul>
+              
+              <button
+                onClick={onStartMatcher}
+                className="group w-max px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/50 transition-all flex items-center gap-2"
+              >
+                {isTa ? 'இப்போதே தொடங்குங்கள்' : 'Get Started Now'}
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+            
+            {/* Video iframe container */}
+            <div className="w-full md:w-7/12 relative min-h-[300px] md:min-h-full bg-black z-10 border-l border-slate-700/50">
+              <iframe 
+                className="absolute inset-0 w-full h-full object-cover"
+                src="https://www.youtube.com/embed/hvg4R6EV__E?autoplay=1&mute=1&loop=1&playlist=hvg4R6EV__E&controls=0&showinfo=0" 
+                title="Scholarship Guide Animation" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+              ></iframe>
+            </div>
+
+          </div>
         </div>
       </section>
 
@@ -936,7 +1005,7 @@ export default function HomePage({
               {(!currentUser && !studentProfile.fullName) && (
                 <div className="mb-4 p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-xl text-xs space-y-2 shadow-2xs">
                   <div className="flex items-center space-x-1.5 font-bold text-emerald-900 text-xs">
-                    <Sparkles size={14} className="text-emerald-600 shrink-0" />
+                    
                     <span>{t.new_reg_card_title || "New Student Registration • 1-Time Bio-Data Setup"}</span>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-snug">
@@ -1198,7 +1267,7 @@ export default function HomePage({
                   onClick={onStartMatcher}
                   className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold rounded-lg transition flex items-center justify-center space-x-2 cursor-pointer shadow-xs border border-emerald-600"
                 >
-                  <Sparkles size={14} className="text-amber-300" />
+                  
                   <span>
                     {currentUser || studentProfile.fullName
                       ? (t.btn_run_instant_calc || '⚡ Run Instant Calculation (Saved Bio-Data)')
@@ -1390,7 +1459,7 @@ export default function HomePage({
               {/* Title with star icons: Dynamic Optimal Stacking Recommendation */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-emerald-600/60">
                 <div className="flex items-center space-x-2">
-                  <Sparkles size={20} className="text-amber-300 fill-amber-300 shrink-0" />
+                  
                   <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
                     {t.optimal_stacking_prefix || "Optimal Stacking Recommendation (Max Benefit):"} <span className="text-amber-200 font-mono">₹{recommendedTotal.toLocaleString('en-IN')} {isTa ? '/ஆண்டு' : '/yr'}</span>
                   </h3>
@@ -1727,7 +1796,7 @@ export default function HomePage({
                       /* Bot counselor bubble */
                       <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-tl-xs shadow-xs max-w-[90%] space-y-1.5">
                         <div className="flex items-center space-x-1 text-[11px] font-bold text-emerald-800">
-                          <Sparkles size={12} />
+                          
                           <span>{isTa ? 'தமிழ்நாடு இ-வித்யா ஆலோசகர்' : 'TN e-Vidya Counselor'}</span>
                         </div>
                         <p className="whitespace-pre-line leading-relaxed text-slate-700">
